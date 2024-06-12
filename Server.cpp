@@ -56,7 +56,7 @@ void Server::handleRequest(int clientSocket) {
 
     std::cout << "Request received:\n" << buffer << std::endl;
 
-    std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nHello, World!";
+    std::string response = "HTTP/1.1 200 OKContent-Type: text/plain\r\n\r\nHello, World!";
     sendResponse(clientSocket, response);
 }
 
