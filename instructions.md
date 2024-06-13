@@ -255,51 +255,23 @@ A status-line consists of the protocol version, a space (SP), the status code, a
       - Insure Proper framing and transmission of dynamically generated or unknown-length content through chunked encoding.
       - Distinguish between transfer encodings (encodings applied during the transmission process, such as chunked transfer) and content encodings (encodings applied to the representation of the content itself, such as compression).
       - Additional endcdings can be applied to the message body, and additional Transfer-Encoding fields can be added to the message.
-      - Handling Multiple Codings:
-        - If multiple encodings are applied, chunked encoding should be the final one to ensure proper framing.
-        - A server/client must not apply chunked encoding more than once to a message body.
-      - Compatibility:
+      - In HEAD request (request of the header only without the mesage content) and in 304 (Not Modified) response, which both dont send message content, transfer-Encoding MAY be sent.
+      - Server must not include transfer-encoding header in case of a status code of 1xx (Informational), 204 (No Content), and any 2xx (Successful) response to a CONNECT request
+      - If transfer-encoding is unknown to the server, server MUST respond with 501 (Not Implemented).
         - Servers and clients that only support HTTP/1.0 typically do not handle Transfer-Encoding correctly and may treat messages as malformed if Transfer-Encoding is present.
-
-      - Interoperability:
         - A client should not send a request with Transfer-Encoding unless it knows the server supports HTTP/1.1 or later.
         - Similarly, a server should not send a response with Transfer-Encoding unless the client's request indicates HTTP/1.1 compatibility.
+        - If multiple encodings are applied, chunked encoding should be the final one to ensure proper framing.
+        - A server/client must not apply chunked encoding more than once to a message body.
 
-Security Considerations:
+      - Security Considerations:
+      - Mixing Transfer-Encoding with Content-Length can lead to security vulnerabilities. Servers should handle such cases cautiously by closing the connection after responding or reject them outright.
+       Server/ client recieving HTTP 1.0 that has transfer-encoding header, it is considered faultly and the connection is closed afterward. 
 
-Mixing Transfer-Encoding with Content-Length can lead to security vulnerabilities like request smuggling or response splitting. Servers should handle such cases cautiously or reject them outright.
-Header Behavior:
-Server Behavior:
+    ## 6.2 Content Length:
+      - The Content-Length header field indicates the size of the message body in octets.
+      - The Content-Length field value is a decimal number.
+      - Purpose:
+        1. Framing Information allowing the recipient to know where the body ends.
+        2. Size of the Representation: For messages that do not include a body (e.g., HEAD responses), the Content-Length can indicate the size of the selected message.
 
-Must not send Transfer-Encoding in responses with status codes 1xx (Informational) or 204 (No Content).
-Should not send Transfer-Encoding in successful responses (2xx) to CONNECT requests.
-Client Behavior:
-
-Must handle Transfer-Encoding in responses appropriately based on the HTTP version compatibility.
-
-      - The chunked transfer coding is the only encoding defined in the HTTP/1.1 specification.
-      - The chunked transfer coding is used to send a payload body in a series of "chunks".
-      - Each chunk consists of the chunk size in bytes followed by a CRLF and the chunk data.
-      - The final chunk is followed by a zero-size chunk and a CRLF.
-      - The message is terminated by a zero-size chunk and a CRLF.
-      - The chunked transfer coding is terminated by the closing of the connection.
-      - The chunked transfer coding is used to send a payload body in a series of "chunks".
-      - Each chunk consists of the chunk size in bytes followed by a CRLF and the chunk data.
-      - The final chunk is followed by a zero-size chunk and a CRLF.
-      - The message is terminated by a zero-size chunk and a CRLF.
-      - The chunked transfer coding is terminated by the closing of the connection.
-      - The chunked transfer coding is used to send a payload body in a series of "chunks".
-      - Each chunk consists of the chunk size in bytes followed by a CRLF and the chunk data.
-      - The final chunk is followed by a zero-size chunk and a CRLF.
-      - The message is terminated by a zero-size chunk and a CRLF.
-      - The chunked transfer coding is terminated by the closing of the connection.
-      - The chunked transfer coding is used to send a payload body in a series of "chunks".
-      - Each chunk consists of the chunk size in bytes followed by a CRLF and the chunk data.
-      - The final chunk is followed by a zero-size chunk and a CRLF.
-      - The message is terminated by a zero-size chunk and a CRLF.
-      - The chunked transfer coding is terminated by the closing of the connection.
-      - The chunked transfer coding is used to send a payload body in a series of "chunks".
-      - Each chunk consists of the chunk size in bytes followed by a CRLF and the chunk data.
-      - The final chunk is followed by a zero-size chunk and a CRLF.
-      - The message is terminated by a zero-size chunk and a CRLF.
-      - The chunked transfer coding is terminated by the closing
