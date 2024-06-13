@@ -154,3 +154,152 @@ OPTIONS * HTTP/1.1
 Host: www.example.org:8001
 after connecting to port 8001 of host "www.example.org".
 
+## 3.3 Reconstructing the Target URI
+  - Target URI is to identify the target resource of an HTTP request.
+  - Identify the scheme (http, https), authority, and path components of the target URI.
+  - The target URI is reconstructed by concatenating the request-target (origin-form) with the Host header field value.
+
+- Cases:
+  1. Origin-form
+    - The authority component is the same as the Host header field value. If there is no Host header field or invalid field value, the authority component is undefined.
+    - The path component is the same as the request-target.
+  - Example:
+    GET /where?q=now HTTP/1.1
+    Host: www.example.org
+  - Target URI: http://www.example.org/where?q=now
+
+  2. Absolute-form
+    - The authority component is the same as the Host header field value. If there is no Host header field or invalid field value, the authority component is undefined.
+    - The target URI is the request-target.
+    - The path component is the same as the request-target.
+  - Example:
+    GET http://www.example.org/pub/WWW/TheProject.html HTTP/1.1
+    Host: www.example.org
+  - Target URI: http://www.example.org/pub/WWW/TheProject.html
+
+  3. Authority-form
+    - The authority component is the same as the request-target.
+    - The target URI is the request-target.
+    - The path component is empty.
+    - Example:
+    CONNECT www.example.com:80 HTTP/1.1
+    Host: www.example.com
+  - Target URI: http://www.example.com:80
+
+  4. Asterisk-form
+    - The authority component is the same as the Host header field value. If there is no Host header field or invalid field value, the authority component is undefined.
+    - The path component is empty.
+  - Example:
+    OPTIONS * HTTP/1.1
+    Host: www.example.org:8001
+  - Target URI: http://www.example.org:8001
+
+- The target URI is reconstructed by concatenating the scheme, "://", authority, and path component.
+- The scheme is "http" for HTTP requests and "https" for HTTPS requests.
+- If the authority component is empty and it's URI scheme requires a non-empty authority component, the request is malformed and the server MUST respond with a 400 (Bad Request) status code.
+
+## 4.1. Status Line:
+  The status line in an HTTP response message is formatted according to specific rules defined by the HTTP specification. Here’s a breakdown of the structure and components of the status line.
+- ## Syntax:
+A status-line consists of the protocol version, a space (SP), the status code, another space, a reason phrase, and ends with CRLF.
+
+  status-line    = HTTP-version SP status-code SP reason-phrase
+- ## Parsing:
+  - Same as request-line parsing.
+  - The status code is a 3-digit integer result code of the server's attempt to understand and satisfy the request.
+  - The reason phrase is intended to give a short textual description of the status code.
+  - The reason phrase is optional and can be empty.
+  - Status-code:
+    - 1xx: Informational - Request received, continuing process
+    - 2xx: Success - The action was successfully received, understood, and accepted
+    - 3xx: Redirection - Further action must be taken to complete the request
+    - 4xx: Client Error - The request contains bad syntax or cannot be fulfilled
+    - 5xx: Server Error - The server failed to fulfill an apparently valid request
+
+## 5 Field Syntax:
+  - Each field line consists of a case-insensitive field name followed by a colon (":"), optional leading whitespace, the field line value, and optional trailing whitespace.
+
+    - field-line   = field-name ":" OWS field-value OWS
+
+  ## 5.1. Field Line Parsing:
+    - Field names are case-insensitive.
+    - Field values are case-sensitive.
+  - Rules:
+    1. No whitespace is allowed between the field-name and colon. Server response with error 400 (Bad Request) if found.
+    2. Whiespace is allowed between the colon and the field-value.
+    3. Leading and trailing whitespace in field values are ignored.
+
+  ## 5.2. Obsolete Line Folding:
+    - Line folding is the process of breaking a long line into multiple lines by inserting a CRLF and at least one SP or HTAB.
+    # Syntax:
+      obs-fold     = OWS CRLF RWS
+                    ; obsolete line folding
+
+    - Line folding is obsolete and MUST NOT be used by senders unless the message is within the "message/http".
+    - Server must reject the massage with 400 (Bad Request) if found unless the message is within the "message/http".
+    - Proxy or gateway must discard the message and replace it with a 502 (Bad Gateway) response or remove the obs-fold before forwarding the message.
+## 6. Message Body:
+  - Consists of any sequence of octets. It carries the actual content of the request or response, unless modified by transfer encodings.
+  - Request:
+    1. Presence of a message body is indicated by either a Content-Length header field or Transfer-Encoding header field.
+    2. Transfer-Encoding takes precedence over Content-Length.
+  - Response:
+    1. Presence of a message body depends on both the method of the original request and the status code of the response.
+   - Example:
+      - For responses to GET or HEAD requests:
+      - If the response status is 200 OK, Message body is send.
+      - If the status is 204 No Content or 304 Not Modified, the response must not include a message body.
+    
+    ## 6.1 Transfer-Encoding:
+      - Specifies the transfer codings that have been (or will be) applied to the message body.
+      - Insure Proper framing and transmission of dynamically generated or unknown-length content through chunked encoding.
+      - Distinguish between transfer encodings (encodings applied during the transmission process, such as chunked transfer) and content encodings (encodings applied to the representation of the content itself, such as compression).
+      - Additional endcdings can be applied to the message body, and additional Transfer-Encoding fields can be added to the message.
+      - Handling Multiple Codings:
+        - If multiple encodings are applied, chunked encoding should be the final one to ensure proper framing.
+        - A server/client must not apply chunked encoding more than once to a message body.
+      - Compatibility:
+        - Servers and clients that only support HTTP/1.0 typically do not handle Transfer-Encoding correctly and may treat messages as malformed if Transfer-Encoding is present.
+
+      - Interoperability:
+        - A client should not send a request with Transfer-Encoding unless it knows the server supports HTTP/1.1 or later.
+        - Similarly, a server should not send a response with Transfer-Encoding unless the client's request indicates HTTP/1.1 compatibility.
+
+Security Considerations:
+
+Mixing Transfer-Encoding with Content-Length can lead to security vulnerabilities like request smuggling or response splitting. Servers should handle such cases cautiously or reject them outright.
+Header Behavior:
+Server Behavior:
+
+Must not send Transfer-Encoding in responses with status codes 1xx (Informational) or 204 (No Content).
+Should not send Transfer-Encoding in successful responses (2xx) to CONNECT requests.
+Client Behavior:
+
+Must handle Transfer-Encoding in responses appropriately based on the HTTP version compatibility.
+
+      - The chunked transfer coding is the only encoding defined in the HTTP/1.1 specification.
+      - The chunked transfer coding is used to send a payload body in a series of "chunks".
+      - Each chunk consists of the chunk size in bytes followed by a CRLF and the chunk data.
+      - The final chunk is followed by a zero-size chunk and a CRLF.
+      - The message is terminated by a zero-size chunk and a CRLF.
+      - The chunked transfer coding is terminated by the closing of the connection.
+      - The chunked transfer coding is used to send a payload body in a series of "chunks".
+      - Each chunk consists of the chunk size in bytes followed by a CRLF and the chunk data.
+      - The final chunk is followed by a zero-size chunk and a CRLF.
+      - The message is terminated by a zero-size chunk and a CRLF.
+      - The chunked transfer coding is terminated by the closing of the connection.
+      - The chunked transfer coding is used to send a payload body in a series of "chunks".
+      - Each chunk consists of the chunk size in bytes followed by a CRLF and the chunk data.
+      - The final chunk is followed by a zero-size chunk and a CRLF.
+      - The message is terminated by a zero-size chunk and a CRLF.
+      - The chunked transfer coding is terminated by the closing of the connection.
+      - The chunked transfer coding is used to send a payload body in a series of "chunks".
+      - Each chunk consists of the chunk size in bytes followed by a CRLF and the chunk data.
+      - The final chunk is followed by a zero-size chunk and a CRLF.
+      - The message is terminated by a zero-size chunk and a CRLF.
+      - The chunked transfer coding is terminated by the closing of the connection.
+      - The chunked transfer coding is used to send a payload body in a series of "chunks".
+      - Each chunk consists of the chunk size in bytes followed by a CRLF and the chunk data.
+      - The final chunk is followed by a zero-size chunk and a CRLF.
+      - The message is terminated by a zero-size chunk and a CRLF.
+      - The chunked transfer coding is terminated by the closing
