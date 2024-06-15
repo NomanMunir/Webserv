@@ -3,45 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to My Cute Server</title>
+    <title>Welcome to My Server</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f0f8ff;
-            color: #333;
             margin: 0;
             padding: 0;
+        }
+        .hero {
+            background-image: url('https://gratisography.com/wp-content/uploads/2024/03/gratisography-funflower-1170x780.jpg'); /* Replace with your image URL */
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-        }
-        .container {
             text-align: center;
-            background-color: #fff;
+            color: #fff;
+        }
+        .hero-content {
+            max-width: 800px;
             padding: 20px;
+            background-color: rgba(0, 0, 0, 0.6);
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         h1 {
-            font-size: 2.5em;
-            color: #ff69b4;
+            font-size: 3em;
+            margin-bottom: 20px;
         }
         p {
-            font-size: 1.2em;
+            font-size: 1.5em;
+            line-height: 1.6;
+            margin-bottom: 30px;
         }
-        .cute-image {
-            width: 150px;
-            height: 150px;
-            margin-top: 20px;
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #ff69b4;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            transition: background-color 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #e63e8c;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome to My Cute Server!</h1>
-        <p>This is a simple HTTP server written in C++.</p>
-        <img src="https://media.giphy.com/media/1oFI8bTUCm9ao/giphy.gif" alt="Cute GIF" class="cute-image">
+    <div class="hero">
+        <div class="hero-content">
+            <h1>Welcome to My Server!</h1>
+            <p>This is a simple HTTP server written in C++.</p>
+            <a href="#" class="btn">Explore More</a>
+        </div>
     </div>
 </body>
 </html>
