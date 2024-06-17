@@ -275,3 +275,39 @@ A status-line consists of the protocol version, a space (SP), the status code, a
         1. Framing Information allowing the recipient to know where the body ends.
         2. Size of the Representation: For messages that do not include a body (e.g., HEAD responses), the Content-Length can indicate the size of the selected message.
 
+    ## 6.3. Message Body Length:
+    Cases:
+    1. Responses to HEAD Requests and Specific Status Codes (1xx, 204, 304): 
+      - These responses are terminated by the first empty line after the header fields and do not contain a message body or trailer section.
+
+    2. 2xx Responses to CONNECT Requests:
+      - These responses indicate that the connection becomes a tunnel immediately after the header fields, and any Content-Length or Transfer-Encoding headers should be ignored.
+
+    3. Transfer-Encoding vs. Content-Length:
+      - If both Transfer-Encoding and Content-Length headers are present, Transfer-Encoding takes precedence. Intermediaries must remove the Content-Length header or consider it as error.
+
+    4. Chunked Transfer-Encoding:
+      - If the Transfer-Encoding header field ends with the chunked transfer coding, the message body length is determined by reading the chunked data until the end of the chunked transfer coding.
+      - If chunked is not the final encoding:
+        - In RESPONSE, the length is determined by reading until the server closes the connection.
+        - In REQUESR, the server must respond with a 400 (Bad Request) status code and close the connection.
+
+    5. Invalid Content-Length:
+      - Request: The server must respond with 400 (Bad Request) and close the connection.
+      - Response: The client must discard the message body and close the connection.
+      - Response to proxy: The proxy must close the connection and discard the message body and send a 502 (Bad Gateway) response.
+
+    6. Valid Content-Length:
+      - It defines the expected message body length in octets. If the connection closes before receiving the indicated length, the message is considered incomplete.
+    
+    7. Message Body Length Determination:
+      - If none of the above conditions apply to a request message, the message body length is zero.
+      - For responses, the message body length is determined by the octets received before the server closes the connection. However, this method can lead to ambiguities if the connection is interrupted or length is reached, so length or encoding delimitations (not close-delimitation) are preferred.
+
+    - A server may reject requests with a message body but without Content-Length by responding with 411 (Length Required).
+    - Clients should send a Content-Length header if the message body length is known to avoid issues with some services that might reject chunked transfer coding.
+    - Clients must either include a Content-Length header or use chunked transfer coding for messages with a body, ensuring the server can handle HTTP/1.1 or later.
+    
+    8. Extra Data After Final Response:
+      - If extra data remains after the final response, a user agent may discard it or attempt to determine if it belongs to the prior message.
+      - Clients must not process, cache, or forward such data to avoid cache poisoning.
