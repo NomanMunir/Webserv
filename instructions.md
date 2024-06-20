@@ -718,3 +718,189 @@ A status-line consists of the protocol version, a space (SP), the status code, a
     5. **Monitoring Network Connections**:
       - A client sending a message body should monitor for error responses while transmitting.
       - If a client receives an indication that the server is closing the connection and does not want to receive the message body, the client should immediately stop transmitting and close the connection.
+  ## 9.6. Tear-down
+      - The "close" connection option signals that the sender will close the connection after completing the current response.
+      - Example header: `Connection: close`
+      **Client:**
+      - Sending `Connection: close` means this is the last request the client will send on this connection.
+      - Receive a "close" connection option MUST cease sending requests on that connection and close the connection after reading the response message containing the "close" connection option.
+      - Client should not assume that pipelines or requests that are in transit will be processed after getting the "close" connection option.
+      **Server**:      
+      - Sending `Connection: close` indicates the server will close the connection after completing the response.
+      - Receive a "close" connection option must initiate closure after sending the final response. 
+      - The server should also send a "close" connection option in its final response and must not process any further requests on that connection.
+
+    #### **Stages of Connection Closure**
+    1. **Immediate Close Risks**:
+      - An immediate closure of a TCP connection by the server can cause issues where the client cannot read the last HTTP response.
+      - If the client sends another request before receiving the response, the server's TCP stack might send a reset packet, which could erase the client's unacknowledged input buffers.
+
+    2. **Avoiding the TCP Reset Problem**:
+      - **Half-Close**: The server first closes the write side of the connection but continues to read from it.
+      - **Client Acknowledgment**: The server waits until it is reasonably certain that the client has acknowledged the server's final response or client has closed the connection.
+      - **Full Close**: Finally, the server fully closes the connection after ensuring proper acknowledgment.
+
+  ## 9.7. TLS Connection Initiation
+   - Initiating a TLS connection for HTTP involves the HTTP client acting as the TLS client, starting the TLS handshake with a ClientHello, and upon successful completion, transmitting HTTP requests over the encrypted connection as TLS application data. This ensures secure communication between the client and the server.
+
+  ## 9.8. TLS Connection Closure
+    1. **Secure Closure Alerts**:
+      - TLS ensures a secure closure by exchanging closure alerts before closing the connection.
+      - A received valid closure alert guarantees that no further data will be transmitted on that connection.
+
+    2. **Incomplete Close**:
+      - When an implementation has sent or received all the HTTP message data it needs (typically by detecting HTTP message boundaries), it might perform an "incomplete close".
+      - This involves sending a closure alert and closing the connection without waiting for the peer's corresponding closure alert.
+      - An incomplete close does not compromise the security of already received data but might indicate that subsequent data could be truncated.
+      - Since TLS does not understand HTTP message framing, it is necessary to inspect the HTTP data to ensure message completeness.
+
+    3. **Handling Incomplete Close**:
+      - When an incomplete close is detected, clients should consider requests complete if they have received:
+        - The specified amount of data in the `Content-Length` header, or
+        - The terminal zero-length chunk when `Transfer-Encoding` is chunked.
+      - A response lacking both chunked transfer coding and `Content-Length` is complete only if a valid closure alert is received.
+      - Treating an incomplete message as complete without proper validation can expose implementations to attacks.
+      - Clients should handle incomplete closes gracefully.
+
+    4. **Client Behavior**:
+      - Clients must send a closure alert before closing the connection.
+      - Clients not expecting additional data may choose to close the connection immediately after sending the closure alert, resulting in an incomplete close on the server side.
+
+    5. **Server Behavior**:
+      - Servers should be prepared to handle incomplete closes from clients, as clients can often detect the end of server data.
+      - Servers must try to exchange closure alerts with the client before closing the connection.
+      - Servers may also close the connection after sending a closure alert, generating an incomplete close on the client side.
+
+## 10. Enclosing Messages as Data
+  - Both `message/http` and `application/http` media types are designed to encapsulate HTTP messages within MIME or other systems requiring media type definitions. The primary difference between them lies in their use cases:
+
+  - * message/http is used for a single HTTP request or response.
+  - * application/http can encapsulate a sequence of HTTP requests or responses.
+
+  - Each type includes optional parameters for specifying the HTTP version and message type and has specific encoding and security considerations.
+
+## 11. Security Considerations
+
+  ### 11.1. Response Splitting
+
+  - Response splitting, also known as CRLF injection, is a technique used in various web attacks. It exploits the line-based nature of HTTP message framing and the ordered association of requests to responses on persistent connections. This technique can be particularly harmful when requests pass through a shared cache.
+
+  ### How Response Splitting Works
+  - Response splitting takes advantage of vulnerabilities in servers, typically within application servers. The attack proceeds as follows:
+
+  1. **Injection of Malicious Data**:
+    - An attacker sends encoded data within some parameter of the request.
+    - This data is later decoded by the server and echoed within any of the response header fields.
+
+  2. **Crafted Response**:
+    - The injected data is crafted to make the server believe that the response has ended and a subsequent response has begun.
+    - This creates a split in the response, allowing the attacker to control the content of the apparent second response.
+
+  3. **Persistent Connections**:
+    - On persistent connections, the attacker can make another request and trick the recipients (including intermediaries like caches) into treating the second part of the split as an authoritative answer to the new request.
+
+  ### Example Scenario  
+  
+  1. **Request with Malicious Parameter**:
+    - A request-target parameter might be read by an application server and reused in a redirect.
+    - The parameter is then echoed in the `Location` header of the response.
+    - If the parameter is improperly encoded, an attacker can include encoded CRLF characters and additional content.
+    - Client request:
+      `https://example.com/redirect?url=<user-input>`
+    
+  2. **Injected CRLF Characters**:
+    - The parameter might include `%0D%0A` (CRLF) followed by malicious content.
+    - The server decodes this parameter and places it in the response header without proper encoding.
+    - Attacker input:
+      `https://example.com/redirect?url=https://attacker.com%0D%0AContent-Length:%200%0D%0A%0D%0AHTTP/1.1%20200%20OK%0D%0AContent-Type:%20text/html%0D%0A%0D%0A<html>Malicious%20Content</html>`
+
+  3. **Resulting Split Response**:
+    - The server’s single response appears as two separate responses.
+    - The attacker controls the content of the second response, which might be treated as the response to a subsequent legitimate request.
+
+    - Server response:
+      ```
+      HTTP/1.1 302 Found
+      Location: https://attacker.com
+      Content-Length: 0
+
+      HTTP/1.1 200 OK
+      Content-Type: text/html
+
+      <html>Malicious Content</html>
+      ```
+
+  ### Defense Against Response Splitting
+
+  #### Filtering Requests
+  - **Common Filter**: 
+    - Filter requests for data that looks like encoded CR (`%0D`) and LF (`%0A`).
+  - **Assumption**:
+    - Assumes the server is only performing URI decoding and not other transformations.
+
+  #### Restricting CR and LF Characters
+  - **Effective Mitigation**:
+    - Prevent any part of the server’s protocol libraries from sending CR or LF characters within the header section.
+
+  ### 11.2. Request Smuggling
+
+    Request smuggling is a sophisticated technique used to manipulate HTTP requests in a way that exploits inconsistencies in how different components parse and interpret HTTP protocol messages. This vulnerability arises from differences in parsing rules among backend servers, proxy servers, and other intermediaries involved in processing HTTP requests. Request smuggling can lead to serious security vulnerabilities and various forms of attacks on web applications.
+
+    ### How Request Smuggling Works
+
+    Request smuggling typically involves two main stages:
+
+    1. **Initial Request**: The attacker sends a carefully crafted HTTP request that is designed to exploit inconsistencies in how different components parse the request.
+
+    2. **Parsing Inconsistencies**: Due to differences in how HTTP requests are parsed by different systems (such as backend servers, proxy servers, or load balancers), the request might be interpreted differently by each component.
+
+    3. **Exploiting the Smuggled Request**: By exploiting these parsing inconsistencies, the attacker can hide additional requests within the initial request. These additional requests might be interpreted by different components as part of the original request or as separate subsequent requests.
+
+    #### Example Scenario
+
+    Let's consider a simplified example of how request smuggling could be exploited:
+
+    1. **Crafting the Initial Request**: The attacker crafts an HTTP request that includes specially crafted headers or body content that exploit parsing inconsistencies.
+
+      ```
+      POST /vulnerable-endpoint HTTP/1.1
+      Host: example.com
+      Content-Length: 13
+      Transfer-Encoding: chunked
+
+      0
+
+      GET /hidden-endpoint HTTP/1.1
+      Host: example.com
+      Connection: close
+      ```
+
+      In this example:
+      - The attacker uses `Transfer-Encoding: chunked` to indicate that the body is chunked.
+      - After ending the chunk with `0`, the attacker adds a second request (`GET /hidden-endpoint`) which is intended to be smuggled.
+
+    2. **Parsing by Backend Servers**: Depending on how the backend server interprets the request, it might:
+      - Treat the `GET /hidden-endpoint` as part of the original request.
+      - Process it separately as a subsequent request.
+
+    3. **Impact of Smuggled Request**: If the backend server interprets the smuggled request (`GET /hidden-endpoint`) as part of the original request, it could potentially execute unauthorized actions or access sensitive data that should not be accessible to the attacker.
+
+    ## 11.3. Message Integrity
+
+      - HTTP has not defined a specific mechanism for ensuring message integrity 
+      - It relies on the error-detection capabilities of the underlying transport protocols.
+      - It uses of length or chunk-delimited framing to detect completeness of messages. 
+      - When message integrity is crucial, additional measures have been adopted (adoption of HTTPS).
+
+      ### Importance of HTTPS
+        1. **HTTPS and Authentication**: The use of HTTPS (HTTP over SSL/TLS) provides authenticated encryption, ensuring confidentiality, authenticity, and integrity of messages exchanged between clients and servers.
+        2. **Protection Against Modification**: HTTPS protects against accidental or malicious modification of messages by encrypting the data and using cryptographic mechanisms.
+
+      ### Challenges and Considerations
+        1. **Connection Closure Issues**: Care must be taken to ensure that premature connection closure does not lead to incomplete message reception, which could affect message integrity.
+        2. **User Agent Handling**: User agents might refuse to accept incomplete or corrupted messages, especially in sensitive applications like medical records.
+
+    ## 11.4. Message Confidentiality
+      - HTTP does not inherently provide message confidentiality mechanisms.
+      - It relies on underlying transport protocols to ensure confidentiality when needed. 
+      - The use of encryption to secure HTTP communications is typically achieved through the use of transport-layer security protocols like SSL/TLS.
