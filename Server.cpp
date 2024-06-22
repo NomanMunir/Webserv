@@ -25,7 +25,7 @@ void Server::initSocket()
     bzero((char *)&serverAddr, sizeof(serverAddr));
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_addr.s_addr = INADDR_ANY;
-    serverAddr.sin_port = htons(8080);
+    serverAddr.sin_port = htons(8000);
 
     if (bind(serverSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0)
     {
@@ -58,6 +58,14 @@ void Server::handleConnections()
         close(clientSocket);
     }
 }
+void Server::printHeaders()
+{
+    std::cout << "Headers:\n";
+    for (std::map<std::string, std::string>::const_iterator it = headers.begin(); it != headers.end(); ++it)
+    {
+        std::cout << it->first << ": " << it->second << std::endl;
+    }
+}
 
 void Server::handleRequest(int clientSocket)
 {
@@ -65,36 +73,17 @@ void Server::handleRequest(int clientSocket)
     bzero(buffer, 1024);
     read(clientSocket, buffer, 1023);
 
-    std::cout << "Request received:\n"
-              << buffer << std::endl;
+    // parseFirstLine(buffer);
+    storeHeaders(buffer);
+    printHeaders();
 
-    std::string uri = parseUri(buffer);
-    std::cout << "Parsed URI: " << uri << std::endl;
-
-    std::string response = generateHttpResponse(uri);
+    std::string response = generateHttpResponse(headers["uri"]);
     sendResponse(clientSocket, response);
-}
-
-std::string Server::parseUri(const std::string &request)
-{
-    std::istringstream requestStream(request);
-    std::string method;
-    std::string uri;
-    std::string version;
-
-    requestStream >> method >> uri >> version;
-
-    if (uri == "/")
-    {
-        uri = "/index.html";
-    }
-
-    return "." + uri; // Prepend "." to keep it within the current directory
 }
 
 std::string Server::generateHttpResponse(const std::string &filepath)
 {
-    std::ifstream file(filepath);
+    std::ifstream file(std::string("." + filepath).c_str());
     if (!file.is_open())
     {
         std::cerr << "Could not open the file: " << filepath << std::endl;
@@ -114,4 +103,35 @@ std::string Server::generateHttpResponse(const std::string &filepath)
 void Server::sendResponse(int clientSocket, const std::string &response)
 {
     write(clientSocket, response.c_str(), response.length());
+}
+
+void Server::storeHeaders(const std::string &request)
+{
+    std::stringstream requestLine(request.c_str());
+    // bool headersDone = false;
+    std::getline(requestLine, startLine);
+    // parseStartLine(startLine);
+    storeFirstLine(startLine);
+    std::string header;
+    while (std::getline(requestLine, header)) {
+        size_t colonPos = header.find(':');
+        if (colonPos != std::string::npos) {
+            std::string key = header.substr(0, colonPos);
+            std::string value = header.substr(colonPos + 1);
+            headers[key] = value;
+        }
+    }
+}
+
+void Server::storeFirstLine(const std::string &request)
+{
+    std::istringstream requestStream(request);
+    std::string method;
+    std::string uri;
+    std::string version;
+
+    requestStream >> method >> uri >> version;
+    headers["method"] = method;
+    headers["version"] = version;
+    headers["uri"] = uri;
 }
