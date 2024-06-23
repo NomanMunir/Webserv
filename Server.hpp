@@ -14,7 +14,9 @@ public:
     std::map<std::string, std::string> headers;
     std::string startLine;
     std::string body;
+
 private:
+
     int serverSocket;
     struct sockaddr_in serverAddr;
 

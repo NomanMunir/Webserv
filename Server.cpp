@@ -25,7 +25,7 @@ void Server::initSocket()
     bzero((char *)&serverAddr, sizeof(serverAddr));
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_addr.s_addr = INADDR_ANY;
-    serverAddr.sin_port = htons(8000);
+    serverAddr.sin_port = htons(8080);
 
     if (bind(serverSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0)
     {
@@ -69,21 +69,47 @@ void Server::printHeaders()
 
 void Server::handleRequest(int clientSocket)
 {
+    std::string request;
     char buffer[1024];
-    bzero(buffer, 1024);
-    read(clientSocket, buffer, 1023);
+    ssize_t bytesRead;
 
-    // parseFirstLine(buffer);
-    storeHeaders(buffer);
+    while ((bytesRead = read(clientSocket, buffer, sizeof(buffer))) > 0)
+    {
+        request.append(buffer, bytesRead);
+        if (request.find("\r\n\r\n") != std::string::npos)
+            break;
+    }
+
+    std::size_t contentLengthPos = request.find("Content-Length:");
+    if (contentLengthPos != std::string::npos)
+    {
+        std::size_t contentLengthEnd = request.find("\r\n", contentLengthPos);
+        std::string contentLengthStr = request.substr(contentLengthPos + 15, contentLengthEnd - (contentLengthPos + 15));
+        int contentLength = std::stoi(contentLengthStr);
+
+        std::size_t bodyPos = request.find("\r\n\r\n") + 4;
+        int bodyLength = request.size() - bodyPos;
+
+        while (bodyLength < contentLength)
+        {
+            bytesRead = read(clientSocket, buffer, sizeof(buffer));
+            request.append(buffer, bytesRead);
+            bodyLength += bytesRead;
+        }
+    }
+    storeHeaders(request);
     printHeaders();
-
+    std::cout << "\nBody: " << body << std::endl;
     std::string response = generateHttpResponse(headers["uri"]);
     sendResponse(clientSocket, response);
 }
 
 std::string Server::generateHttpResponse(const std::string &filepath)
 {
-    std::ifstream file(std::string("." + filepath).c_str());
+    std::string path = filepath;
+    if (filepath == "/")
+        path = "." + filepath + "index.html";
+    std::ifstream file(path.c_str());
     if (!file.is_open())
     {
         std::cerr << "Could not open the file: " << filepath << std::endl;
@@ -107,19 +133,34 @@ void Server::sendResponse(int clientSocket, const std::string &response)
 
 void Server::storeHeaders(const std::string &request)
 {
-    std::stringstream requestLine(request.c_str());
+    std::stringstream requestStream(request.c_str());
     // bool headersDone = false;
-    std::getline(requestLine, startLine);
-    // parseStartLine(startLine);
+    std::getline(requestStream, startLine);
     storeFirstLine(startLine);
     std::string header;
-    while (std::getline(requestLine, header)) {
+    while (std::getline(requestStream, header))
+    {
+        if (header == "\r" || header.empty())
+            break;
         size_t colonPos = header.find(':');
-        if (colonPos != std::string::npos) {
+        if (colonPos != std::string::npos)
+        {
             std::string key = header.substr(0, colonPos);
             std::string value = header.substr(colonPos + 1);
+            size_t start = value.find_first_not_of(" \t");
+            if (start != std::string::npos)
+                value = value.substr(start);
             headers[key] = value;
         }
+    }
+    // Read the body
+    std::map<std::string, std::string>::iterator it = headers.find("Content-Length");
+    if (it != headers.end())
+    {
+        size_t contentLength = std::atoi(it->second.c_str());
+        body.resize(contentLength);
+        std::cout << "Size : " << contentLength;
+        requestStream.read(&body[0], contentLength);
     }
 }
 
