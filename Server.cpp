@@ -21,15 +21,22 @@ void Server::initSocket()
         perror("Error opening socket");
         exit(1);
     }
+    // but in nonblock mode
+    // if(fcntl(serverSocket, F_SETFL, O_NONBLOCK) < 0)
+    // {
+    //     perror("Error cant put in nonblock mode");
+    //     exit(1);
+    // }
 
     bzero((char *)&serverAddr, sizeof(serverAddr));
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_addr.s_addr = INADDR_ANY;
-    serverAddr.sin_port = htons(8000);
+    serverAddr.sin_port = htons(8001);
 
     if (bind(serverSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0)
     {
         perror("Error binding socket");
+        close(serverSocket);
         exit(1);
     }
 
@@ -41,23 +48,61 @@ void Server::run()
     handleConnections();
 }
 
-void Server::handleConnections()
-{
-    struct sockaddr_in clientAddr;
-    socklen_t clientLen = sizeof(clientAddr);
+void Server::handleConnections() {
+    pollfd serverPollFd;
+    serverPollFd.fd = serverSocket;
+    serverPollFd.events = POLLIN;
+    socketsFd.push_back(serverPollFd);
 
-    while (true)
-    {
-        int clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddr, &clientLen);
-        if (clientSocket < 0)
-        {
-            perror("Error on accept");
-            continue;
+    std::cout << "Server socket added to poll list. Waiting for connections..." << std::endl;
+
+    while (true) {
+        int pollCount = poll(socketsFd.data(), socketsFd.size(), -1); // Wait indefinitely for events
+        if (pollCount < 0) {
+            perror("Error: Poll failed");
+            break;
         }
-        handleRequest(clientSocket);
-        close(clientSocket);
+
+        for (size_t i = 0; i < socketsFd.size(); ++i) 
+        {
+            if (socketsFd[i].revents & POLLIN) 
+            {
+                if (socketsFd[i].fd == serverSocket) 
+                {
+                    // Accept new connection
+                    struct sockaddr_in clientAddr;
+                    socklen_t clientLen = sizeof(clientAddr);
+                    int client_fd = accept(serverSocket, (struct sockaddr *)&clientAddr, &clientLen);
+                    if (client_fd < 0) 
+                    {
+                        perror("Error accepting client connection");
+                        continue;
+                    }
+                    // Add client socket to poll list
+                    pollfd clientFd;
+                    clientFd.fd = client_fd;
+                    clientFd.events = POLLIN; // Monitor for incoming data
+                    socketsFd.push_back(clientFd);
+                } 
+                else 
+                {
+                    // Handle data from client
+                    int client_fd = socketsFd[i].fd;
+                    handleRequest(client_fd); // Example function to handle client request
+
+                    // Close client connection after handling request
+                    close(client_fd);
+                    socketsFd.erase(socketsFd.begin() + i); // Remove from poll list
+                    --i; // Adjust index to account for erased element
+                }
+            }
+        }
     }
+
+    // Cleanup: Close server socket
+    close(serverSocket);
 }
+
 void Server::printHeaders()
 {
     std::cout << "Headers:\n";

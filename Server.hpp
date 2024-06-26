@@ -5,6 +5,8 @@
 #include <vector>
 #include <netinet/in.h>
 #include <map>
+#include <fcntl.h>
+#include <poll.h>
 
 class Server
 {
@@ -14,10 +16,14 @@ public:
     std::map<std::string, std::string> headers;
     std::string startLine;
     std::string body;
+    
+    
 private:
     int serverSocket;
     struct sockaddr_in serverAddr;
-
+    std::vector<struct pollfd> socketsFd;
+    
+    
     void initSocket();
     void handleConnections();
     void handleRequest(int clientSocket);
