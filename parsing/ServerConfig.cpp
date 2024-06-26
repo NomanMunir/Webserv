@@ -4,7 +4,7 @@
 Http::~Http() {}
 Http::Http() {}
 
-// Function to trim whitespace from both ends of a string
+
 std::string Http::trim(const std::string &s)
 {
     size_t start = s.find_first_not_of(" \t\r\n");
@@ -12,7 +12,7 @@ std::string Http::trim(const std::string &s)
     return (start == std::string::npos) ? "" : s.substr(start, end - start + 1);
 }
 
-// Function to parse a key-value directive
+
 void Http::parseDirective(const std::string &line)
 {
     size_t pos = line.find(' ');
@@ -23,7 +23,7 @@ void Http::parseDirective(const std::string &line)
     directives[key] = value;
 }
 
-// Function to split a string by a delimiter
+
 std::vector<std::string> Http::split(const std::string &s, char delimiter)
 {
     std::vector<std::string> tokens;
@@ -36,7 +36,7 @@ std::vector<std::string> Http::split(const std::string &s, char delimiter)
     return tokens;
 }
 
-// Function to parse route configuration
+
 void Http::parseRoute(std::ifstream &file, ServerConfig &serverConfig, const std::string &path)
 {
     RouteConfig routeConfig;
@@ -67,7 +67,7 @@ void Http::parseRoute(std::ifstream &file, ServerConfig &serverConfig, const std
     serverConfig.routes[path] = routeConfig;
 }
 
-// Function to parse server configuration
+
 void Http::parseServer(std::ifstream &file)
 {
     ServerConfig serverConfig;
@@ -83,7 +83,7 @@ void Http::parseServer(std::ifstream &file)
             serverConfig.host = trim(line.substr(5));
         else if (line.find("port") == 0)
             serverConfig.port = std::stoi(trim(line.substr(5)));
-        else if (line.find("server_name") == 0)
+        else if (line.find("server_names") == 0)
             serverConfig.serverName = trim(line.substr(12));
         else if (line.find("error_page") == 0)
         {

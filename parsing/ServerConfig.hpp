@@ -24,7 +24,7 @@ struct RouteConfig
     std::string uploadDir;
 };
 
-struct ServerConfig 
+struct ServerConfig
 {
     std::string host;
     int port;
