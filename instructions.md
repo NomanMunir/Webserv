@@ -1,5 +1,5 @@
 ```markdown
-# RFC
+
 
 ## 1.1 Message Format:
 ```

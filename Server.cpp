@@ -159,7 +159,6 @@ void Server::storeHeaders(const std::string &request)
     {
         size_t contentLength = std::atoi(it->second.c_str());
         body.resize(contentLength);
-        std::cout << "Size : " << contentLength;
         requestStream.read(&body[0], contentLength);
     }
 }
