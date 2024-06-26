@@ -35,19 +35,20 @@ void tokanize(std::stringstream &ss, std::vector<std::string> &tokens)
     }
 }
 
-bool checkHttpDirective(const std::vector<std::string> &tokens, size_t &i)
+bool checkHttpDirective(std::vector<std::string> &tokens)
 {
-    if (i + 1 >= tokens.size())
+    if (tokens.size() < 2)
         return false;
 
-    const std::string &key = tokens[i];
-    const std::string &value = tokens[i + 1];
-    std::cout << key << " " << value << std::endl;
+    const std::string key = tokens[0];
+    const std::string value = tokens[1];
+    tokens.erase(tokens.begin(), tokens.begin() + 2);
 
     if (key == "client_body_size" || key == "keepalive_timeout")
     {
         if (value[value.size() - 1] == ';')
         {
+            std::cout << key << " " << value << std::endl;
             size_t limit = key == "keepalive_timeout" ? value.size() - 2 : value.size() - 1;
             for (size_t j = 0; j < limit; j++)
             {
@@ -60,27 +61,26 @@ bool checkHttpDirective(const std::vector<std::string> &tokens, size_t &i)
     }
     else
         return false;
-    i++;
     return true;
 }
 
-bool checkLocationBlock(const std::vector<std::string> &tokens, size_t &i)
+bool checkLocationBlock(std::vector<std::string> &tokens)
 {
-    if (i + 1 >= tokens.size())
+    if (tokens.size() < 2)
         return false;
-
-    const std::string &key = tokens[i];
-    std::string value = tokens[i + 1];
+    std::string key = tokens[0];
+    std::string value = tokens[1];
+    tokens.erase(tokens.begin(), tokens.begin() + 2);
     const std::string keys[] = {"path", "methods", "redirect", "root", "directory_listing", "default_file", "cgi_path", "cgi", "upload_dir"};
 
     while (value.find(";") == std::string::npos)
     {
-        if (++i + 1 >= tokens.size())
+        if (tokens.empty())
             return false;
-        value += " " + tokens[i + 1];
+        value += " " + tokens[0];
+        tokens.erase(tokens.begin());
     }
-
-    if (std::find(keys, keys + 9, key) == keys + 9)
+    if (std::find(std::begin(keys), std::end(keys), key) == std::end(keys))
         return false;
 
     if (value[value.size() - 1] == ';')
@@ -89,42 +89,40 @@ bool checkLocationBlock(const std::vector<std::string> &tokens, size_t &i)
         std::cout << key << " " << value << std::endl;
     }
     else
-    {
         return false;
-    }
 
-    i++;
     return true;
 }
 
-bool checkServerBlock(std::vector<std::string> tokens, size_t &i)
+bool checkServerBlock(std::vector<std::string> &tokens)
 {
-    if (i + 1 >= tokens.size())
+    if (tokens.size() < 2)
         return false;
-    std::string key = tokens[i];
-    std::string value = tokens[i + 1];
+    std::string key = tokens[0];
+    std::string value = tokens[1];
+    tokens.erase(tokens.begin(), tokens.begin() + 2);
     std::string keys[] = {"server_names", "listen", "port", "host", "error_page", "client_body_size", "location"};
     while (value.find(";") == std::string::npos && key != "location")
     {
-        if (++i + 1 >= tokens.size())
+        if (tokens.empty())
             return false;
-        value += " " + tokens[i + 1];
+        value += " " + tokens[0];
+        tokens.erase(tokens.begin());
     }
     if (std::find(std::begin(keys), std::end(keys), key) == std::end(keys))
         return false;
     if (key == "location")
     {
-        if (tokens[i + 2] != "{")
+        if (tokens[0] != "{")
             return false;
         std::cout << key << " " << value << std::endl;
-        i += 3;
-        for (; i < tokens.size() - 1; i++)
+        tokens.erase(tokens.begin());
+        while (tokens[0] != "}")
         {
-            if (tokens[i] == "}")
-                return true;
-            if (!checkLocationBlock(tokens, i))
+            if (!checkLocationBlock(tokens))
                 return false;
         }
+        tokens.erase(tokens.begin());
     }
     else
     {
@@ -136,51 +134,43 @@ bool checkServerBlock(std::vector<std::string> tokens, size_t &i)
         else
             return false;
     }
-    i++;
     return true;
 }
 
-bool checkServerDirective(std::vector<std::string> tokens, size_t &i)
+bool checkServerDirective(std::vector<std::string> &tokens)
 {
-    for (; i < tokens.size() - 1; i++)
+    if (tokens.size() < 2)
+        return false;
+    while (tokens[0] != "}")
     {
-        if (tokens[i] == "}")
-            return true;
-        if (!checkServerBlock(tokens, i))
+        if (!checkServerBlock(tokens))
             return false;
     }
+    tokens.erase(tokens.begin());
     return true;
 }
 
-bool validateBlocks(std::vector<std::string> &tokens)
+bool validateBlocks(std::vector<std::string> tokens)
 {
-    bool serverBlock = false;
     if (tokens.empty() || tokens[0] != "http" || tokens[1] != "{")
         return false;
-    // tokens.erase(tokens.begin(), tokens.begin() + 2);
+    tokens.erase(tokens.begin(), tokens.begin() + 2);
     if (tokens[tokens.size() - 1] != "}")
         return false;
-    for (size_t i = 2; i < tokens.size() - 1; i++)
+    tokens.pop_back();
+    while (tokens.size() > 0)
     {
-        if (tokens[i] == "server")
+        if (tokens[0] == "server")
         {
-            serverBlock = true;
-            if (tokens[i + 1] != "{")
+            if (tokens[1] != "{")
                 return false;
-            i += 2;
-            if (!checkServerDirective(tokens, i))
-                return false;
-        }
-        else if (tokens[i] == "}")
-        {
-            if (serverBlock)
-                serverBlock = false;
-            else
+            tokens.erase(tokens.begin(), tokens.begin() + 2);
+            if (!checkServerDirective(tokens))
                 return false;
         }
         else
         {
-            if (!checkHttpDirective(tokens, i))
+            if (!checkHttpDirective(tokens))
                 return false;
         }
     }
