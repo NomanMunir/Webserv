@@ -1,14 +1,18 @@
-#include "Server.hpp"
-#include <iostream>
-#include <unistd.h>
-#include <cstring>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <fstream>
-#include <sstream>
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Server.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/29 14:41:04 by nmunir            #+#    #+#             */
+/*   Updated: 2024/06/29 14:41:51 by nmunir           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-Server::Server()
+#include "Server.hpp"
+
+Server::Server(Parser &parser)
 {
     initSocket();
 }

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Server.hpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/29 14:41:08 by nmunir            #+#    #+#             */
+/*   Updated: 2024/06/29 14:42:45 by nmunir           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
@@ -5,11 +17,20 @@
 #include <vector>
 #include <netinet/in.h>
 #include <map>
+#include "parsing/Parser.hpp"
+#include <iostream>
+#include <unistd.h>
+#include <cstring>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <fstream>
+#include <sstream>
 
 class Server
 {
 public:
-    Server();
+    Server(Parser &parser);
     void run();
     std::map<std::string, std::string> headers;
     std::string startLine;

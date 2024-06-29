@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:52:32 by nmunir            #+#    #+#             */
-/*   Updated: 2024/06/29 13:31:49 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/06/29 14:37:44 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 #include <vector>
 #include <cstdlib>
 #include <unistd.h>
-#include "utils.hpp"
+#include "../utils/utils.hpp"
 
 struct RouteConfig
 {
