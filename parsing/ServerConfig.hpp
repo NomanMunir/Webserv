@@ -12,7 +12,8 @@
 #include <vector>
 #include <cstdlib>
 #include <unistd.h>
-struct RouteConfig 
+
+struct RouteConfig
 {
     std::string path;
     std::vector<std::string> methods;
@@ -34,7 +35,7 @@ struct ServerConfig
     std::map<std::string, RouteConfig> routes;
 };
 
-class Http 
+class Http
 {
 	public:
 		Http(const std::string& configFile);
