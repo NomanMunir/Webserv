@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 17:07:42 by nmunir            #+#    #+#             */
-/*   Updated: 2024/06/29 14:38:50 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/06/30 13:51:09 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,9 @@ int main(int ac, char **av)
     try
     {
         Parser parser(av[1]);
+        Validation validation(parser);
         Server server(parser);
+        server.run();
     }
     catch (std::exception &e)
     {

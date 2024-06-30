@@ -6,26 +6,31 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 14:41:08 by nmunir            #+#    #+#             */
-/*   Updated: 2024/06/29 14:42:45 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/06/30 14:13:15 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
+#include "parsing/Parser.hpp"
+#include "parsing/Validation.hpp"
 #include <string>
 #include <vector>
 #include <netinet/in.h>
 #include <map>
-#include "parsing/Parser.hpp"
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <unistd.h>
 #include <cstring>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <netinet/in.h>
-#include <fstream>
-#include <sstream>
+#include <cerrno>
+
+class Parser;
 
 class Server
 {

@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:52:32 by nmunir            #+#    #+#             */
-/*   Updated: 2024/06/29 14:37:44 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/06/30 17:51:14 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@
 
 struct RouteConfig
 {
-	std::string path;
 	std::vector<std::string> methods;
 	std::string redirect;
 	std::string root;
@@ -41,10 +40,10 @@ struct RouteConfig
 struct ServerConfig
 {
 	std::string host;
-	int port;
+	std::string port;
 	std::string serverName;
-	std::map<int, std::string> errorPages;
-	int clientBodySizeLimit;
+	std::map<std::string, std::string> errorPages;
+	std::string clientBodySizeLimit;
 	std::map<std::string, RouteConfig> routeMap;
 };
 
@@ -53,29 +52,22 @@ class Parser
 	public:
 		Parser(const std::string configFile);
 		~Parser();
+		std::vector<ServerConfig> getServers();
+		std::map<std::string, std::string> getDirectives();
 
 	private:
-		void validateServerNames(std::string& value);
-		void initializeLimits(std::map<std::string, std::vector<int> > &limits);
-		void validateHost(std::string &value);
-		bool validateNumber(std::string key, std::string value);
-		bool validateErrorPages(std::string &key, std::string &value);
-		bool validateDirectory(std::string &value);
-
-	
-		void validateServerBlock(std::string& key, std::string& value);
-		void validateRouteBlock(std::string& key, std::string& value, RouteConfig &routeConfig);
+		void setServerBlock(std::string &key, std::string &value);
+		void setRouteBlock(std::string &key, std::string &value, RouteConfig &routeConfig);
+		
 		void checkLocationBlock(RouteConfig &routeConfig);
 		void checkServerBlock();
-		void validateBlocks();
-
-		void tokanize(std::stringstream &buffer);
+		
 		void checkHttpDirective();
 		void checkServerDirective();
-		void printDirectives();
-		void printServers();
-		void reset();
-		// void resetRoute();
+		
+		void parseBlocks();
+		void tokanize(std::stringstream &buffer);
+		void setDefault();
 		
 		std::string buffer;
 		std::string path;
@@ -83,7 +75,6 @@ class Parser
 		std::map<std::string, std::string> directives;
 		std::vector<ServerConfig> servers;
 		ServerConfig serverConfig;
-		// RouteConfig routeConfig;
 };
 
 #endif // PARSER_HPP
