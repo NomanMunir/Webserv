@@ -21,12 +21,20 @@ void Server::initSocket()
         perror("Error opening socket");
         exit(1);
     }
-    // but in nonblock mode
-    // if(fcntl(serverSocket, F_SETFL, O_NONBLOCK) < 0)
-    // {
-    //     perror("Error cant put in nonblock mode");
-    //     exit(1);
-    // }
+
+    int e = 1;
+    if(setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &e,sizeof(e)) < 0)
+    {
+        perror("Error setsockopt option");
+        close(serverSocket);
+        exit(1);
+    }
+   if (fcntl(serverSocket, F_SETFL, O_NONBLOCK, FD_CLOEXEC) < 0)
+    {
+        perror("Error non-Blocking server");
+        close(serverSocket);
+        exit(1);
+    }
 
     bzero((char *)&serverAddr, sizeof(serverAddr));
     serverAddr.sin_family = AF_INET;
@@ -40,7 +48,12 @@ void Server::initSocket()
         exit(1);
     }
 
-    listen(serverSocket, 5);
+    if(listen(serverSocket, SOMAXCONN))
+    {
+        perror("Error: listen");
+        close(serverSocket);
+        exit(1);
+    }
 }
 
 void Server::run()
@@ -48,24 +61,34 @@ void Server::run()
     handleConnections();
 }
 
-void Server::handleConnections() {
+void Server::handleConnections() 
+{
     pollfd serverPollFd;
     serverPollFd.fd = serverSocket;
-    serverPollFd.events = POLLIN;
+    serverPollFd.events = POLLIN; // monitor for read event
     socketsFd.push_back(serverPollFd);
 
     std::cout << "Server socket added to poll list. Waiting for connections..." << std::endl;
 
-    while (true) {
+    while (true) 
+    {
         int pollCount = poll(socketsFd.data(), socketsFd.size(), -1); // Wait indefinitely for events
-        if (pollCount < 0) {
+        if (pollCount < 0) 
+        {
             perror("Error: Poll failed");
+            break;
+        }
+        if(pollCount == 0)
+        {
+            perror("Error: No event");
             break;
         }
 
         for (size_t i = 0; i < socketsFd.size(); ++i) 
         {
-            if (socketsFd[i].revents & POLLIN) 
+            std::cout << socketsFd[i].fd << std::endl;
+            
+            if (socketsFd[i].revents == POLLIN) 
             {
                 if (socketsFd[i].fd == serverSocket) 
                 {
@@ -83,7 +106,8 @@ void Server::handleConnections() {
                     clientFd.fd = client_fd;
                     clientFd.events = POLLIN; // Monitor for incoming data
                     socketsFd.push_back(clientFd);
-                } 
+                    
+                }
                 else 
                 {
                     // Handle data from client
