@@ -6,13 +6,13 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:52:26 by nmunir            #+#    #+#             */
-/*   Updated: 2024/06/30 17:51:08 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/01 14:55:45 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Parser.hpp"
 
-void Parser::setRouteBlock(std::string &key, std::string &value, RouteConfig &routeConfig)
+void Parser::setRouteBlock(std::string &key, std::string &value)
 {
     if (value.empty())
         throw std::runtime_error("Error: invalid configuration file " + value);
@@ -35,7 +35,7 @@ void Parser::setRouteBlock(std::string &key, std::string &value, RouteConfig &ro
     }
 }
 
-void Parser::checkLocationBlock(RouteConfig &routeConfig)
+void Parser::checkLocationBlock()
 {
     if (tokens.size() < 2)
         throw std::runtime_error("Error: invalid configuration file " + tokens[0]);
@@ -59,21 +59,50 @@ void Parser::checkLocationBlock(RouteConfig &routeConfig)
     else
     {
         value = value.substr(0, value.size() - 1);
-        setRouteBlock(key, value, routeConfig);
+        setRouteBlock(key, value);
     }
 }
 
+void Parser::setListen(std::string &value)
+{
+    if (value.empty())
+        throw std::runtime_error("Error: invalid configuration file " + value);
+    std::vector<std::string> listenValues;
+    std::vector<std::string> splitedValues = split(value, ' ');
+    if (splitedValues.size() == 2)
+    {
+        if (splitedValues[1] != "ssl")
+            throw std::runtime_error("Error: invalid configuration file " + splitedValues[1]);
+        listenValues.push_back("1");
+    }
+    else if (splitedValues.size() == 1)
+        listenValues.push_back("0");
+    else
+        throw std::runtime_error("Error: invalid configuration file " + value);
+    splitedValues = split(splitedValues[0], ':');
+    if (splitedValues.size() == 2)
+    {
+        listenValues.push_back(splitedValues[0]);
+        listenValues.push_back(splitedValues[1]);
+    }
+    else if (splitedValues.size() == 1)
+    {
+        listenValues.push_back("0.0.0.0");
+        listenValues.push_back(splitedValues[0]);
+    }
+    else
+        throw std::runtime_error("Error: invalid configuration file " + value);
+    serverConfig.listen.push_back(listenValues);
+}
 void Parser::setServerBlock(std::string &key, std::string &value)
 {
     if (key == "server_names")
-
         serverConfig.serverName = value;
-    else if (key == "listen" || key == "port")
-        serverConfig.port = value;
+    else if (key == "listen")
+        setListen(value);
+
     else if (key == "client_body_size")
         serverConfig.clientBodySizeLimit = value;
-    else if (key == "host")
-        serverConfig.host = value;
     else if (key == "error_pages")
     {
         std::vector<std::string> errorPages = split(value, ' ');
@@ -89,7 +118,7 @@ void Parser::checkServerBlock()
     std::string key = tokens[0];
     std::string value = tokens[1];
     tokens.erase(tokens.begin(), tokens.begin() + 2);
-    std::string keys[] = {"server_names", "listen", "port", "host",
+    std::string keys[] = {"server_names", "listen",
                           "error_pages", "client_body_size", "location"};
     while (value.find(";") == std::string::npos && key != "location")
     {
@@ -108,9 +137,8 @@ void Parser::checkServerBlock()
             throw std::runtime_error("Error: invalid configuration file " + tokens[0]);
         // std::cout << key << " " << value << std::endl;
         tokens.erase(tokens.begin());
-        RouteConfig routeConfig;
         while (tokens[0] != "}")
-            checkLocationBlock(routeConfig);
+            checkLocationBlock();
         serverConfig.routeMap[value] = routeConfig;
         tokens.erase(tokens.begin());
     }
@@ -119,6 +147,7 @@ void Parser::checkServerBlock()
         if (value.back() == ';')
         {
             value = value.substr(0, value.size() - 1);
+            
             setServerBlock(key, value);
         }
         else
@@ -176,7 +205,7 @@ void Parser::parseBlocks()
         else
             checkHttpDirective();
     }
-    printServers(servers);
+    // printServers(servers);
 }
 
 void Parser::tokanize(std::stringstream &buffer)
@@ -194,10 +223,14 @@ void Parser::tokanize(std::stringstream &buffer)
     }
 }
 
-
-struct RouteConfig setDefaultRoute()
+void Parser::setDefault()
 {
-    RouteConfig routeConfig;
+    serverConfig.listen.clear();
+    serverConfig.serverName = "localhost";
+    serverConfig.errorPages["400"] = "/Users/nmunir/Desktop/webserv/error.html";
+    serverConfig.errorPages["404"] = "/Users/nmunir/Desktop/webserv/error.html";
+    serverConfig.errorPages["500"] = "/Users/nmunir/Desktop/webserv/error.html";
+    serverConfig.clientBodySizeLimit = "1";
     routeConfig.methods.push_back("GET");
     routeConfig.methods.push_back("HEAD");
     routeConfig.root = "/Users/nmunir/Desktop/Webserv";
@@ -205,22 +238,10 @@ struct RouteConfig setDefaultRoute()
     routeConfig.defaultFile = "index.html";
     routeConfig.cgiPath = "/Users/nmunir/Desktop/Webserv";
     routeConfig.uploadDir = "/Users/nmunir/Desktop/Webserv";
-    return routeConfig;
-
+    routeConfig.redirect = "/";
+    serverConfig.routeMap["/"] = routeConfig;
 }
 
-void Parser::setDefault()
-{
-    serverConfig.host = "localhost";
-    serverConfig.port = "8080";
-    serverConfig.serverName = "localhost";
-    // serverConfig.errorPages["400"] = "/Users/nmunir/Desktop/webserv/error.html";
-    serverConfig.errorPages["404"] = "/Users/nmunir/Desktop/webserv/error.html";
-    serverConfig.errorPages["500"] = "/Users/nmunir/Desktop/webserv/error.html";
-    serverConfig.clientBodySizeLimit = "1";
-    serverConfig.routeMap["/"] = setDefaultRoute();
-    
-}
 Parser::~Parser() {}
 Parser::Parser(const std::string configFile)
 {
@@ -234,6 +255,7 @@ Parser::Parser(const std::string configFile)
     tokanize(ss);
     setDefault();
     parseBlocks();
+    printServers(servers);
 }
 
 std::vector<ServerConfig> Parser::getServers()

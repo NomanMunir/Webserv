@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:52:32 by nmunir            #+#    #+#             */
-/*   Updated: 2024/06/30 17:51:14 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/01 14:02:31 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,7 @@ struct RouteConfig
 
 struct ServerConfig
 {
-	std::string host;
-	std::string port;
+	std::vector<std::vector<std::string> > listen;
 	std::string serverName;
 	std::map<std::string, std::string> errorPages;
 	std::string clientBodySizeLimit;
@@ -57,9 +56,9 @@ class Parser
 
 	private:
 		void setServerBlock(std::string &key, std::string &value);
-		void setRouteBlock(std::string &key, std::string &value, RouteConfig &routeConfig);
-		
-		void checkLocationBlock(RouteConfig &routeConfig);
+		void setRouteBlock(std::string &key, std::string &value);
+		void setListen(std::string &value);
+		void checkLocationBlock();
 		void checkServerBlock();
 		
 		void checkHttpDirective();
@@ -75,6 +74,7 @@ class Parser
 		std::map<std::string, std::string> directives;
 		std::vector<ServerConfig> servers;
 		ServerConfig serverConfig;
+		RouteConfig routeConfig;
 };
 
 #endif // PARSER_HPP

@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:46:04 by nmunir            #+#    #+#             */
-/*   Updated: 2024/06/30 17:29:02 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/01 14:04:15 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,8 +76,13 @@ void printServers(std::vector<ServerConfig> servers)
     for (size_t i = 0; i < servers.size(); i++)
     {
         std::cout << "Server " << i << std::endl;
-        std::cout << "Host: " << servers[i].host << std::endl;
-        std::cout << "Port: " << servers[i].port << std::endl;
+        std::cout << "Listen: " << std::endl;
+        for (size_t j = 0; j < servers[i].listen.size(); j++)
+        {
+            for (size_t k = 0; k < servers[i].listen[j].size(); k++)
+                std::cout << servers[i].listen[j][k] << " ";
+            std::cout << std::endl;
+        }
         std::cout << "Server Name: " << servers[i].serverName << std::endl;
         std::cout << "Client Body Size Limit: " << servers[i].clientBodySizeLimit << std::endl;
         std::cout << "Error Pages: " << std::endl;

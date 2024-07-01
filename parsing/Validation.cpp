@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/30 13:35:44 by nmunir            #+#    #+#             */
-/*   Updated: 2024/06/30 17:49:01 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/01 15:16:22 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,9 @@ void Validation::initializeLimits(std::map<std::string, std::vector<int> > &limi
     limits["keepalive_timeout"].push_back(0);
     limits["keepalive_timeout"].push_back(3600); // 0 to 3,600 seconds (1 hour)
 
-    limits["port"] = std::vector<int>();
-    limits["port"].push_back(1);
-    limits["port"].push_back(65535); // 1 to 65,535 (valid port range)
+    limits["listen"] = std::vector<int>();
+    limits["listen"].push_back(1);
+    limits["listen"].push_back(65535); // 1 to 65,535 (valid port range)
 
     limits["error_pages"] = std::vector<int>();
     limits["error_pages"].push_back(100);
@@ -63,17 +63,18 @@ void Validation::validateRouteMap(std::map<std::string, RouteConfig> &routeMap)
 		isDirectory(it->second.root);
 		isDirectory(it->second.root + "/" + it->second.redirect);
 		isDirectory(it->second.cgiPath);
-		// isDirectory(it->second.uploadDir);
-		// isFile(it->second.root + "/" + it->second.defaultFile);
+		isDirectory(it->second.uploadDir);
+		isFile(it->second.root + "/" + it->second.defaultFile);
 	}
 }
-
 
 bool Validation::validateErrorPages(std::string key, std::string value)
 {
 	if (!validateNumber("error_pages", key))
 		return false;
-	isFile("/Users/nmunir/Desktop/Webserv" + value);  
+    if (value.find("/Users/nmunir/Desktop/webserv/") == std::string::npos)
+    	value = "/Users/nmunir/Desktop/webserv/" + value;
+    isFile(value);        
     return true;
 }
 
@@ -98,19 +99,32 @@ void Validation::validateServerNames(std::string &value)
     }
 }
 
-void Validation::validateHost(std::string &value)
+void Validation::validateIP(std::string ip)
 {
-	std::vector<std::string> hostParts = split(value, '.');
-	int count = std::count(value.begin(), value.end(), '.');
+	int count = std::count(ip.begin(), ip.end(), '.');
+    std::vector<std::string> ipParts = split(ip, '.');
+
 	if (count != 3)
-		throw std::runtime_error("Error: invalid configuration file " + value);
-	if (hostParts.empty() || hostParts.size() != 4)
-		throw std::runtime_error("Error: invalid configuration file " + value);
-	for (size_t i = 0; i < hostParts.size(); i++)
+		throw std::runtime_error("Error: invalid configuration file " + ip);
+	if (ipParts.empty() || ipParts.size() != 4)
+		throw std::runtime_error("Error: invalid configuration file " + ip);
+	for (size_t i = 0; i < ipParts.size(); i++)
 	{
-		if (hostParts[i].empty() || !validateNumber("ip", hostParts[i]))
-			throw std::runtime_error("Error: invalid configuration file " + hostParts[i]);
+		if (ipParts[i].empty() || !validateNumber("ip", ipParts[i]))
+			throw std::runtime_error("Error: invalid configuration file " + ipParts[i]);
 	}
+}
+
+void Validation::validateListen(std::vector<std::vector<std::string> > &listenVec)
+{
+    for (size_t i = 0; i < listenVec.size(); i++)
+    {
+        if (listenVec[i].size() != 3)
+            throw std::runtime_error("Error: invalid configuration file " + listenVec[i][0]);
+	    validateIP(listenVec[i][1]);
+        if (!validateNumber("listen", listenVec[i][2]))
+            throw std::runtime_error("Error: invalid configuration file " + listenVec[i][2]);
+    }
 }
 
 void Validation::validateDirectives(std::map<std::string, std::string> directives)
@@ -119,7 +133,6 @@ void Validation::validateDirectives(std::map<std::string, std::string> directive
 		throw std::runtime_error("client_body_size_limit directive is invalid");
 	if (!validateNumber("keepalive_timeout", directives["keep_alive_timeout"]))
 		throw std::runtime_error("keep_alive_timeout directive is invalid");
-	
 }
 
 Validation::Validation(Parser parser)
@@ -128,9 +141,7 @@ Validation::Validation(Parser parser)
 	std::vector<ServerConfig> servers = parser.getServers();
 	for (size_t i = 0; i < servers.size(); i++)
 	{
-		validateHost(servers[i].host);
-		if (!validateNumber("port", servers[i].port))
-			throw std::runtime_error("Error: invalid port number");
+		validateListen(servers[i].listen);
 		validateServerNames(servers[i].serverName);
 		for (std::map<std::string, std::string>::iterator it = servers[i].errorPages.begin(); it != servers[i].errorPages.end(); it++)
 		{
@@ -143,8 +154,4 @@ Validation::Validation(Parser parser)
 	}
 }
 
-Validation::~Validation()
-{
-}
-
-
+Validation::~Validation(){ }
