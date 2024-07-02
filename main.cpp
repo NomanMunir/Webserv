@@ -6,25 +6,24 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 17:07:42 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/01 15:13:31 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/02 11:48:15 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
-int main(int ac, char **av)
+int main(int ac, const char **av)
 {
-    if (ac != 2)
-    {
-        std::cerr << "Usage: ./webserv <config_file>" << std::endl;
-        return 1;
-    }
     try
     {
+        if (ac > 2)
+            throw std::runtime_error("Usage: ./webserv <config_file>");
+        if (ac == 1)
+            av[1] = "config1.conf";
         Parser parser(av[1]);
         Validation validation(parser);
-        // Server server(parser);
-        // server.run();
+        Server server(parser);
+        server.run();
     }
     catch (std::exception &e)
     {

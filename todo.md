@@ -6,8 +6,5 @@
 [*] Handle multiple values for single key like server_names hi there
 [*] check files path and directories if they exist.
 [*] check repeated keys.
-[] listen can be only port number or with host ip:port ex : listen 127.0.0.1:8080;
-[] Check if host name is url or ip address
-[ ] If we have the same error code like: 400 400 /error.html 500 400 /500.html do we replace the old 400 value or keep the old one?
-
-[ ] check for ssl certificate, ssl key (default?)
+[*] listen can be only port number or with host ip:port ex : listen 127.0.0.1:8080;
+[*] If we have the same error code like: 400 400 /error.html 500 400 /500.html do we replace the old 400 value or keep the old one?

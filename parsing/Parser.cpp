@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:52:26 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/01 14:55:45 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/02 11:43:38 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,8 @@ void Parser::checkLocationBlock()
     std::string key = tokens[0];
     std::string value = tokens[1];
     tokens.erase(tokens.begin(), tokens.begin() + 2);
-    const std::string keys[] = {"methods", "redirect", "root",
-                                "directory_listing", "default_file", "cgi_path", "cgi", "upload_dir"};
+    const std::string keys[] = {"methods", "redirect", "root", "directory_listing", \
+                                "default_file", "cgi_path", "cgi", "upload_dir"};
 
     while (value.find(";") == std::string::npos)
     {
@@ -200,7 +200,9 @@ void Parser::parseBlocks()
             if (tokens[1] != "{")
                 throw std::runtime_error("Error: invalid configuration file " + tokens[1]);
             tokens.erase(tokens.begin(), tokens.begin() + 2);
+            // serverBlock.push_back(ServerBlock(tokens));
             checkServerDirective();
+            
         }
         else
             checkHttpDirective();
@@ -255,7 +257,7 @@ Parser::Parser(const std::string configFile)
     tokanize(ss);
     setDefault();
     parseBlocks();
-    printServers(servers);
+    // printServers(servers);
 }
 
 std::vector<ServerConfig> Parser::getServers()

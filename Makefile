@@ -5,6 +5,7 @@ CXXFLAGS = #-std=c++98 -Wall -Wextra -Werror
 
 SRCS = main.cpp Server.cpp \
 		parsing/Parser.cpp parsing/Validation.cpp \
+		headers/Headers.cpp headers/Request.cpp \
 		utils/utils.cpp \
 
 OBJS = $(SRCS:.cpp=.o)

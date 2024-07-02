@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 14:41:04 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/01 11:31:06 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/02 13:17:57 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@ void Server::initSocket()
         perror("Error binding socket");
         exit(1);
     }
-
     listen(serverSocket, 5);
 }
 
@@ -53,60 +52,9 @@ void Server::handleConnections()
 
     while (true)
     {
-        int clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddr, &clientLen);
-        if (clientSocket < 0)
-        {
-            perror("Error on accept");
-            continue;
-        }
-        handleRequest(clientSocket);
-        close(clientSocket);
+        Request(accept(serverSocket, (struct sockaddr *)&clientAddr, &clientLen));
+        
     }
-}
-void Server::printHeaders()
-{
-    std::cout << "Headers:\n";
-    for (std::map<std::string, std::string>::const_iterator it = headers.begin(); it != headers.end(); ++it)
-    {
-        std::cout << it->first << ": " << it->second << std::endl;
-    }
-}
-
-void Server::handleRequest(int clientSocket)
-{
-    std::string request;
-    char buffer[1024];
-    ssize_t bytesRead;
-
-    while ((bytesRead = read(clientSocket, buffer, sizeof(buffer))) > 0)
-    {
-        request.append(buffer, bytesRead);
-        if (request.find("\r\n\r\n") != std::string::npos)
-            break;
-    }
-
-    std::size_t contentLengthPos = request.find("Content-Length:");
-    if (contentLengthPos != std::string::npos)
-    {
-        std::size_t contentLengthEnd = request.find("\r\n", contentLengthPos);
-        std::string contentLengthStr = request.substr(contentLengthPos + 15, contentLengthEnd - (contentLengthPos + 15));
-        int contentLength = std::stoi(contentLengthStr);
-
-        std::size_t bodyPos = request.find("\r\n\r\n") + 4;
-        int bodyLength = request.size() - bodyPos;
-
-        while (bodyLength < contentLength)
-        {
-            bytesRead = read(clientSocket, buffer, sizeof(buffer));
-            request.append(buffer, bytesRead);
-            bodyLength += bytesRead;
-        }
-    }
-    storeHeaders(request);
-    printHeaders();
-    std::cout << "\nBody: " << body << std::endl;
-    std::string response = generateHttpResponse(headers["uri"]);
-    sendResponse(clientSocket, response);
 }
 
 std::string Server::generateHttpResponse(const std::string &filepath)
