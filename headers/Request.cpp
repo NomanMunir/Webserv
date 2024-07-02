@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:31:21 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/02 13:24:15 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/02 14:51:04 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ void handleRequest(int clientSocket)
     // printHeaders();
     // std::string response = generateHttpResponse(headers["uri"]);
 	std::string content = "Hello, World!";
-    std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(content.size()) + "\r\n\r\n" + content;
+    std::string response = "HTTP/1.1 200 OK\rContent-Type: text/html\r\nContent-Length: " + std::to_string(content.size()) + "\r\n\r\n" + content;
     sendResponse(clientSocket, response);
 }
 

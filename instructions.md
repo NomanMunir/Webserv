@@ -45,19 +45,19 @@ The version of an HTTP/1.x message is indicated by an HTTP-version field in the 
 ## 3.1 Request Line:
 
 - ## Syntax:
-A request-line begins with a method token, followed by a single space (SP), the request-target, and another single space (SP), and ends with the protocol version.
+  A request-line begins with a method token, followed by a single space (SP), the request-target, and another single space (SP), and ends with the protocol version.
 
   request-line   = method SP request-target SP HTTP-version
 
-## Method:          
-    Request method to be performed on the target resource. case-sensitive, can define new method
+- ## Method:          
+  Request method to be performed on the target resource. case-sensitive, can define new method
 
 - ## Parsing:
-Parse on whitespace-delimited word boundaries and, aside from the CRLF terminator, treat any form of whitespace as the SP separator while ignoring preceding or trailing whitespace; such whitespace includes one or more of the following octets: SP, HTAB, VT (%x0B), FF (%x0C), or bare CR. 
+  Parse on whitespace-delimited word boundaries and, aside from the CRLF terminator, treat any form of whitespace as the SP separator while ignoring preceding or trailing whitespace; such whitespace includes one or more of the following octets: SP, HTAB, VT (%x0B), FF (%x0C), or bare CR. 
 
 - ## Length:
-HTTP does not place a predefined limit on the length of a request-line. 
-In practice, It is RECOMMENDED that all HTTP senders and recipients support, at a minimum, request-line lengths of 8000 octets.
+  HTTP does not place a predefined limit on the length of a request-line. 
+  In practice, It is RECOMMENDED that all HTTP senders and recipients support, at a minimum, request-line lengths of 8000 octets.
 
 - Method longer than any that it implements SHOULD respond with a 501 (Not Implemented) status code. 
 - Request-target longer than any URI it wishes to parse MUST respond with a 414 (URI Too Long) status code 

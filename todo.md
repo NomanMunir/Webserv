@@ -8,3 +8,9 @@
 [*] check repeated keys.
 [*] listen can be only port number or with host ip:port ex : listen 127.0.0.1:8080;
 [*] If we have the same error code like: 400 400 /error.html 500 400 /500.html do we replace the old 400 value or keep the old one?
+
+## Request:
+[ ] Pares http version 1.0
+
+## Response:
+[ ] Server SHOULD respond with a 400 (Bad Request) response and close the connection if grammer is not correct

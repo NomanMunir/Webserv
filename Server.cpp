@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 14:41:04 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/02 13:17:57 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/02 14:47:07 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,10 +51,7 @@ void Server::handleConnections()
     socklen_t clientLen = sizeof(clientAddr);
 
     while (true)
-    {
         Request(accept(serverSocket, (struct sockaddr *)&clientAddr, &clientLen));
-        
-    }
 }
 
 std::string Server::generateHttpResponse(const std::string &filepath)
