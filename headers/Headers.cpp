@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 11:20:23 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/02 14:59:39 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/02 15:31:43 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,15 +27,17 @@ void Headers::parseFirstLine()
     std::string method;
     std::string uri;
     std::string version;
-
-    std::vector<std::string> tokens = split(firstLine, ' ');
-	if (tokens.size() != 3)
+	
+	if (firstLine.size() > 8192)
 		throw std::runtime_error("Invalid header format.5");
+    std::vector<std::string> tokens = split(trim(firstLine), ' ');
+	if (tokens.size() != 3)
+		throw std::runtime_error("Invalid header format.6");
 	method = tokens[0];
 	uri = tokens[1];
 	version = tokens[2];
-	if ((method != "GET" && method != "POST") || version != "HTTP/1.1")
-		throw std::runtime_error("Invalid header format.6");		
+	if ((method != "GET" && method != "POST") || version != "HTTP/1.1" || uri.size() > 2048)
+		throw std::runtime_error("Invalid header format.7");	
     headers["method"] = method;
     headers["version"] = version;
     headers["uri"] = uri;

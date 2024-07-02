@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 17:07:42 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/02 15:07:48 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/02 15:27:32 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@
     // return 0;
 // }
 int main() {
-    std::string request = "GET / HTTP/1.1\nHost:example.com\r\nConnection: keep-alive\r\n\r\n";
+    std::string request = "   GET / HTTP/1.1                  \r\nHost:example.com\r\nConnection: keep-alive\r\n\r\n";
     try {
         Headers headers(request);
     } catch (const std::exception& e) {

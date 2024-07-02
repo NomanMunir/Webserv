@@ -66,93 +66,93 @@ The version of an HTTP/1.x message is indicated by an HTTP-version field in the 
 Target resource upon which to apply the request
 
 - ## Forms:
-There are four distinct formats for the request-target, depending on both the method being requested and whether the request is to a proxy.
-request-target = origin-form
-                / absolute-form
-                / authority-form
-                / asterisk-form
+  There are four distinct formats for the request-target, depending on both the method being requested and whether the request is to a proxy.
+  request-target = origin-form
+                  / absolute-form
+                  / authority-form
+                  / asterisk-form
 
 - ## Syntax:
-1. No whitespace is allowed in the request-target.
-2. Invalid request-line: 400 (Bad Request) error or a 301 (Moved Permanently) redirect with the request-target properly encoded. A recipient // SHOULD NOT attempt to autocorrect
-3. A client MUST send a Host header field  in all HTTP/1.1 request messages. 
-4. If the target URI includes an authority component, then a client MUST send a field value for Host that is identical to that authority component, excluding any userinfo subcomponent and its "@" delimiter. 
-5. If the authority component is missing or undefined for the target URI, then a client MUST send a Host header field with an empty field value.
-6. A server MUST respond with a 400 (Bad Request) status code to any HTTP/1.1 request message that lacks a Host header field and to any request message that contains more than one Host header field line or a Host header field with an invalid field value.
+  1. No whitespace is allowed in the request-target.
+  2. Invalid request-line: 400 (Bad Request) error or a 301 (Moved Permanently) redirect with the request-target properly encoded. A recipient // SHOULD NOT attempt to autocorrect
+  3. A client MUST send a Host header field  in all HTTP/1.1 request messages. 
+  4. If the target URI includes an authority component, then a client MUST send a field value for Host that is identical to that authority component, excluding any userinfo subcomponent and its "@" delimiter. 
+  5. If the authority component is missing or undefined for the target URI, then a client MUST send a Host header field with an empty field value.
+  6. A server MUST respond with a 400 (Bad Request) status code to any HTTP/1.1 request message that lacks a Host header field and to any request message that contains more than one Host header field line or a Host header field with an invalid field value.
 
 - ## Origin-form:
 
-- ## Syntax:
-  origin-form    = absolute-path [ "?" query ]
-- Client MUST send only the absolute path and query components of the target URI as the request-target. 
-- If the target URI's path component is empty, the client MUST send "/" as the path. 
-- A Host header field is also sent.
+  - ## Syntax:
+    origin-form    = absolute-path [ "?" query ]
+  - Client MUST send only the absolute path and query components of the target URI as the request-target. 
+  - If the target URI's path component is empty, the client MUST send "/" as the path. 
+  - A Host header field is also sent.
 
-- ## Example
-  http://www.example.org/where?q=now
-    Server would open a TCP connection to port 80 of the host "www.example.org" and send the lines:
-    GET /where?q=now HTTP/1.1
-    Host: www.example.org
-    followed by the remainder of the request message.
+  - ## Example
+    http://www.example.org/where?q=now
+      Server would open a TCP connection to port 80 of the host "www.example.org" and send the lines:
+      GET /where?q=now HTTP/1.1
+      Host: www.example.org
+      followed by the remainder of the request message.
 
 - ## Absolute-form:
   Request to a proxy, a client MUST send the target URI in "absolute-form" as the request-target.
 
-- ## Syntax:
-  absolute-form  = absolute-URI
+  - ## Syntax:
+    absolute-form  = absolute-URI
 
-- ## Example:
+  - ## Example:
 
-GET http://www.example.org/pub/WWW/TheProject.html HTTP/1.1
+  GET http://www.example.org/pub/WWW/TheProject.html HTTP/1.1
 
-- A client MUST send a Host header field in an HTTP/1.1 request even if the request-target is in the absolute-form, since this allows the Host information to be forwarded through ancient HTTP/1.0 proxies that might not have implemented Host.
+  - A client MUST send a Host header field in an HTTP/1.1 request even if the request-target is in the absolute-form, since this allows the Host information to be forwarded through ancient HTTP/1.0 proxies that might not have implemented Host.
 
-- ## Cases:
-Proxy:
-- Ignore the received Host header field and  replace it with the host information of the request-target. 
-- A proxy that forwards such a request MUST generate a new Host field value based on the received request-target rather than forward the received Host field value.
+  - ## Cases:
+  Proxy:
+  - Ignore the received Host header field and  replace it with the host information of the request-target. 
+  - A proxy that forwards such a request MUST generate a new Host field value based on the received request-target rather than forward the received Host field value.
 
-Origin Server:
-- Ignore the received Host header field and use the host information of the request-target. 
-- Note that if the request-target does not have an authority component, an empty Host header will be sent.
+  Origin Server:
+  - Ignore the received Host header field and use the host information of the request-target. 
+  - Note that if the request-target does not have an authority component, an empty Host header will be sent.
 
 
 - ## Authority-form:
-- Only used for CONNECT requests. A CONNECT request is a method used in the HTTP protocol to establish a tunnel through a proxy server. 
+  Only used for CONNECT requests. A CONNECT request is a method used in the HTTP protocol to establish a tunnel through a proxy server. 
 
-- ## Syntax:
-It consists of only the uri-host and port number of the tunnel destination, separated by a colon (":").
+  - ## Syntax:
+  It consists of only the uri-host and port number of the tunnel destination, separated by a colon (":").
 
-  authority-form = uri-host ":" port
+    authority-form = uri-host ":" port
 
-- ## Example:
-CONNECT www.example.com:80 HTTP/1.1
-Host: www.example.com
-Request Method: CONNECT
-Request-Target: www.example.com:80 (authority-form)
-HTTP Version: HTTP/1.1
-Host Header: Specifies the host (www.example.com) to which the tunnel connection is requested.
+  - ## Example:
+  CONNECT www.example.com:80 HTTP/1.1
+  Host: www.example.com
+  Request Method: CONNECT
+  Request-Target: www.example.com:80 (authority-form)
+  HTTP Version: HTTP/1.1
+  Host Header: Specifies the host (www.example.com) to which the tunnel connection is requested.
 
 
 - ## Asterisk-form:
-- Used for a server-wide OPTIONS request Server responds with information about the server's capabilities and supported HTTP methods for all resources.
+  Used for a server-wide OPTIONS request Server responds with information about the server's capabilities and supported HTTP methods for all resources.
 
-- ## Syntax:
-  asterisk-form  = "*"
+  - ## Syntax:
+    asterisk-form  = "*"
+    OPTIONS * HTTP/1.1
+  Client requests OPTIONS for the server as a whole, as opposed to a specific named resource of that server.
+
+
+  If a proxy receives an OPTIONS request with an absolute-form of request-target in which the URI has an empty path and no query component, then the last proxy on the request chain MUST send a request-target of "*" when it forwards the request to the indicated origin server.
+
+  For example, the request
+
+  OPTIONS http://www.example.org:8001 HTTP/1.1
+  would be forwarded by the final proxy as
+
   OPTIONS * HTTP/1.1
-Client requests OPTIONS for the server as a whole, as opposed to a specific named resource of that server.
-
-
-If a proxy receives an OPTIONS request with an absolute-form of request-target in which the URI has an empty path and no query component, then the last proxy on the request chain MUST send a request-target of "*" when it forwards the request to the indicated origin server.
-
-For example, the request
-
-OPTIONS http://www.example.org:8001 HTTP/1.1
-would be forwarded by the final proxy as
-
-OPTIONS * HTTP/1.1
-Host: www.example.org:8001
-after connecting to port 8001 of host "www.example.org".
+  Host: www.example.org:8001
+  after connecting to port 8001 of host "www.example.org".
 
 ## 3.3 Reconstructing the Target URI
   - Target URI is to identify the target resource of an HTTP request.
