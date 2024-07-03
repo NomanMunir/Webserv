@@ -20,3 +20,7 @@
 [ ] If the authority component is missing or undefined for the target URI, then a client MUST send a Host header field with an empty field value.
 
 [ ] A server MUST respond with a 400 (Bad Request) status code to any HTTP/1.1 request message that lacks a Host header field and to any request message that contains more than one Host header field line or a Host header field with an invalid field value.
+
+
+
+[ ] link config file with all the classes like client_body_size to how much we are reading; 

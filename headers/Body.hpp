@@ -1,39 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Request.hpp                                        :+:      :+:    :+:   */
+/*   Body.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/02 12:25:54 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/03 17:20:06 by nmunir           ###   ########.fr       */
+/*   Created: 2024/07/03 14:10:31 by nmunir            #+#    #+#             */
+/*   Updated: 2024/07/03 17:14:36 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef REQUEST_HPP
-# define REQUEST_HPP
+#ifndef BODY_HPP
+#define BODY_HPP
 
-// #include "Body.hpp"
-#include "Headers.hpp"
 #include "../utils/utils.hpp"
-#include <iostream>
-#include <vector>
-#include <map>
-#include <string>
-#include <sstream>
 
-class Headers;
-class Request
+class Body
 {
 	public:
-		Request(int clientSocket);
-		~Request();
+		Body(int clientSocket, Headers headers);
+		Body(){};
+		~Body();
+		Body(const Body &b);
+		Body &operator=(const Body &b);
+		void printBody();
 	private:
-		void handleRequest(int clientSocket);
-
-		std::string request;
-		Headers headers;
-		// Body body;
+		std::string body;
+		void parseBody(int clientSocket, Headers &headers);
 };
 
-#endif // REQUEST_HPP
+#endif // BODY_HPP

@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:46:04 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/01 14:04:15 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/03 14:52:44 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,45 @@ void isFile(const std::string &path)
     if (!S_ISREG(info.st_mode))
         throw std::runtime_error(path + " is not a regular file");
 }
+
+static void initializeLimits(std::map<std::string, std::vector<int> > &limits)
+{
+    limits["keepalive_timeout"] = std::vector<int>();
+    limits["keepalive_timeout"].push_back(0);
+    limits["keepalive_timeout"].push_back(3600); // 0 to 3,600 seconds (1 hour)
+
+    limits["listen"] = std::vector<int>();
+    limits["listen"].push_back(1);
+    limits["listen"].push_back(65535); // 1 to 65,535 (valid port range)
+
+    limits["error_pages"] = std::vector<int>();
+    limits["error_pages"].push_back(100);
+    limits["error_pages"].push_back(599); // 100 to 599 (valid HTTP status codes)
+    limits["ip"] = std::vector<int>();
+    limits["ip"].push_back(0);   // 0 to 255 (valid IP range)
+    limits["ip"].push_back(255); // 0 to 255 (valid IP range)
+    
+    limits["Content-Length"] = std::vector<int>();
+    limits["Content-Length"].push_back(0);
+    limits["Content-Length"].push_back(1000000); // 0 to 1,000,000 bytes (1 MB)
+}
+
+bool validateNumber(std::string key, std::string value)
+{
+    std::map<std::string, std::vector<int> > limits;
+    initializeLimits(limits);
+    size_t limit = value.back() == ';' ? value.size() - 1 : value.size();
+    for (size_t j = 0; j < limit; j++)
+    {
+        if (!isdigit(value[j]))
+            return false;
+    }
+    double num = std::atof(value.substr(0, limit).c_str());
+    if (num < limits[key][0] || num > limits[key][1])
+        return false;
+    return true;
+}
+
 
 void printServers(std::vector<ServerConfig> servers)
 {

@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 14:41:08 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/02 12:43:58 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/03 16:46:23 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,9 @@
 #include <cerrno>
 #include "headers/Headers.hpp"
 #include "headers/Request.hpp"
+#include "headers/Body.hpp"
 
 class Parser;
-class Headers;
 
 class Server
 {

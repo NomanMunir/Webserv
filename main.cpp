@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 17:07:42 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/03 10:26:40 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/03 14:27:36 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,9 @@ int main(int ac, const char **av)
             av[1] = "config1.conf";
         Parser parser(av[1]);
         Validation validation(parser);
-        printServers(parser.getServers());
-        // Server server(parser);
-        // server.run();
+        // printServers(parser.getServers());
+        Server server(parser);
+        server.run();
     }
     catch (std::exception &e)
     {
@@ -34,7 +34,7 @@ int main(int ac, const char **av)
     return 0;
 }
 // int main() {
-//     std::string request = " GET http://www.example.com HTTP/1.1\r\nHost:example.com\r\nConnection: keep-alive\r\n\r\n";
+//     std::string request = " CONNECT www.example.com:80 HTTP/1.1\r\nHost:www.example.com\r\nConnection: keep-alive\r\n\r\n";
 //     try {
 //         Headers headers(request);
 //     } catch (const std::exception& e)
