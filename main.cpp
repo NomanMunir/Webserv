@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
+/*   By: absalem < absalem@student.42abudhabi.ae    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 17:07:42 by nmunir            #+#    #+#             */
-/*   Updated: 2024/06/08 17:12:09 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/01 16:21:39 by absalem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
+#include "server/Server.hpp"
+
 
 int main() {
     Server server;

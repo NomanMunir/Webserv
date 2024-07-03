@@ -63,34 +63,31 @@ void Server::run()
 
 void Server::handleConnections() 
 {
-    pollfd serverPollFd;
-    serverPollFd.fd = serverSocket;
-    serverPollFd.events = POLLIN; // monitor for read event
-    socketsFd.push_back(serverPollFd);
+    pollManager.addSocket(serverSocket, POLLIN); // Add server socket to poll list
 
     std::cout << "Server socket added to poll list. Waiting for connections..." << std::endl;
 
     while (true) 
     {
-        int pollCount = poll(socketsFd.data(), socketsFd.size(), -1); // Wait indefinitely for events
+        int pollCount = pollManager.waitForEvents(); // Wait indefinitely for events
         if (pollCount < 0) 
         {
             perror("Error: Poll failed");
             break;
         }
-        if(pollCount == 0)
+        if (pollCount == 0) 
         {
             perror("Error: No event");
             break;
         }
 
-        for (size_t i = 0; i < socketsFd.size(); ++i) 
+        for (size_t i = 0; i < pollManager.getSocketsCount(); ++i) 
         {
-            std::cout << socketsFd[i].fd << std::endl;
-            
-            if (socketsFd[i].revents == POLLIN) 
+            pollfd event = pollManager.getEvent(i);
+
+            if (event.revents & POLLIN) 
             {
-                if (socketsFd[i].fd == serverSocket) 
+                if (event.fd == serverSocket) 
                 {
                     // Accept new connection
                     struct sockaddr_in clientAddr;
@@ -102,21 +99,17 @@ void Server::handleConnections()
                         continue;
                     }
                     // Add client socket to poll list
-                    pollfd clientFd;
-                    clientFd.fd = client_fd;
-                    clientFd.events = POLLIN; // Monitor for incoming data
-                    socketsFd.push_back(clientFd);
-                    
-                }
+                    pollManager.addSocket(client_fd, POLLIN);
+                } 
                 else 
                 {
                     // Handle data from client
-                    int client_fd = socketsFd[i].fd;
+                    int client_fd = event.fd;
                     handleRequest(client_fd); // Example function to handle client request
 
                     // Close client connection after handling request
                     close(client_fd);
-                    socketsFd.erase(socketsFd.begin() + i); // Remove from poll list
+                    pollManager.removeSocket(i); // Remove from poll list
                     --i; // Adjust index to account for erased element
                 }
             }

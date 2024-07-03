@@ -7,6 +7,9 @@
 #include <map>
 #include <fcntl.h>
 #include <poll.h>
+#include "Poll.hpp"
+
+class Poll;
 
 class Server
 {
@@ -21,7 +24,8 @@ public:
 private:
     int serverSocket;
     struct sockaddr_in serverAddr;
-    std::vector<struct pollfd> socketsFd;
+    // std::vector<struct pollfd> socketsFd;
+    Poll pollManager;
     
     
     void initSocket();
