@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 11:20:28 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/02 14:54:33 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/02 16:20:07 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ class Headers
 		std::string firstLine;
 		void parseHeader(std::string &request);
 		void parseFirstLine();
+		void parseRequestURI();
 };
 
 #endif // HEADERS_HPP

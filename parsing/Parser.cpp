@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:52:26 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/02 11:43:38 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/03 10:20:25 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,23 +68,12 @@ void Parser::setListen(std::string &value)
     if (value.empty())
         throw std::runtime_error("Error: invalid configuration file " + value);
     std::vector<std::string> listenValues;
-    std::vector<std::string> splitedValues = split(value, ' ');
+    std::vector<std::string> splitedValues = split(value, ':');
     if (splitedValues.size() == 2)
     {
-        if (splitedValues[1] != "ssl")
-            throw std::runtime_error("Error: invalid configuration file " + splitedValues[1]);
-        listenValues.push_back("1");
-    }
-    else if (splitedValues.size() == 1)
-        listenValues.push_back("0");
-    else
-        throw std::runtime_error("Error: invalid configuration file " + value);
-    splitedValues = split(splitedValues[0], ':');
-    if (splitedValues.size() == 2)
-    {
-        listenValues.push_back(splitedValues[0]);
+        listenValues.push_back(splitedValues[0]);   
         listenValues.push_back(splitedValues[1]);
-    }
+    }   
     else if (splitedValues.size() == 1)
     {
         listenValues.push_back("0.0.0.0");

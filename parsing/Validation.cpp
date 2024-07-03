@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/30 13:35:44 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/01 15:16:22 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/03 10:50:32 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,16 +50,23 @@ bool Validation::validateNumber(std::string key, std::string value)
     return true;
 }
 
+void Validation::validateMethods(std::vector<std::string> methods)
+{
+    std::string validMethods[] = {"GET", "HEAD", "POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE", "PATCH"};
+    for (size_t i = 0; i < methods.size(); i++)
+    {
+        if (std::find(std::begin(validMethods), std::end(validMethods), methods[i]) == std::end(validMethods))
+            throw std::runtime_error("Error: invalid configuration file " + methods[i]);
+    }
+}
+
 void Validation::validateRouteMap(std::map<std::string, RouteConfig> &routeMap)
 {
 	for (std::map<std::string, RouteConfig>::iterator it = routeMap.begin(); it != routeMap.end(); it++)
 	{
 		isDirectory(it->first);
-        for (size_t i = 0; i < it->second.methods.size(); i++)
-        {
-            if (it->second.methods[i] != "GET" && it->second.methods[i] != "POST" && it->second.methods[i] != "DELETE" && it->second.methods[i] != "PUT")
-                throw std::runtime_error("Error: invalid configuration file " + it->second.methods[i]);
-        }
+        validateMethods(it->second.methods);
+
 		isDirectory(it->second.root);
 		isDirectory(it->second.root + "/" + it->second.redirect);
 		isDirectory(it->second.cgiPath);
@@ -119,10 +126,10 @@ void Validation::validateListen(std::vector<std::vector<std::string> > &listenVe
 {
     for (size_t i = 0; i < listenVec.size(); i++)
     {
-        if (listenVec[i].size() != 3)
+        if (listenVec[i].size() != 2)
             throw std::runtime_error("Error: invalid configuration file " + listenVec[i][0]);
-	    validateIP(listenVec[i][1]);
-        if (!validateNumber("listen", listenVec[i][2]))
+	    validateIP(listenVec[i][0]);
+        if (!validateNumber("listen", listenVec[i][1]))
             throw std::runtime_error("Error: invalid configuration file " + listenVec[i][2]);
     }
 }

@@ -12,5 +12,11 @@
 ## Request:
 [ ] Pares http version 1.0
 
-## Response:
-[ ] Server SHOULD respond with a 400 (Bad Request) response and close the connection if grammer is not correct
+## header
+[ ] A client MUST send a Host header field in all HTTP/1.1 request messages.
+
+[ ] If the target URI includes an authority component, then a client MUST send a field value for Host that is identical to that authority component, excluding any userinfo subcomponent and its "@" delimiter.
+
+[ ] If the authority component is missing or undefined for the target URI, then a client MUST send a Host header field with an empty field value.
+
+[ ] A server MUST respond with a 400 (Bad Request) status code to any HTTP/1.1 request message that lacks a Host header field and to any request message that contains more than one Host header field line or a Host header field with an invalid field value.
