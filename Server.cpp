@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 14:41:04 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/02 14:47:07 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/04 13:49:32 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,18 +40,25 @@ void Server::initSocket()
     listen(serverSocket, 5);
 }
 
-void Server::run()
+void Server::run(Parser &configFile)
 {
-    handleConnections();
+    handleConnections(configFile);
 }
 
-void Server::handleConnections()
+void Server::handleConnections(Parser &configFile)
 {
     struct sockaddr_in clientAddr;
     socklen_t clientLen = sizeof(clientAddr);
 
     while (true)
-        Request(accept(serverSocket, (struct sockaddr *)&clientAddr, &clientLen));
+    {
+        int clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddr, &clientLen);
+        Request request(clientSocket);
+        Response response(request, configFile);
+        response.sendResponse(clientSocket);
+        if (close(clientSocket) == -1)
+		    throw std::runtime_error("Error closing client socket.");
+    }
 }
 
 std::string Server::generateHttpResponse(const std::string &filepath)

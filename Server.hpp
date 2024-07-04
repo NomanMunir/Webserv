@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 14:41:08 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/03 16:46:23 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/04 13:47:02 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <cerrno>
-#include "headers/Headers.hpp"
-#include "headers/Request.hpp"
-#include "headers/Body.hpp"
+#include "request/Request.hpp"
+#include "response/Response.hpp"
 
 class Parser;
 
@@ -40,7 +39,7 @@ class Server
 {
 public:
     Server(Parser &parser);
-    void run();
+    void run(Parser &configFile);
     std::map<std::string, std::string> headers;
     std::string startLine;
     std::string body;
@@ -51,13 +50,11 @@ private:
     struct sockaddr_in serverAddr;
 
     void initSocket();
-    void handleConnections();
-    void handleRequest(int clientSocket);
+    void handleConnections(Parser &configFile);
     void sendResponse(int clientSocket, const std::string &response);
     std::string generateHttpResponse(const std::string &filepath);
     void storeFirstLine(const std::string &request);
     void storeHeaders(const std::string &request);
-    void printHeaders();
 
     // bool parseRequestLine(std::istringstream &stream);
     // bool parseHeaders(std::istringstream &stream);

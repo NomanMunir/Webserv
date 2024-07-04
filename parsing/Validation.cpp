@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/30 13:35:44 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/03 12:04:59 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/04 15:17:42 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ void Validation::validateListen(std::vector<std::vector<std::string> > &listenVe
 
 void Validation::validateDirectives(std::map<std::string, std::string> directives)
 {
-	if (!validateNumber("client_body_size", directives["client_body_size_limit"]))
+	if (!validateNumber("Content-Length", directives["client_body_size_limit"]))
 		throw std::runtime_error("client_body_size_limit directive is invalid");
 	if (!validateNumber("keepalive_timeout", directives["keep_alive_timeout"]))
 		throw std::runtime_error("keep_alive_timeout directive is invalid");
@@ -117,7 +117,7 @@ Validation::Validation(Parser parser)
 			if (!validateErrorPages(it->first, it->second))
 				throw std::runtime_error("Error: invalid error pages");
 		}
-		if (!validateNumber("client_body_size", servers[i].clientBodySizeLimit))
+		if (!validateNumber("Content-Length", servers[i].clientBodySizeLimit))
 			throw std::runtime_error("Error: invalid client body size limit");
 		validateRouteMap(servers[i].routeMap);
 	}

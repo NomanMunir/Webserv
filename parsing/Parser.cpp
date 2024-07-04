@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:52:26 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/03 10:20:25 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/04 15:19:52 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,9 @@ void Parser::checkLocationBlock()
     const std::string keys[] = {"methods", "redirect", "root", "directory_listing", \
                                 "default_file", "cgi_path", "cgi", "upload_dir"};
 
+    if (std::find(std::begin(keys), std::end(keys), key) == std::end(keys))
+        throw std::runtime_error("Error: invalid configuration file " + key);
+
     while (value.find(";") == std::string::npos)
     {
         if (tokens.empty())
@@ -52,8 +55,6 @@ void Parser::checkLocationBlock()
         value += " " + tokens[0];
         tokens.erase(tokens.begin());
     }
-    if (std::find(std::begin(keys), std::end(keys), key) == std::end(keys))
-        throw std::runtime_error("Error: invalid configuration file " + key);
     if (value.back() != ';')
         throw std::runtime_error("Error: invalid configuration file " + value);
     else
@@ -196,7 +197,6 @@ void Parser::parseBlocks()
         else
             checkHttpDirective();
     }
-    // printServers(servers);
 }
 
 void Parser::tokanize(std::stringstream &buffer)
@@ -244,8 +244,12 @@ Parser::Parser(const std::string configFile)
     file.close();
     buffer = ss.str();
     tokanize(ss);
+    if (tokens.empty())
+        throw std::runtime_error("Error: invalid configuration file :(");
     setDefault();
     parseBlocks();
+    if (servers.empty())
+        throw std::runtime_error("Error: invalid configuration file :(");
     // printServers(servers);
 }
 

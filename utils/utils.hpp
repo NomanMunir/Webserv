@@ -6,15 +6,30 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:46:20 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/03 12:05:49 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/04 11:13:50 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
-#include "../Server.hpp"
 #include "../parsing/Parser.hpp"
+#include <string>
+#include <vector>
+#include <netinet/in.h>
+#include <map>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <unistd.h>
+#include <cstring>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <cerrno>
+
 struct ServerConfig;
 
 std::string trim(const std::string &s);

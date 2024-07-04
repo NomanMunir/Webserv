@@ -24,3 +24,9 @@
 
 
 [ ] link config file with all the classes like client_body_size to how much we are reading; 
+
+
+[ ] split the server names and set check each one.
+[ ] set default server if we coul'nt found the server_name.
+[ ] is method allowed in the route block.
+[ ] fix if there is no location block.
