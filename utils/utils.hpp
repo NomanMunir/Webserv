@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:46:20 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/04 11:13:50 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/04 17:26:53 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,9 @@ struct ServerConfig;
 std::string trim(const std::string &s);
 std::vector<std::string> split(const std::string &s, char delimiter);
 void isFile(const std::string &path);
+bool isFile(std::string &path);
 void isDirectory(const std::string &path);
+bool isDirectory(std::string &path);
 void printServers(std::vector<ServerConfig> servers);
 bool validateNumber(std::string key, std::string value);
 

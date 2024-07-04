@@ -30,3 +30,7 @@
 [ ] set default server if we coul'nt found the server_name.
 [ ] is method allowed in the route block.
 [ ] fix if there is no location block.
+[ ] servers with the same server name. How to hanlde them check in nginx.
+[ ] check for file types and set appropriate values
+[ ] auto indexing for directories.
+[ ] check if the directory is ending with / in nginx.

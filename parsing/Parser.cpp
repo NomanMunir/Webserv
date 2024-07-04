@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:52:26 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/04 15:19:52 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/04 17:08:33 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void Parser::setRouteBlock(std::string &key, std::string &value)
         else if (key == "directory_listing")
             routeConfig.directoryListing = value == "on" ? true : false;
         else if (key == "default_file")
-            routeConfig.defaultFile = value;
+            routeConfig.defaultFile = split(value, ' ');
         else if (key == "cgi_path" || key == "cgi")
             routeConfig.cgiPath = value;
         else if (key == "upload_dir")
@@ -87,7 +87,7 @@ void Parser::setListen(std::string &value)
 void Parser::setServerBlock(std::string &key, std::string &value)
 {
     if (key == "server_names")
-        serverConfig.serverName = value;
+         serverConfig.serverName = split(value, ' ');
     else if (key == "listen")
         setListen(value);
 
@@ -217,7 +217,7 @@ void Parser::tokanize(std::stringstream &buffer)
 void Parser::setDefault()
 {
     serverConfig.listen.clear();
-    serverConfig.serverName = "localhost";
+    serverConfig.serverName.push_back("localhost");
     serverConfig.errorPages["400"] = "/Users/nmunir/Desktop/webserv/error.html";
     serverConfig.errorPages["404"] = "/Users/nmunir/Desktop/webserv/error.html";
     serverConfig.errorPages["500"] = "/Users/nmunir/Desktop/webserv/error.html";
@@ -226,7 +226,7 @@ void Parser::setDefault()
     routeConfig.methods.push_back("HEAD");
     routeConfig.root = "/Users/nmunir/Desktop/Webserv";
     routeConfig.directoryListing = false;
-    routeConfig.defaultFile = "index.html";
+    routeConfig.defaultFile.push_back("index.html");
     routeConfig.cgiPath = "/Users/nmunir/Desktop/Webserv";
     routeConfig.uploadDir = "/Users/nmunir/Desktop/Webserv";
     routeConfig.redirect = "/";
@@ -250,7 +250,6 @@ Parser::Parser(const std::string configFile)
     parseBlocks();
     if (servers.empty())
         throw std::runtime_error("Error: invalid configuration file :(");
-    // printServers(servers);
 }
 
 std::vector<ServerConfig> Parser::getServers()

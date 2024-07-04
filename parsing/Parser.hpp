@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:52:32 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/04 11:10:33 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/04 16:48:21 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ struct RouteConfig
 	std::string redirect;
 	std::string root;
 	bool directoryListing;
-	std::string defaultFile;
+	std::vector<std::string> defaultFile;
 	std::string cgiPath;
 	std::string uploadDir;
 };
@@ -41,7 +41,7 @@ struct RouteConfig
 struct ServerConfig
 {
 	std::vector<std::vector<std::string> > listen;
-	std::string serverName;
+	std::vector<std::string> serverName;
 	std::map<std::string, std::string> errorPages;
 	std::string clientBodySizeLimit;
 	std::map<std::string, RouteConfig> routeMap;

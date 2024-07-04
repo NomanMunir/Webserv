@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 11:20:23 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/04 14:10:31 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/04 17:09:47 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,11 +48,9 @@ void Headers::parseRequestURI()
 	{
 		if ("http://" + host != uri)
 			throw std::runtime_error("9 400 (Bad Request) response and close the connection");
-		std::cout << "absolute uri: " << uri << std::endl;
 	}
 	else if (headers["method"] == "OPTIONS" && uri == "*") // Asterisk-form URI
 	{
-		std::cout << "asterisk-form uri: " << uri << std::endl;
 		// headers["uri"] = "http://" + host;
 	}
 	else if (headers["method"] == "CONNECT") // Authority-form URI
@@ -62,7 +60,6 @@ void Headers::parseRequestURI()
 			tokens[0] = "www." + tokens[0];
 		if (tokens.size() != 2 || !validateNumber("listen", tokens[1]) || tokens[0] != host)
 			throw std::runtime_error("12 400 (Bad Request) response and close the connection");
-		std::cout << "connect-form uri: " << uri << std::endl;
 		// headers["uri"] = "http://" + host + ":" + tokens[1];
 	}
 	else if (uri[0] == '/') // Origin-form URI
@@ -136,6 +133,12 @@ void Headers::parseHeader(int clientSocket)
 			throw std::runtime_error("4. 400 (Bad Request) response and close the connection");
 		std::string key = trim(line.substr(0, pos));
 		std::string value = trim(line.substr(pos + 1));
+		if (key == "Host")
+		{
+			pos = value.find(':');
+		if (pos != std::string::npos)
+			value = trim(value.substr(0, pos));
+		}
 		if (key.empty() || value.empty())
 			throw std::runtime_error("5. 400 (Bad Request) response and close the connection");
 		headers[key] = value;
@@ -146,7 +149,6 @@ void Headers::parseHeader(int clientSocket)
 Headers::Headers(int clientSocket)
 {
 	parseHeader(clientSocket);
-	// printHeaders();
 }
 
 Headers::~Headers() { }

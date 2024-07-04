@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/30 13:35:44 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/04 15:17:42 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/04 16:58:31 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,14 +26,15 @@ void Validation::validateRouteMap(std::map<std::string, RouteConfig> &routeMap)
 {
 	for (std::map<std::string, RouteConfig>::iterator it = routeMap.begin(); it != routeMap.end(); it++)
 	{
-		isDirectory(it->first);
         validateMethods(it->second.methods);
 
 		isDirectory(it->second.root);
+		isDirectory(it->second.root + "/" + it->first);
 		isDirectory(it->second.root + "/" + it->second.redirect);
 		isDirectory(it->second.cgiPath);
 		isDirectory(it->second.uploadDir);
-		isFile(it->second.root + "/" + it->second.defaultFile);
+		// for (size_t i = 0; i < it->second.defaultFile.size(); i++)
+			// isFile(it->second.root + "/" + it->second.defaultFile[i]);
 	}
 }
 
@@ -49,23 +50,18 @@ bool Validation::validateErrorPages(std::string key, std::string value)
 
 void Validation::validateServerNames(std::string &value)
 {
-    std::stringstream ss(value);
-    std::string serverName;
-    while (ss >> serverName)
-    {
-        if (serverName.empty())
-            throw std::runtime_error("Error: invalid configuration file " + serverName);
-        if (serverName.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-") != std::string::npos)
-            throw std::runtime_error("Error: invalid configuration file " + serverName);
-        if (serverName.find("*") != std::string::npos && serverName.find("*") != 0)
-            throw std::runtime_error("Error: invalid configuration file " + serverName);
-        if (serverName.front() == '-' || serverName.back() == '-' || serverName.front() == '.' || serverName.back() == '.')
-            throw std::runtime_error("Error: invalid configuration file " + serverName);
-        if (serverName.find("..") != std::string::npos || serverName.find("--") != std::string::npos)
-            throw std::runtime_error("Error: invalid configuration file " + serverName);
-        if (std::all_of(serverName.begin(), serverName.end(), ::isdigit))
-            throw std::runtime_error("Error: invalid configuration file " + serverName);
-    }
+	if (value.empty())
+		throw std::runtime_error("Error: invalid configuration file " + value);
+	if (value.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-") != std::string::npos)
+		throw std::runtime_error("Error: invalid configuration file " + value);
+	if (value.find("*") != std::string::npos && value.find("*") != 0)
+		throw std::runtime_error("Error: invalid configuration file " + value);
+	if (value.front() == '-' || value.back() == '-' || value.front() == '.' || value.back() == '.')
+		throw std::runtime_error("Error: invalid configuration file " + value);
+	if (value.find("..") != std::string::npos || value.find("--") != std::string::npos)
+		throw std::runtime_error("Error: invalid configuration file " + value);
+	if (std::all_of(value.begin(), value.end(), ::isdigit))
+		throw std::runtime_error("Error: invalid configuration file " + value);
 }
 
 void Validation::validateIP(std::string ip)
@@ -111,7 +107,8 @@ Validation::Validation(Parser parser)
 	for (size_t i = 0; i < servers.size(); i++)
 	{
 		validateListen(servers[i].listen);
-		validateServerNames(servers[i].serverName);
+		for (size_t j = 0; j < servers[i].serverName.size(); j++)
+			validateServerNames(servers[i].serverName[j]);
 		for (std::map<std::string, std::string>::iterator it = servers[i].errorPages.begin(); it != servers[i].errorPages.end(); it++)
 		{
 			if (!validateErrorPages(it->first, it->second))
@@ -121,6 +118,7 @@ Validation::Validation(Parser parser)
 			throw std::runtime_error("Error: invalid client body size limit");
 		validateRouteMap(servers[i].routeMap);
 	}
+	printServers(servers);
 }
 
 Validation::~Validation(){ }

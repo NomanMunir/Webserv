@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:46:04 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/03 14:52:44 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/04 17:26:42 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,47 @@ void isDirectory(const std::string &path)
     }
     if (!S_ISDIR(info.st_mode))
         throw std::runtime_error(path + " is not a directory");
+}
+bool isDirectory(std::string &path)
+{
+    struct stat info;
+    if (stat(path.c_str(), &info) != 0)
+    {
+        switch (errno)
+        {
+        case EACCES:
+            return (false);
+        case ENOENT:
+            return (false);
+        case ENOTDIR:
+            return (false);
+        default:
+            return (false);
+        }
+    }
+    if (!S_ISDIR(info.st_mode))
+        return (false);
+    return (true);
+}
+
+bool isFile(std::string &path)
+{
+    struct stat info;
+    if (stat(path.c_str(), &info) != 0)
+    {
+        switch (errno)
+        {
+        case EACCES:
+            return (false);
+        case ENOENT:
+            return (false);
+        default:
+            return (false);
+        }
+    }
+    if (!S_ISREG(info.st_mode))
+        return (false);
+    return (true);
 }
 
 void isFile(const std::string &path)
@@ -122,7 +163,8 @@ void printServers(std::vector<ServerConfig> servers)
                 std::cout << servers[i].listen[j][k] << " ";
             std::cout << std::endl;
         }
-        std::cout << "Server Name: " << servers[i].serverName << std::endl;
+        for (size_t j = 0; j < servers[i].serverName.size(); j++)
+            std::cout << "Server Name: " << servers[i].serverName[j] << std::endl;
         std::cout << "Client Body Size Limit: " << servers[i].clientBodySizeLimit << std::endl;
         std::cout << "Error Pages: " << std::endl;
         for (std::map<std::string, std::string>::iterator it = servers[i].errorPages.begin(); it != servers[i].errorPages.end(); ++it)
@@ -138,7 +180,8 @@ void printServers(std::vector<ServerConfig> servers)
             std::cout << "Redirect: " << it->second.redirect << std::endl;
             std::cout << "Root: " << it->second.root << std::endl;
             std::cout << "Directory Listing: " << it->second.directoryListing << std::endl;
-            std::cout << "Default File: " << it->second.defaultFile << std::endl;
+            for (size_t j = 0; j < it->second.defaultFile.size(); j++)
+                std::cout << "Default File: " << it->second.defaultFile[j] << std::endl;
             std::cout << "CGI Path: " << it->second.cgiPath << std::endl;
             std::cout << "Upload Dir: " << it->second.uploadDir << std::endl;
             std::cout << std::endl;
