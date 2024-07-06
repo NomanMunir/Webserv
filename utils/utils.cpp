@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:46:04 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/04 17:26:42 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/06 11:45:43 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,6 +110,32 @@ void isFile(const std::string &path)
     }
     if (!S_ISREG(info.st_mode))
         throw std::runtime_error(path + " is not a regular file");
+}
+
+void initializeVector(std::vector<std::string> &v, const std::string s[], size_t size)
+{
+    for (size_t i = 0; i < size; ++i)
+    {
+        v.push_back(s[i]);
+    }
+}
+
+void initializeVector(std::vector<std::string> &v, std::string s[], size_t size)
+{
+    for (size_t i = 0; i < size; ++i)
+    {
+        v.push_back(s[i]);
+    }
+}
+
+bool myFind(std::vector<std::string> &v, std::string &s)
+{
+    for (size_t i = 0; i < v.size(); i++)
+    {
+        if (v[i] == s)
+            return true;
+    }
+    return false;
 }
 
 static void initializeLimits(std::map<std::string, std::vector<int> > &limits)

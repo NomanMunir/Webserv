@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 14:41:08 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/04 13:47:02 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/06 11:08:15 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@
 #include <sys/stat.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <fcntl.h>
 #include <cerrno>
 #include "request/Request.hpp"
 #include "response/Response.hpp"

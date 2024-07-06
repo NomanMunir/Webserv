@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:52:26 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/04 17:08:33 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/06 11:47:25 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,10 +42,14 @@ void Parser::checkLocationBlock()
     std::string key = tokens[0];
     std::string value = tokens[1];
     tokens.erase(tokens.begin(), tokens.begin() + 2);
-    const std::string keys[] = {"methods", "redirect", "root", "directory_listing", \
-                                "default_file", "cgi_path", "cgi", "upload_dir"};
+    const std::string keyArray[] = {
+        "methods", "redirect", "root", "directory_listing",
+        "default_file", "cgi_path", "cgi", "upload_dir"
+    };
+    std::vector<std::string> keys;
+    initializeVector(keys, keyArray, sizeof(keyArray) / sizeof(keyArray[0]));
 
-    if (std::find(std::begin(keys), std::end(keys), key) == std::end(keys))
+    if (!myFind(keys, key))
         throw std::runtime_error("Error: invalid configuration file " + key);
 
     while (value.find(";") == std::string::npos)
@@ -108,8 +112,12 @@ void Parser::checkServerBlock()
     std::string key = tokens[0];
     std::string value = tokens[1];
     tokens.erase(tokens.begin(), tokens.begin() + 2);
-    std::string keys[] = {"server_names", "listen",
+    const std::string keyArray[] = {"server_names", "listen",
                           "error_pages", "client_body_size", "location"};
+    std::vector<std::string> keys;
+    initializeVector(keys, keyArray, sizeof(keyArray) / sizeof(keyArray[0]));
+    if (!myFind(keys, key))
+        throw std::runtime_error("Error: invalid configuration file " + key);
     while (value.find(";") == std::string::npos && key != "location")
     {
         if (tokens.empty())
@@ -117,10 +125,7 @@ void Parser::checkServerBlock()
         value += " " + tokens[0];
         tokens.erase(tokens.begin());
     }
-
-    if (std::find(std::begin(keys), std::end(keys), key) == std::end(keys))
-        throw std::runtime_error("Error: invalid configuration file " + key);
-
+    
     if (key == "location")
     {
         if (tokens[0] != "{")

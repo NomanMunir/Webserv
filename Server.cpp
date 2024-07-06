@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 14:41:04 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/04 13:49:32 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/06 11:08:40 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,19 @@ void Server::initSocket()
     serverAddr.sin_addr.s_addr = inet_addr(ipAddress);
     serverAddr.sin_port = htons(8080);
 
+    int e = 1;
+    if(setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &e,sizeof(e)) < 0)
+    {
+        perror("Error setsockopt option");
+        close(serverSocket);
+        exit(1);
+    }
+    //  if (fcntl(serverSocket, F_SETFL, O_NONBLOCK, FD_CLOEXEC) < 0)
+    // {
+    //     perror("Error non-Blocking server");
+    //     close(serverSocket);
+    //     exit(1);
+    // }
     if (bind(serverSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0)
     {
         perror("Error binding socket");

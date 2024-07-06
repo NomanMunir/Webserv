@@ -34,3 +34,5 @@
 [ ] check for file types and set appropriate values
 [ ] auto indexing for directories.
 [ ] check if the directory is ending with / in nginx.
+[ ] duplicate location in the server block is invalid.
+[ ] directory ending with / is valid in nginx.

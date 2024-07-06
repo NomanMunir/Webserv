@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/30 13:35:44 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/04 16:58:31 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/06 12:02:28 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,12 @@
 
 void Validation::validateMethods(std::vector<std::string> methods)
 {
-    std::string validMethods[] = {"GET", "HEAD", "POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE", "PATCH"};
+    std::string validMethodsArr[] = {"GET", "HEAD", "POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE", "PATCH"};
+	std::vector<std::string> validMethods;
+	initializeVector(validMethods, validMethodsArr, sizeof(validMethodsArr) / sizeof(validMethodsArr[0]));
     for (size_t i = 0; i < methods.size(); i++)
     {
-        if (std::find(std::begin(validMethods), std::end(validMethods), methods[i]) == std::end(validMethods))
+        if (!myFind(validMethods, methods[i]))
             throw std::runtime_error("Error: invalid configuration file " + methods[i]);
     }
 }
@@ -118,7 +120,7 @@ Validation::Validation(Parser parser)
 			throw std::runtime_error("Error: invalid client body size limit");
 		validateRouteMap(servers[i].routeMap);
 	}
-	printServers(servers);
+	// printServers(servers);
 }
 
 Validation::~Validation(){ }

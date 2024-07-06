@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 15:22:38 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/04 17:38:35 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/06 16:50:51 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,41 @@ void Response::response404()
 	response = "HTTP/1.1 404 Not Found\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 }
 
-void Response::checkType(std::string &path, RouteConfig &targetRoute)
+std::string listDirectory(const std::string& dirPath)
+{
+    std::string htmlContent;
+
+    // Open the directory
+    DIR *dir;
+    struct dirent *ent;
+
+    if ((dir = opendir(dirPath.c_str())) != NULL) {
+        // Start building HTML content
+        htmlContent += "<html><head><title>Index of " + dirPath + "</title></head><body>";
+        htmlContent += "<h1>Index of " + dirPath + "</h1><hr><ul>";
+
+        while ((ent = readdir(dir)) != NULL) {
+            std::string filename = ent->d_name;
+
+            // Skip "." and ".." entries
+            if (filename == "." || filename == "..")
+                continue;
+
+            // Add a list item with a hyperlink to each file
+            htmlContent += "<li><a href=\"" + filename + "\">" + filename + "</a></li>";
+        }
+
+        htmlContent += "</ul><hr></body></html>";
+
+        closedir(dir);
+    } else {
+        // Could not open directory
+        std::cerr << "Error: Could not open directory " << dirPath << std::endl;
+    }
+    return htmlContent;
+}
+
+bool Response::checkType(std::string &path, RouteConfig &targetRoute)
 {
 	size_t i = 0;
 	if (isDirectory(path))
@@ -41,20 +75,19 @@ void Response::checkType(std::string &path, RouteConfig &targetRoute)
 		}
 		if (i == targetRoute.defaultFile.size())
 		{
-			std::cout << "error 301" << std::endl;
-			response404();
-			return;
+			// std::cout << "error 301" << std::endl;
+			// response404();
+			return false;
 		}
 	}
 	else if (!isFile(path))
 	{
 		std::cout << "error 301" << std::endl;
 		response404();
-		return;
+		return false;
 	}
-	
+	return true;
 }
-
 
 void Response::handleGET(bool isGet, Request &request, Parser &configFile)
 {
@@ -63,8 +96,8 @@ void Response::handleGET(bool isGet, Request &request, Parser &configFile)
 		size_t i = 0;
 		std::string path = request.getHeaders().getValue("uri");
 		std::string requestHost = request.getHeaders().getValue("Host");
-		std::cout << "RequestHost : " << requestHost << std::endl;
-		std::cout << "RequestUri : " << path << std::endl;
+		// std::cout << "RequestHost : " << requestHost << std::endl;
+		// std::cout << "RequestUri : " << path << std::endl;
 		std::vector<ServerConfig> servers = configFile.getServers();
 		RouteConfig targetRoute;
 
@@ -76,7 +109,6 @@ void Response::handleGET(bool isGet, Request &request, Parser &configFile)
 		}
 		if (i == servers.size())
 			i = 0;
-		std::cout << "Index : " << i << std::endl;
 		std::map<std::string, RouteConfig> routes = servers[i].routeMap;
 		std::map<std::string, RouteConfig>::iterator it = routes.begin();
 		for (; it != routes.end(); it++)
@@ -92,19 +124,28 @@ void Response::handleGET(bool isGet, Request &request, Parser &configFile)
 			response404();
 			return;
 		}
-		std::cout << "targetRoute.root : " << targetRoute.root << std::endl;
+		// std::cout << "targetRoute.root : " << targetRoute.root << std::endl;
 		std::string fullPath = targetRoute.root + path;
-			
+
 		std::cout << "FullPath : " << fullPath << std::endl;
-		checkType(fullPath, targetRoute);
-		std::ifstream file(fullPath);
-		std::string line;
-		std::string body;
-		while (std::getline(file, line))
+		if (checkType(fullPath, targetRoute))
 		{
-			body += line + "\n";
+			std::ifstream file(fullPath.c_str());
+			std::stringstream buffer;
+			buffer << file.rdbuf();
+			std::string body = buffer.str();
+			response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 		}
-		response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
+		else
+		{
+			if (targetRoute.directoryListing)
+			{
+				std::string body = listDirectory(fullPath);
+				response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
+			}
+			else
+				response404();
+		}
 	}
 }
 

@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 11:20:23 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/04 17:09:47 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/06 12:03:25 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,6 @@ void Headers::parseRequestURI()
 	}
 	else if (uri[0] == '/') // Origin-form URI
 	{
-		std::cout << "origin-form uri: " << uri << std::endl;
 		// headers["uri"] = "http://" + host + uri;
 	}
 	else
