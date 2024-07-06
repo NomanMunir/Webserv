@@ -59,7 +59,7 @@ void Parser::checkLocationBlock()
         value += " " + tokens[0];
         tokens.erase(tokens.begin());
     }
-    if (value.back() != ';')
+    if (value.empty() || value.back() != ';')
         throw std::runtime_error("Error: invalid configuration file " + value);
     else
     {
@@ -139,10 +139,9 @@ void Parser::checkServerBlock()
     }
     else
     {
-        if (value.back() == ';')
+        if (!value.empty() || value.back() != ';')
         {
             value = value.substr(0, value.size() - 1);
-            
             setServerBlock(key, value);
         }
         else
@@ -223,17 +222,17 @@ void Parser::setDefault()
 {
     serverConfig.listen.clear();
     serverConfig.serverName.push_back("localhost");
-    serverConfig.errorPages["400"] = "/Users/nmunir/Desktop/webserv/error.html";
-    serverConfig.errorPages["404"] = "/Users/nmunir/Desktop/webserv/error.html";
-    serverConfig.errorPages["500"] = "/Users/nmunir/Desktop/webserv/error.html";
+    serverConfig.errorPages["400"] = "/var/www/html/error.html";
+    serverConfig.errorPages["404"] = "/var/www/html/error.html";
+    serverConfig.errorPages["500"] = "/var/www/html/error.html";
     serverConfig.clientBodySizeLimit = "1";
     routeConfig.methods.push_back("GET");
     routeConfig.methods.push_back("HEAD");
-    routeConfig.root = "/Users/nmunir/Desktop/Webserv";
+    routeConfig.root = "/var/www/html";
     routeConfig.directoryListing = false;
     routeConfig.defaultFile.push_back("index.html");
-    routeConfig.cgiPath = "/Users/nmunir/Desktop/Webserv";
-    routeConfig.uploadDir = "/Users/nmunir/Desktop/Webserv";
+    routeConfig.cgiPath = "/var/www/html";
+    routeConfig.uploadDir = "/var/www/html";
     routeConfig.redirect = "/";
     serverConfig.routeMap["/"] = routeConfig;
 }

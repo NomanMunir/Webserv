@@ -34,6 +34,8 @@ class Response
 		void handleResponse(Request &request, Parser &configFile);
 		void handleGET(bool isGet, Request &request, Parser &configFile);
 		bool checkType(std::string &path, RouteConfig &targetRoute);
+		ServerConfig chooseServer(std::string requestHost, Parser &configFile);
+		RouteConfig chooseRoute(std::string path, ServerConfig &server);
 
 };
 

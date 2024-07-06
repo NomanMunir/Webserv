@@ -82,52 +82,63 @@ bool Response::checkType(std::string &path, RouteConfig &targetRoute)
 	}
 	else if (!isFile(path))
 	{
-		std::cout << "error 301" << std::endl;
-		response404();
+		// std::cout << "error 301" << std::endl;
+		// response404();
 		return false;
 	}
 	return true;
+}
+
+ServerConfig Response::chooseServer(std::string requestHost, Parser &configFile)
+{
+	std::vector<ServerConfig> servers = configFile.getServers();
+	std::vector<ServerConfig>::iterator it = servers.begin();
+	for (; it != servers.end(); it++)
+	{
+		std::vector<std::string> serverNames = it->serverName;
+		if (std::find(serverNames.begin(), serverNames.end(), requestHost) != serverNames.end())
+			break;
+	}
+	if (it == servers.end())
+		return servers[0];
+	return *it;
+}
+
+RouteConfig Response::chooseRoute(std::string path, ServerConfig &server)
+{
+	std::map<std::string, RouteConfig> routes = server.routeMap;
+	RouteConfig targetRoute;
+	std::map<std::string, RouteConfig>::iterator it = routes.begin();
+	for (; it != routes.end(); it++)
+	{
+		if (path.find(it->first) == 0)
+		{
+			targetRoute = it->second;
+			break;
+		}
+	}
+		if (it == routes.end())
+		{
+			response404();
+			throw std::runtime_error("Error: Route not found");
+		}
+	return targetRoute;
 }
 
 void Response::handleGET(bool isGet, Request &request, Parser &configFile)
 {
 	if (isGet)
 	{
-		size_t i = 0;
 		std::string path = request.getHeaders().getValue("uri");
 		std::string requestHost = request.getHeaders().getValue("Host");
 		// std::cout << "RequestHost : " << requestHost << std::endl;
 		// std::cout << "RequestUri : " << path << std::endl;
-		std::vector<ServerConfig> servers = configFile.getServers();
-		RouteConfig targetRoute;
-
-		for (; i < servers.size(); i++)
-		{
-			std::vector<std::string> serverNames = servers[i].serverName;
-			if (std::find(serverNames.begin(), serverNames.end(), requestHost) != serverNames.end())
-				break;
-		}
-		if (i == servers.size())
-			i = 0;
-		std::map<std::string, RouteConfig> routes = servers[i].routeMap;
-		std::map<std::string, RouteConfig>::iterator it = routes.begin();
-		for (; it != routes.end(); it++)
-		{
-			if (it->first == path)
-			{
-				targetRoute = it->second;
-				break;
-			}
-		}
-		if (it == routes.end())
-		{
-			response404();
-			return;
-		}
-		// std::cout << "targetRoute.root : " << targetRoute.root << std::endl;
+		ServerConfig targetServer = chooseServer(requestHost, configFile);
+		RouteConfig targetRoute = chooseRoute(path, targetServer);
 		std::string fullPath = targetRoute.root + path;
 
 		std::cout << "FullPath : " << fullPath << std::endl;
+		
 		if (checkType(fullPath, targetRoute))
 		{
 			std::ifstream file(fullPath.c_str());

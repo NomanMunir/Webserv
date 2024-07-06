@@ -44,8 +44,8 @@ bool Validation::validateErrorPages(std::string key, std::string value)
 {
 	if (!validateNumber("error_pages", key))
 		return false;
-    if (value.find("/Users/nmunir/Desktop/webserv/") == std::string::npos)
-    	value = "/Users/nmunir/Desktop/webserv/" + value;
+    if (value.find("/var/www/html") == std::string::npos)
+    	value = "/var/www/html/" + value;
     isFile(value);        
     return true;
 }

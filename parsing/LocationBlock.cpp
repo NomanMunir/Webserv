@@ -16,10 +16,10 @@ LocationBlock::LocationBlock(std::vector<std::string> &tokens)
 {
 	methods[0] = "GET";
 	redirect = "/";
-	root = "/Users/nmunir/Desktop/Webserv";
+	root = "/var/www/html";
 	directoryListing = false;
 	defaultFile = "index.html";
-	cgiPath = "/Users/nmunir/Desktop/Webserv/cgi-bin";
-	uploadDir = "/Users/nmunir/Desktop/Webserv/upload";
+	cgiPath = "/var/www/html/cgi-bin";
+	uploadDir = "/var/www/html/upload";
 	
 }
