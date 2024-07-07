@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:25:54 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/04 11:33:12 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/07 13:31:20 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,12 @@
 class Request
 {
 	public:
-		Request(int clientSocket);
+		Request(int clientSocket, Parser &parser);
 		~Request();
 		Headers getHeaders();
 		Body getBody();
 	private:
-		void handleRequest(int clientSocket);
+		void handleRequest(int clientSocket, Parser &parser);
 
 		std::string request;
 		Headers headers;

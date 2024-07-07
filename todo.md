@@ -13,9 +13,9 @@
 [ ] Pares http version 1.0
 
 ## header
-[ ] A client MUST send a Host header field in all HTTP/1.1 request messages.
+[*] A client MUST send a Host header field in all HTTP/1.1 request messages.
 
-[ ] If the target URI includes an authority component, then a client MUST send a field value for Host that is identical to that authority component, excluding any userinfo subcomponent and its "@" delimiter.
+[*] If the target URI includes an authority component, then a client MUST send a field value for Host that is identical to that authority component, excluding any userinfo subcomponent and its "@" delimiter.
 
 [ ] If the authority component is missing or undefined for the target URI, then a client MUST send a Host header field with an empty field value.
 
@@ -23,16 +23,21 @@
 
 
 
-[ ] link config file with all the classes like client_body_size to how much we are reading; 
+[*] link config file with all the classes like client_body_size to how much we are reading; 
 
 
-[ ] split the server names and set check each one.
-[ ] set default server if we coul'nt found the server_name.
-[ ] is method allowed in the route block.
-[ ] fix if there is no location block.
+[*] split the server names and set check each one.
+[*] set default server if we could not find the server_name.
+[*] is method allowed in the route block.
+[*] fix if there is no location block.
+[*] duplicate location in the server block is invalid.
+[*] auto indexing for directories.
+
+[ ] server directives are repeated
 [ ] servers with the same server name. How to hanlde them check in nginx.
 [ ] check for file types and set appropriate values
-[ ] auto indexing for directories.
-[ ] check if the directory is ending with / in nginx.
-[ ] duplicate location in the server block is invalid.
-[ ] directory ending with / is valid in nginx.
+[ ] check if the directory is ending with / in nginx. directory ending with / is valid in nginx.
+[ ] server will still run if there is no listen directive.
+[ ] if there is no root directive in the server block it use it's default folder to serve the files.
+[ ] if there in no servername it will still run.
+[ ] it needs a server does not metter even if it's empty. it will still run.

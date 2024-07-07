@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 15:22:38 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/06 16:50:51 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/07 13:58:01 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,28 +25,25 @@ void Response::response404()
 	response = "HTTP/1.1 404 Not Found\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 }
 
-std::string listDirectory(const std::string& dirPath)
+std::string listDirectory(const std::string& dirPath, const std::string& uriPath)
 {
     std::string htmlContent;
 
-    // Open the directory
     DIR *dir;
     struct dirent *ent;
+	std::string newUriPath = (uriPath == "/") ? "" : uriPath;
 
     if ((dir = opendir(dirPath.c_str())) != NULL) {
-        // Start building HTML content
         htmlContent += "<html><head><title>Index of " + dirPath + "</title></head><body>";
         htmlContent += "<h1>Index of " + dirPath + "</h1><hr><ul>";
 
-        while ((ent = readdir(dir)) != NULL) {
+        while ((ent = readdir(dir)) != NULL)
+		{
             std::string filename = ent->d_name;
 
-            // Skip "." and ".." entries
             if (filename == "." || filename == "..")
                 continue;
-
-            // Add a list item with a hyperlink to each file
-            htmlContent += "<li><a href=\"" + filename + "\">" + filename + "</a></li>";
+            htmlContent += "<li><a href=\"" + newUriPath + "/" + filename + "\">" + filename + "</a></li>";
         }
 
         htmlContent += "</ul><hr></body></html>";
@@ -151,7 +148,7 @@ void Response::handleGET(bool isGet, Request &request, Parser &configFile)
 		{
 			if (targetRoute.directoryListing)
 			{
-				std::string body = listDirectory(fullPath);
+				std::string body = listDirectory(fullPath, path);
 				response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 			}
 			else
@@ -163,6 +160,16 @@ void Response::handleGET(bool isGet, Request &request, Parser &configFile)
 void Response::handleResponse(Request &request, Parser &configFile)
 {
 	std::string method = request.getHeaders().getValue("method");
+	std::string path = request.getHeaders().getValue("uri");
+	std::string requestHost = request.getHeaders().getValue("Host");
+	ServerConfig targetServer = chooseServer(requestHost, configFile);
+	RouteConfig targetRoute = chooseRoute(path, targetServer);
+	if (!myFind(targetRoute.methods, method))
+	{
+		std::cout << "error 405 Method Not Allowed" << std::endl;
+		response404();
+		return;
+	}
 	handleGET(method == "GET", request, configFile);
 	// handlePOST(method == "POST" ? true : false, request, configFile);
 }

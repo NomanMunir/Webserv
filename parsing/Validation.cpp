@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/30 13:35:44 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/06 12:02:28 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/07 17:42:41 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,9 @@ void Validation::validateMethods(std::vector<std::string> methods)
 
 void Validation::validateRouteMap(std::map<std::string, RouteConfig> &routeMap)
 {
+	if (routeMap.begin()->first == "")
+		throw std::runtime_error("Error: invalid configuration file " + routeMap.begin()->first);
+
 	for (std::map<std::string, RouteConfig>::iterator it = routeMap.begin(); it != routeMap.end(); it++)
 	{
         validateMethods(it->second.methods);

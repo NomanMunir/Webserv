@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 14:41:04 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/06 11:08:40 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/07 13:32:18 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void Server::handleConnections(Parser &configFile)
     while (true)
     {
         int clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddr, &clientLen);
-        Request request(clientSocket);
+        Request request(clientSocket, configFile);
         Response response(request, configFile);
         response.sendResponse(clientSocket);
         if (close(clientSocket) == -1)

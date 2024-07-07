@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 14:10:31 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/04 11:15:21 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/07 13:27:46 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 class Body
 {
 	public:
-		Body(int clientSocket, Headers &headers);
+		Body(int clientSocket, Headers &headers, Parser &parser);
 		Body(){};
 		~Body();
 		Body(const Body &b);
@@ -32,7 +32,7 @@ class Body
 		void printBody();
 	private:
 		std::string body;
-		void parseBody(int clientSocket, Headers &headers);
+		void parseBody(int clientSocket, Headers &headers, Parser &parser);
 };
 
 #endif // BODY_HPP

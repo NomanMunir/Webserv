@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:52:26 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/06 11:47:25 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/07 17:36:35 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void Parser::checkLocationBlock()
     if (tokens.size() < 2)
         throw std::runtime_error("Error: invalid configuration file " + tokens[0]);
     std::string key = tokens[0];
-    std::string value = tokens[1];
+    std::string value = tokens[1]; 
     tokens.erase(tokens.begin(), tokens.begin() + 2);
     const std::string keyArray[] = {
         "methods", "redirect", "root", "directory_listing",
@@ -134,6 +134,11 @@ void Parser::checkServerBlock()
         tokens.erase(tokens.begin());
         while (tokens[0] != "}")
             checkLocationBlock();
+        for (std::map<std::string, RouteConfig>::iterator it = serverConfig.routeMap.begin(); it != serverConfig.routeMap.end(); it++)
+        {
+            if (it->first == value)
+                throw std::runtime_error("Error: invalid configuration file " + value);
+        }   
         serverConfig.routeMap[value] = routeConfig;
         tokens.erase(tokens.begin());
     }
@@ -155,6 +160,7 @@ void Parser::checkServerDirective()
         throw std::runtime_error("Error: invalid configuration file " + tokens[0] + tokens[1]);
     while (tokens[0] != "}")
         checkServerBlock();
+    serverConfig.routeMap.erase("");
     servers.push_back(serverConfig);
     setDefault();
     tokens.erase(tokens.begin());
@@ -222,19 +228,19 @@ void Parser::setDefault()
 {
     serverConfig.listen.clear();
     serverConfig.serverName.push_back("localhost");
-    serverConfig.errorPages["400"] = "/var/www/html/error.html";
-    serverConfig.errorPages["404"] = "/var/www/html/error.html";
-    serverConfig.errorPages["500"] = "/var/www/html/error.html";
+    serverConfig.errorPages["400"] = "/Users/nmunir/Desktop/Webserv/error.html";
+    serverConfig.errorPages["404"] = "/Users/nmunir/Desktop/Webserv/error.html";
+    serverConfig.errorPages["500"] = "/Users/nmunir/Desktop/Webserv/error.html";
     serverConfig.clientBodySizeLimit = "1";
+    serverConfig.routeMap.clear();
     routeConfig.methods.push_back("GET");
-    routeConfig.methods.push_back("HEAD");
-    routeConfig.root = "/var/www/html";
+    routeConfig.root = "/Users/nmunir/Desktop/Webserv";
     routeConfig.directoryListing = false;
     routeConfig.defaultFile.push_back("index.html");
-    routeConfig.cgiPath = "/var/www/html";
-    routeConfig.uploadDir = "/var/www/html";
+    routeConfig.cgiPath = "/Users/nmunir/Desktop/Webserv";
+    routeConfig.uploadDir = "/Users/nmunir/Desktop/Webserv";
     routeConfig.redirect = "/";
-    serverConfig.routeMap["/"] = routeConfig;
+    serverConfig.routeMap[""] = routeConfig;
 }
 
 Parser::~Parser() {}
