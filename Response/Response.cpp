@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 15:22:38 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/07 13:58:01 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/08 17:29:59 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,49 +56,66 @@ std::string listDirectory(const std::string& dirPath, const std::string& uriPath
     return htmlContent;
 }
 
-bool Response::checkType(std::string &path, RouteConfig &targetRoute)
+int Response::checkType(std::string &path, RouteConfig &targetRoute)
 {
-	size_t i = 0;
-	if (isDirectory(path))
-	{
-		for (; i < targetRoute.defaultFile.size(); i++)
-		{
-			std::string newPath = path + "/" + targetRoute.defaultFile[i];
-			if (isFile(newPath))
-			{
-				path = newPath;
-				break;
-			}
-		}
-		if (i == targetRoute.defaultFile.size())
-		{
-			// std::cout << "error 301" << std::endl;
-			// response404();
-			return false;
-		}
-	}
-	else if (!isFile(path))
-	{
-		// std::cout << "error 301" << std::endl;
-		// response404();
-		return false;
-	}
-	return true;
+	struct stat info;
+	if (stat(path.c_str(), &info) != 0)
+		return (0);
+	else if (S_ISDIR(info.st_mode))
+		return (1);
+	else if (S_ISREG(info.st_mode))
+		return (2);
 }
 
-ServerConfig Response::chooseServer(std::string requestHost, Parser &configFile)
+bool handleDirectory(std::string &fullPath, std::string &path, RouteConfig &targetRoute)
 {
+	for (size_t i = 0; i < targetRoute.defaultFile.size(); i++)
+	{
+		std::string newPath = path + "/" + targetRoute.defaultFile[i];
+		if (isFile(newPath))
+		{
+			path = newPath;
+			return (true);
+		}
+	}
+	if (targetRoute.directoryListing)
+	{
+		std::string body = listDirectory(fullPath, path);
+		response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
+	}
+	else
+		response404();
+}
+ServerConfig Response::chooseServer(Request &request, Parser &configFile)
+{
+	size_t count = 0;
+	std::vector<ServerConfig>::iterator targetServer;
+	std::string requestHost = request.getHeaders().getValue("Host");
+	std::string requestPort = request.getHeaders().getValue("Port");
 	std::vector<ServerConfig> servers = configFile.getServers();
 	std::vector<ServerConfig>::iterator it = servers.begin();
+
 	for (; it != servers.end(); it++)
 	{
+		std::vector<std::vector<std::string> > ports = it->listen;
+
+		for (size_t i = 0; i < ports.size(); i++)
+		{
+			if (ports[i][1] == requestPort)
+				break;
+			else
+				continue;
+		}
 		std::vector<std::string> serverNames = it->serverName;
-		if (std::find(serverNames.begin(), serverNames.end(), requestHost) != serverNames.end())
-			break;
+		if (myFind(serverNames, requestHost))
+		{
+			targetServer = it;
+			count++;
+		}
 	}
-	if (it == servers.end())
+	if (count != 1)
 		return servers[0];
-	return *it;
+	return *targetServer;
 }
 
 RouteConfig Response::chooseRoute(std::string path, ServerConfig &server)
@@ -122,21 +139,26 @@ RouteConfig Response::chooseRoute(std::string path, ServerConfig &server)
 	return targetRoute;
 }
 
+bool checkEndingSlash(std::string &fullPath, std::string &path)
+{
+	if (fullPath[fullPath.size() - 1] != '/')
+		return false;
+	return true;
+}
 void Response::handleGET(bool isGet, Request &request, Parser &configFile)
 {
 	if (isGet)
 	{
 		std::string path = request.getHeaders().getValue("uri");
-		std::string requestHost = request.getHeaders().getValue("Host");
 		// std::cout << "RequestHost : " << requestHost << std::endl;
 		// std::cout << "RequestUri : " << path << std::endl;
-		ServerConfig targetServer = chooseServer(requestHost, configFile);
+		ServerConfig targetServer = chooseServer(request, configFile);
 		RouteConfig targetRoute = chooseRoute(path, targetServer);
 		std::string fullPath = targetRoute.root + path;
 
 		std::cout << "FullPath : " << fullPath << std::endl;
-		
-		if (checkType(fullPath, targetRoute))
+		int type = checkType(fullPath, targetRoute);
+		if (type == 2)
 		{
 			std::ifstream file(fullPath.c_str());
 			std::stringstream buffer;
@@ -144,16 +166,18 @@ void Response::handleGET(bool isGet, Request &request, Parser &configFile)
 			std::string body = buffer.str();
 			response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 		}
-		else
+		else if (type == 1)
 		{
-			if (targetRoute.directoryListing)
+			if (!checkEndingSlash(fullPath, path))
 			{
-				std::string body = listDirectory(fullPath, path);
-				response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
+				response = "HTTP/1.1 301 OK\r\nContent-Type: text/html\r\nContent-Length: 6 \r\n\r\n hello\n";
+				std::cout << "end: " << fullPath[fullPath.size() - 1] << std::endl;
 			}
 			else
-				response404();
+				handleDirectory(fullPath, path, targetRoute);
 		}
+		else if (type == 0)
+			response404();
 	}
 }
 
@@ -162,7 +186,7 @@ void Response::handleResponse(Request &request, Parser &configFile)
 	std::string method = request.getHeaders().getValue("method");
 	std::string path = request.getHeaders().getValue("uri");
 	std::string requestHost = request.getHeaders().getValue("Host");
-	ServerConfig targetServer = chooseServer(requestHost, configFile);
+	ServerConfig targetServer = chooseServer(request, configFile);
 	RouteConfig targetRoute = chooseRoute(path, targetServer);
 	if (!myFind(targetRoute.methods, method))
 	{

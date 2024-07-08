@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 15:21:58 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/06 13:14:47 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/08 17:18:02 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,8 @@ class Response
 		void response404();
 		void handleResponse(Request &request, Parser &configFile);
 		void handleGET(bool isGet, Request &request, Parser &configFile);
-		bool checkType(std::string &path, RouteConfig &targetRoute);
-		ServerConfig chooseServer(std::string requestHost, Parser &configFile);
+		int checkType(std::string &path, RouteConfig &targetRoute);
+		ServerConfig chooseServer(Request &request, Parser &configFile);
 		RouteConfig chooseRoute(std::string path, ServerConfig &server);
 
 };

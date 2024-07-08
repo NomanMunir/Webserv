@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:52:32 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/06 10:52:28 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/08 15:55:40 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ class Parser
 		void parseBlocks();
 		void tokanize(std::stringstream &buffer);
 		void setDefault();
+		void reset();
 		
 		std::string buffer;
 		std::string path;

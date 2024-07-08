@@ -32,12 +32,18 @@
 [*] fix if there is no location block.
 [*] duplicate location in the server block is invalid.
 [*] auto indexing for directories.
+[*] server directives are repeated
 
-[ ] server directives are repeated
-[ ] servers with the same server name. How to hanlde them check in nginx.
-[ ] check for file types and set appropriate values
+[ ] substring creating problems.
+
+[*] servers with the same server name. How to hanlde them check in nginx?
+	Answer: it will use the default one if it finds multiple servers with the same name and same port. Firt it will check the port and then the server name.
+
+[ ] check for file types and set appropriate values.
 [ ] check if the directory is ending with / in nginx. directory ending with / is valid in nginx.
 [ ] server will still run if there is no listen directive.
 [ ] if there is no root directive in the server block it use it's default folder to serve the files.
 [ ] if there in no servername it will still run.
 [ ] it needs a server does not metter even if it's empty. it will still run.
+[ ] if the location key is "hi" not "/hi" what to do
+[ ] if root has slash at the end

@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:52:26 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/07 17:36:35 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/08 16:03:41 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ void Parser::setListen(std::string &value)
     std::vector<std::string> splitedValues = split(value, ':');
     if (splitedValues.size() == 2)
     {
-        listenValues.push_back(splitedValues[0]);   
+        listenValues.push_back(splitedValues[0]); 
         listenValues.push_back(splitedValues[1]);
     }   
     else if (splitedValues.size() == 1)
@@ -91,7 +91,16 @@ void Parser::setListen(std::string &value)
 void Parser::setServerBlock(std::string &key, std::string &value)
 {
     if (key == "server_names")
-         serverConfig.serverName = split(value, ' ');
+    {
+        std::stringstream ss(value);
+        std::string token;
+        while (std::getline(ss, token, ' '))
+        {
+            if (token.empty())
+                continue;
+            serverConfig.serverName.push_back(token);   
+        }
+    }
     else if (key == "listen")
         setListen(value);
 
@@ -162,7 +171,7 @@ void Parser::checkServerDirective()
         checkServerBlock();
     serverConfig.routeMap.erase("");
     servers.push_back(serverConfig);
-    setDefault();
+    reset();
     tokens.erase(tokens.begin());
 }
 
@@ -226,20 +235,56 @@ void Parser::tokanize(std::stringstream &buffer)
 
 void Parser::setDefault()
 {
+    for (size_t i = 0; i < servers.size(); i++)
+    {
+        if (servers[i].serverName.empty())
+            servers[i].serverName.push_back("localhost");
+        if (servers[i].listen.empty())
+        {
+            servers[i].listen.push_back(std::vector<std::string>());
+            servers[i].listen[0].push_back("0.0.0.0");
+            servers[i].listen[0].push_back("80");
+        }
+        if (servers[i].errorPages.empty())
+        {
+            servers[i].errorPages["400"] = "/Users/nmunir/Desktop/Webserv/error.html";
+            servers[i].errorPages["404"] = "/Users/nmunir/Desktop/Webserv/error.html";
+            servers[i].errorPages["500"] = "/Users/nmunir/Desktop/Webserv/error.html";
+        }
+        if (servers[i].clientBodySizeLimit.empty())
+            servers[i].clientBodySizeLimit = "1";
+        if (servers[i].routeMap.empty())
+        {
+            servers[i].routeMap["/"] = routeConfig;
+            servers[i].routeMap[""].methods.push_back("GET");
+            servers[i].routeMap[""].root = "/Users/nmunir/Desktop/Webserv";
+            servers[i].routeMap[""].directoryListing = false;
+            servers[i].routeMap[""].defaultFile.push_back("index.html");
+            servers[i].routeMap[""].cgiPath = "/Users/nmunir/Desktop/Webserv";
+            servers[i].routeMap[""].uploadDir = "/Users/nmunir/Desktop/Webserv";
+            servers[i].routeMap[""].redirect = "/";
+        }
+    }
+
+}
+
+void Parser::reset()
+{
     serverConfig.listen.clear();
-    serverConfig.serverName.push_back("localhost");
-    serverConfig.errorPages["400"] = "/Users/nmunir/Desktop/Webserv/error.html";
-    serverConfig.errorPages["404"] = "/Users/nmunir/Desktop/Webserv/error.html";
-    serverConfig.errorPages["500"] = "/Users/nmunir/Desktop/Webserv/error.html";
-    serverConfig.clientBodySizeLimit = "1";
+    serverConfig.serverName.clear();
+    serverConfig.errorPages.clear();
+    serverConfig.clientBodySizeLimit = "";
     serverConfig.routeMap.clear();
-    routeConfig.methods.push_back("GET");
-    routeConfig.root = "/Users/nmunir/Desktop/Webserv";
+    
+    serverConfig.routeMap.clear();
+    routeConfig.methods.clear();
+    routeConfig.redirect = "";
+    routeConfig.root = "";
     routeConfig.directoryListing = false;
-    routeConfig.defaultFile.push_back("index.html");
-    routeConfig.cgiPath = "/Users/nmunir/Desktop/Webserv";
-    routeConfig.uploadDir = "/Users/nmunir/Desktop/Webserv";
-    routeConfig.redirect = "/";
+    routeConfig.defaultFile.clear();
+    routeConfig.cgiPath = "";
+    routeConfig.uploadDir = "";
+    routeConfig.redirect = "";
     serverConfig.routeMap[""] = routeConfig;
 }
 
@@ -256,8 +301,10 @@ Parser::Parser(const std::string configFile)
     tokanize(ss);
     if (tokens.empty())
         throw std::runtime_error("Error: invalid configuration file :(");
-    setDefault();
+    // setDefault();
+    reset();
     parseBlocks();
+    setDefault();
     if (servers.empty())
         throw std::runtime_error("Error: invalid configuration file :(");
 }

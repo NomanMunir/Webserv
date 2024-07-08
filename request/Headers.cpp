@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 11:20:23 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/06 12:03:25 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/08 14:18:33 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,9 +134,16 @@ void Headers::parseHeader(int clientSocket)
 		std::string value = trim(line.substr(pos + 1));
 		if (key == "Host")
 		{
-			pos = value.find(':');
-		if (pos != std::string::npos)
-			value = trim(value.substr(0, pos));
+			std::vector<std::string> tokens = split(value, ':');
+			if (tokens.size() == 2)
+			{
+				if (!validateNumber("listen", tokens[1]))
+					throw std::runtime_error("5. 400 (Bad Request) response and close the connection");
+				headers["Port"] = tokens[1];
+				value = tokens[0];
+			}
+			else
+				headers["Port"] = "80";
 		}
 		if (key.empty() || value.empty())
 			throw std::runtime_error("5. 400 (Bad Request) response and close the connection");
