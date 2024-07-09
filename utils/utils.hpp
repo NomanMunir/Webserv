@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:46:20 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/06 11:45:54 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/09 12:14:18 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@
 struct ServerConfig;
 
 std::string trim(const std::string &s);
+std::string trimChar(const std::string s, char c);
 std::vector<std::string> split(const std::string &s, char delimiter);
 void isFile(const std::string &path);
 bool isFile(std::string &path);

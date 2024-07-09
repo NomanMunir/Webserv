@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 15:22:38 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/08 17:29:59 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/09 17:58:04 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,16 +65,18 @@ int Response::checkType(std::string &path, RouteConfig &targetRoute)
 		return (1);
 	else if (S_ISREG(info.st_mode))
 		return (2);
+	return (0);
 }
 
-bool handleDirectory(std::string &fullPath, std::string &path, RouteConfig &targetRoute)
+bool Response::handleDirectory(std::string &fullPath, std::string &path, RouteConfig &targetRoute)
 {
 	for (size_t i = 0; i < targetRoute.defaultFile.size(); i++)
 	{
-		std::string newPath = path + "/" + targetRoute.defaultFile[i];
+		std::string newPath = fullPath + targetRoute.defaultFile[i];
+		std::cout << "NewPath : " << newPath << std::endl;
 		if (isFile(newPath))
 		{
-			path = newPath;
+			fullPath = newPath;
 			return (true);
 		}
 	}
@@ -84,7 +86,11 @@ bool handleDirectory(std::string &fullPath, std::string &path, RouteConfig &targ
 		response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 	}
 	else
+	{
+		std::cout << "error 403 Forbidden" << std::endl;
 		response404();
+	}
+	return (false);
 }
 ServerConfig Response::chooseServer(Request &request, Parser &configFile)
 {
@@ -118,45 +124,56 @@ ServerConfig Response::chooseServer(Request &request, Parser &configFile)
 	return *targetServer;
 }
 
+std::string findMatch(std::string &path, std::map<std::string, RouteConfig> routes)
+{
+	std::map<std::string, RouteConfig>::iterator it = routes.begin();
+	for (; it != routes.end(); it++)
+	{
+		std::string route =  trimChar(it->first, '/');
+		if (path == route)
+			return it->first;
+	}
+	if (it == routes.end())
+		return "";
+	return "";
+}
+
 RouteConfig Response::chooseRoute(std::string path, ServerConfig &server)
 {
 	std::map<std::string, RouteConfig> routes = server.routeMap;
 	RouteConfig targetRoute;
-	std::map<std::string, RouteConfig>::iterator it = routes.begin();
-	for (; it != routes.end(); it++)
+	std::vector<std::string> splitPath = split(path, '/');
+	// std::cout << "splitPath size : " << splitPath.size() << std::endl;
+	for (size_t i = 0; i < splitPath.size(); i++)
 	{
-		if (path.find(it->first) == 0)
+		// std::cout << " i : " << i << " splitPath : " << splitPath[i] << std::endl;
+		path = trimChar(path, '/');
+		// std::cout << "path : " << path << std::endl;
+		std::string route = findMatch(path, routes);
+		if (route != "")
 		{
-			targetRoute = it->second;
+			// std::cout << "what is route : " << route << std::endl;
+			targetRoute = routes[route];
 			break;
 		}
+		path = path.substr(0, path.find_last_of('/'));
 	}
-		if (it == routes.end())
-		{
-			response404();
-			throw std::runtime_error("Error: Route not found");
-		}
 	return targetRoute;
 }
 
-bool checkEndingSlash(std::string &fullPath, std::string &path)
+bool checkEndingSlash(std::string &fullPath)
 {
 	if (fullPath[fullPath.size() - 1] != '/')
 		return false;
 	return true;
 }
-void Response::handleGET(bool isGet, Request &request, Parser &configFile)
+void Response::handleGET(bool isGet, RouteConfig &targetRoute, std::string &path)
 {
 	if (isGet)
 	{
-		std::string path = request.getHeaders().getValue("uri");
-		// std::cout << "RequestHost : " << requestHost << std::endl;
-		// std::cout << "RequestUri : " << path << std::endl;
-		ServerConfig targetServer = chooseServer(request, configFile);
-		RouteConfig targetRoute = chooseRoute(path, targetServer);
 		std::string fullPath = targetRoute.root + path;
 
-		std::cout << "FullPath : " << fullPath << std::endl;
+		// std::cout << "FullPath : " << fullPath << std::endl;
 		int type = checkType(fullPath, targetRoute);
 		if (type == 2)
 		{
@@ -168,34 +185,66 @@ void Response::handleGET(bool isGet, Request &request, Parser &configFile)
 		}
 		else if (type == 1)
 		{
-			if (!checkEndingSlash(fullPath, path))
-			{
+			if (!checkEndingSlash(fullPath))
 				response = "HTTP/1.1 301 OK\r\nContent-Type: text/html\r\nContent-Length: 6 \r\n\r\n hello\n";
-				std::cout << "end: " << fullPath[fullPath.size() - 1] << std::endl;
-			}
 			else
-				handleDirectory(fullPath, path, targetRoute);
+			{
+				if(handleDirectory(fullPath, path, targetRoute))
+				{
+					std::ifstream file(fullPath.c_str());
+					std::stringstream buffer;
+					buffer << file.rdbuf();
+					std::string body = buffer.str();
+					response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
+				}
+				
+			}
 		}
 		else if (type == 0)
 			response404();
 	}
 }
 
+void Response::handlePOST(bool isPost, RouteConfig &targetRoute, std::string &path, Body &body)
+{
+	if (isPost)
+	{
+		std::string fullPath = targetRoute.root + path;
+		int type = checkType(fullPath, targetRoute);
+		if (type == 2)
+		{
+			std::ofstream file(fullPath.c_str());
+			file << body.getBody();
+			file.close();
+			response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: 6 \r\n\r\n hello\n";
+		}
+		else if (type == 1)
+		{
+			response404();
+		}
+		else if (type == 0)
+			response404();
+	}
+}
+
+
 void Response::handleResponse(Request &request, Parser &configFile)
 {
 	std::string method = request.getHeaders().getValue("method");
-	std::string path = request.getHeaders().getValue("uri");
+	std::string uri = request.getHeaders().getValue("uri");
 	std::string requestHost = request.getHeaders().getValue("Host");
+	Body body = request.getBody();
 	ServerConfig targetServer = chooseServer(request, configFile);
-	RouteConfig targetRoute = chooseRoute(path, targetServer);
+	RouteConfig targetRoute = chooseRoute(uri, targetServer);
+	std::cout << "targetRoute : " << targetRoute.root << std::endl;
 	if (!myFind(targetRoute.methods, method))
 	{
-		std::cout << "error 405 Method Not Allowed" << std::endl;
+		std::cout << "error 403 Forbidden" << std::endl;
 		response404();
 		return;
 	}
-	handleGET(method == "GET", request, configFile);
-	// handlePOST(method == "POST" ? true : false, request, configFile);
+	handleGET(method == "GET", targetRoute, uri);
+	handlePOST(method == "POST", targetRoute, uri, body);
 }
 
 Response::Response(Request &request, Parser &configFile)
@@ -203,6 +252,12 @@ Response::Response(Request &request, Parser &configFile)
 	handleResponse(request, configFile);
 }
 
+Response::Response(std::string errorCode, ServerConfig &server)
+{
+	findErrorPage(errorCode, server.errorPages);
+	server.errorPages[errorCode];
+	
+}
 Response::~Response() { }
 
 void Response::sendResponse(int clientSocket)

@@ -7,8 +7,13 @@ server {
     server_name example.com www.example.com;
     
     # Default error pages
+    error_page 400 /errors/400.html;
+    error_page 403 /errors/403.html;
     error_page 404 /errors/404.html;
+    error_page 413 /errors/413.html;
+    error_page 414 /errors/414.html;
     error_page 500 /errors/500.html;
+    error_page 501 /errors/501.html;
 
     # Limit client body size
     client_max_body_size 1m;

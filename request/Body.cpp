@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 14:11:50 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/07 13:41:54 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/09 17:09:04 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ Body &Body::operator=(const Body &b)
 	return *this;
 }
 
+
 void Body::printBody()
 {
 	std::cout << "Body: " << body << std::endl;
@@ -53,7 +54,6 @@ void Body::parseBody(int clientSocket, Headers &headers, Parser &parser)
             if (std::atof(length.c_str()) == body.size())
                 break;
         }
-        std::cout << "Body: " << body << std::endl;
     }
     else if (!headers.getValue("Transfer-Encoding").empty())
     {
@@ -61,4 +61,4 @@ void Body::parseBody(int clientSocket, Headers &headers, Parser &parser)
     }
 }
 
-
+std::string Body::getBody() { return body; }

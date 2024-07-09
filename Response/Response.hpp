@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 15:21:58 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/08 17:18:02 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/09 17:57:46 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ class Response
 {
 	public:
 		Response(Request &request, Parser &configFile);
+		Response(std::string errorCode, ServerConfig &server);
 		~Response();
 		std::string getResponse();
 		void sendResponse(int clinetSocket);
@@ -32,8 +33,10 @@ class Response
 		
 		void response404();
 		void handleResponse(Request &request, Parser &configFile);
-		void handleGET(bool isGet, Request &request, Parser &configFile);
+		void handleGET(bool isGet, RouteConfig &targetRoute, std::string &path);
+		void handlePOST(bool isPost, RouteConfig &targetRoute, std::string &path, Body &body);
 		int checkType(std::string &path, RouteConfig &targetRoute);
+		bool handleDirectory(std::string &fullPath, std::string &path, RouteConfig &targetRoute);
 		ServerConfig chooseServer(Request &request, Parser &configFile);
 		RouteConfig chooseRoute(std::string path, ServerConfig &server);
 

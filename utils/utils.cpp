@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:46:04 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/08 17:13:36 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/09 12:14:25 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,13 @@ std::string trim(const std::string &s)
 {
     size_t start = s.find_first_not_of(" \t\r\n");
     size_t end = s.find_last_not_of(" \t\r\n");
+    return (start == std::string::npos) ? "" : s.substr(start, end - start + 1);
+}
+
+std::string trimChar(const std::string s, char c)
+{
+    size_t start = s.find_first_not_of(c);
+    size_t end = s.find_last_not_of(c);
     return (start == std::string::npos) ? "" : s.substr(start, end - start + 1);
 }
 
