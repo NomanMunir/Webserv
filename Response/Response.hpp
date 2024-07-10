@@ -6,39 +6,49 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 15:21:58 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/09 17:57:46 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/10 14:29:05 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#pragma once
 
 #ifndef RESPONSE_HPP
 #define RESPONSE_HPP
 
-#include "../request/Request.hpp"
 #include "../parsing/Parser.hpp"
 #include <dirent.h>
 #include <cstring>
+#include "../request/Request.hpp"
 
 class Response
 {
 	public:
-		Response(Request &request, Parser &configFile);
-		Response(std::string errorCode, ServerConfig &server);
+		Response(int clientFd);
 		~Response();
 		std::string getResponse();
-		void sendResponse(int clinetSocket);
 		void printResponse();
+		void setTargetServer(ServerConfig server);
+		void setTargetRoute(RouteConfig route);
+		ServerConfig getTargetServer();
+		RouteConfig getTargetRoute();
+		void sendError(std::string errorCode);
+		void handleResponse(Request &request);
+
 	private:
 		std::map<int, std::string> statusCodes;
 		std::string response;
+		int clientSocket;
+		ServerConfig targetServer;
+		RouteConfig targetRoute;
 		
 		void response404();
-		void handleResponse(Request &request, Parser &configFile);
+		void defaultErrorPage(std::string errorCode);
 		void handleGET(bool isGet, RouteConfig &targetRoute, std::string &path);
 		void handlePOST(bool isPost, RouteConfig &targetRoute, std::string &path, Body &body);
+		void findErrorPage(std::string errorCode, std::map<std::string, std::string> errorPages);
+		
 		int checkType(std::string &path, RouteConfig &targetRoute);
 		bool handleDirectory(std::string &fullPath, std::string &path, RouteConfig &targetRoute);
-		ServerConfig chooseServer(Request &request, Parser &configFile);
-		RouteConfig chooseRoute(std::string path, ServerConfig &server);
 
 };
 

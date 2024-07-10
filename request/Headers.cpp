@@ -6,12 +6,12 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 11:20:23 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/08 14:18:33 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/10 12:49:34 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Headers.hpp"
-
+#include "../Response/Response.hpp"
 
 Headers::Headers(const Headers &h)
 {
@@ -36,18 +36,18 @@ void Headers::printHeaders()
 	}
 }
 
-void Headers::parseRequestURI()
+void Headers::parseRequestURI(Response &structResponse)
 {
 	std::string host = headers["Host"];
 	if (host.empty())
-		throw std::runtime_error("11 400 (Bad Request) response and close the connection");
+		structResponse.sendError("400");
 	if (host.find("www.") != 0)
 		host = "www." + host;
 	std::string uri = headers["uri"];
 	if (uri.find("http://") == 0) // Absolute URI
 	{
 		if ("http://" + host != uri)
-			throw std::runtime_error("9 400 (Bad Request) response and close the connection");
+			structResponse.sendError("400");
 	}
 	else if (headers["method"] == "OPTIONS" && uri == "*") // Asterisk-form URI
 	{
@@ -59,7 +59,7 @@ void Headers::parseRequestURI()
 		if (tokens[0].find("www.") != 0)
 			tokens[0] = "www." + tokens[0];
 		if (tokens.size() != 2 || !validateNumber("listen", tokens[1]) || tokens[0] != host)
-			throw std::runtime_error("12 400 (Bad Request) response and close the connection");
+			structResponse.sendError("400");
 		// headers["uri"] = "http://" + host + ":" + tokens[1];
 	}
 	else if (uri[0] == '/') // Origin-form URI
@@ -67,10 +67,10 @@ void Headers::parseRequestURI()
 		// headers["uri"] = "http://" + host + uri;
 	}
 	else
-		throw std::runtime_error("10 400 (Bad Request) response and close the connection");
+		structResponse.sendError("400");
 }
 
-void Headers::parseFirstLine()
+void Headers::parseFirstLine(Response &structResponse)
 {
     std::istringstream requestStream(firstLine);
     std::string method;
@@ -79,37 +79,24 @@ void Headers::parseFirstLine()
     std::string validMethods[] = {"GET", "HEAD", "POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE", "PATCH"};
 
 	if (firstLine.size() > 8192)
-		throw std::runtime_error("5 501 (Not Implemented)");
+		structResponse.sendError("501");
     std::vector<std::string> tokens = split(trim(firstLine), ' ');
 	if (tokens.size() != 3)
-		throw std::runtime_error("6 400 (Bad Request) response and close the connection");
+		structResponse.sendError("400");
 	method = tokens[0];
 	uri = tokens[1];
 	version = tokens[2];
 	if (uri.size() > 2048)
-		throw std::runtime_error("7 414 (URI Too Long) status code");
+		structResponse.sendError("414");
 	if (std::find(std::begin(validMethods), std::end(validMethods), method) == std::end(validMethods) || version != "HTTP/1.1")
-		throw std::runtime_error("8 501 (Not Implemented)");	
+		structResponse.sendError("501");
     headers["method"] = method;
     headers["version"] = version;
     headers["uri"] = uri;
 }
 
-void Headers::parseHeader(int clientSocket)
+void Headers::parseHeader(Response &structResponse, std::string &request)
 {
-	std::string request;
-    char buffer;
-
-	while (read(clientSocket, &buffer, 1) > 0)
-    {
-		if (!isascii(buffer))
-			throw std::runtime_error("Non-ASCII character found in request header.");
-        request.append(1, buffer);
-        if (request.find("\r\n\r\n") != std::string::npos)
-            break;
-    }
-	if (request.substr(request.size() - 4) != "\r\n\r\n")
-		throw std::runtime_error("0. 400 (Bad Request) response and close the connection");
 	request = request.substr(0, request.size() - 2);
 	std::string line;
 	std::istringstream iss(request);
@@ -118,18 +105,18 @@ void Headers::parseHeader(int clientSocket)
 		if (!trim(firstLine).empty())
 			break;
 	}
-	parseFirstLine();
+	parseFirstLine(structResponse);
 	while (std::getline(iss, line, '\n'))
 	{
 		if (line.empty() || isspace(line[0]))
-			throw std::runtime_error("1. 400 (Bad Request) response and close the connection");
+			structResponse.sendError("400");
 		if (line.find('\r') != line.size() - 1)
-			throw std::runtime_error("2. 400 (Bad Request) response and close the connection");
+			structResponse.sendError("400");
 		size_t pos = line.find(":");
 		if (pos == std::string::npos)
-			throw std::runtime_error("3. 400 (Bad Request) response and close the connection");
+			structResponse.sendError("400");
 		if (isspace(line[pos - 1]))
-			throw std::runtime_error("4. 400 (Bad Request) response and close the connection");
+			structResponse.sendError("400");
 		std::string key = trim(line.substr(0, pos));
 		std::string value = trim(line.substr(pos + 1));
 		if (key == "Host")
@@ -138,7 +125,7 @@ void Headers::parseHeader(int clientSocket)
 			if (tokens.size() == 2)
 			{
 				if (!validateNumber("listen", tokens[1]))
-					throw std::runtime_error("5. 400 (Bad Request) response and close the connection");
+					structResponse.sendError("400");
 				headers["Port"] = tokens[1];
 				value = tokens[0];
 			}
@@ -146,15 +133,15 @@ void Headers::parseHeader(int clientSocket)
 				headers["Port"] = "80";
 		}
 		if (key.empty() || value.empty())
-			throw std::runtime_error("5. 400 (Bad Request) response and close the connection");
+			structResponse.sendError("400");
 		headers[key] = value;
 	}
-	parseRequestURI();
+	parseRequestURI(structResponse);
 }
 
-Headers::Headers(int clientSocket)
+Headers::Headers(Response &structResponse, std::string &request)
 {
-	parseHeader(clientSocket);
+	parseHeader(structResponse, request);
 }
 
 Headers::~Headers() { }

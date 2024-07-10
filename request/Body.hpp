@@ -6,22 +6,22 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 14:10:31 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/09 17:08:41 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/10 12:47:35 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#pragma once
 
 #ifndef BODY_HPP
 #define BODY_HPP
 
 #include "../utils/utils.hpp"
 #include "Headers.hpp"
-#include "Response.hpp"
 #include <iostream>
 #include <vector>
 #include <map>
 #include <string>
 
-// class Headers;
 class Body
 {
 	public:

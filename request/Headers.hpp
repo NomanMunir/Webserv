@@ -6,9 +6,11 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 11:20:28 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/04 10:55:25 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/10 12:49:41 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#pragma once
 
 #ifndef HEADERS_HPP
 #define HEADERS_HPP
@@ -20,12 +22,11 @@
 #include <map>
 #include <string>
 
-
-
+class Response;
 class Headers
 {
 	public:
-		Headers(int clientSocket);
+		Headers(Response &structResponse, std::string &request);
 		Headers(){};
 		~Headers();
 		Headers(const Headers &h);
@@ -36,9 +37,9 @@ class Headers
 	private:
 		std::map<std::string, std::string> headers;
 		std::string firstLine;
-		void parseHeader(int clientSocket);
-		void parseFirstLine();
-		void parseRequestURI();
+		void parseHeader(Response &structResponse, std::string &request);
+		void parseFirstLine(Response &structResponse);
+		void parseRequestURI(Response &structResponse);
 };
 
 #endif // HEADERS_HPP

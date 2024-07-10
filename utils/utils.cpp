@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:46:04 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/09 12:14:25 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/10 14:19:54 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,4 +220,91 @@ void printServers(std::vector<ServerConfig> servers)
             std::cout << std::endl;
         }
     }
+}
+
+void responseClient(int fd, std::string response)
+{
+    write(fd, response.c_str(), response.size());
+}
+
+std::string getErrorMsg(std::string errorCode)
+{
+	std::map<std::string, std::string> errorMsgs;
+
+	// 1xx Informational
+	errorMsgs["100"] = "Continue";
+	errorMsgs["101"] = "Switching Protocols";
+	errorMsgs["102"] = "Processing";
+	errorMsgs["103"] = "Early Hints";
+
+	// 2xx Success
+	errorMsgs["200"] = "OK";
+	errorMsgs["201"] = "Created";
+	errorMsgs["202"] = "Accepted";
+	errorMsgs["203"] = "Non-Authoritative Information";
+	errorMsgs["204"] = "No Content";
+	errorMsgs["205"] = "Reset Content";
+	errorMsgs["206"] = "Partial Content";
+	errorMsgs["207"] = "Multi-Status";
+	errorMsgs["208"] = "Already Reported";
+	errorMsgs["226"] = "IM Used";
+
+	// 3xx Redirection
+	errorMsgs["300"] = "Multiple Choices";
+	errorMsgs["301"] = "Moved Permanently";
+	errorMsgs["302"] = "Found";
+	errorMsgs["303"] = "See Other";
+	errorMsgs["304"] = "Not Modified";
+	errorMsgs["305"] = "Use Proxy";
+	errorMsgs["306"] = "(Unused)";
+	errorMsgs["307"] = "Temporary Redirect";
+	errorMsgs["308"] = "Permanent Redirect";
+
+	// 4xx Client Error
+	errorMsgs["400"] = "Bad Request";
+	errorMsgs["401"] = "Unauthorized";
+	errorMsgs["402"] = "Payment Required";
+	errorMsgs["403"] = "Forbidden";
+	errorMsgs["404"] = "Not Found";
+	errorMsgs["405"] = "Method Not Allowed";
+	errorMsgs["406"] = "Not Acceptable";
+	errorMsgs["407"] = "Proxy Authentication Required";
+	errorMsgs["408"] = "Request Timeout";
+	errorMsgs["409"] = "Conflict";
+	errorMsgs["410"] = "Gone";
+	errorMsgs["411"] = "Length Required";
+	errorMsgs["412"] = "Precondition Failed";
+	errorMsgs["413"] = "Payload Too Large";
+	errorMsgs["414"] = "URI Too Long";
+	errorMsgs["415"] = "Unsupported Media Type";
+	errorMsgs["416"] = "Range Not Satisfiable";
+	errorMsgs["417"] = "Expectation Failed";
+	errorMsgs["418"] = "I'm a teapot";
+	errorMsgs["421"] = "Misdirected Request";
+	errorMsgs["422"] = "Unprocessable Entity";
+	errorMsgs["423"] = "Locked";
+	errorMsgs["424"] = "Failed Dependency";
+	errorMsgs["425"] = "Too Early";
+	errorMsgs["426"] = "Upgrade Required";
+	errorMsgs["428"] = "Precondition Required";
+	errorMsgs["429"] = "Too Many Requests";
+	errorMsgs["431"] = "Request Header Fields Too Large";
+	errorMsgs["451"] = "Unavailable For Legal Reasons";
+
+	// 5xx Server Error
+	errorMsgs["500"] = "Internal Server Error";
+	errorMsgs["501"] = "Not Implemented";
+	errorMsgs["502"] = "Bad Gateway";
+	errorMsgs["503"] = "Service Unavailable";
+	errorMsgs["504"] = "Gateway Timeout";
+	errorMsgs["505"] = "HTTP Version Not Supported";
+	errorMsgs["506"] = "Variant Also Negotiates";
+	errorMsgs["507"] = "Insufficient Storage";
+	errorMsgs["508"] = "Loop Detected";
+	errorMsgs["510"] = "Not Extended";
+	errorMsgs["511"] = "Network Authentication Required";
+
+    if (errorMsgs.empty())
+        return "";
+    return (errorMsgs[errorCode]);
 }

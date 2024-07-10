@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:46:20 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/09 12:14:18 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/10 10:05:24 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,5 +44,7 @@ bool validateNumber(std::string key, std::string value);
 bool myFind(std::vector<std::string> &v, std::string &s);
 void initializeVector(std::vector<std::string> &v, const std::string s[], size_t size);
 void initializeVector(std::vector<std::string> &v, std::string s[], size_t size);
+std::string getErrorMsg(std::string errorCode);
+void responseClient(int fd, std::string response);
 
 #endif // UTILS_HPP	

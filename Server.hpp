@@ -6,15 +6,13 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 14:41:08 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/06 11:08:15 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/10 13:09:17 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-#include "parsing/Parser.hpp"
-#include "parsing/Validation.hpp"
 #include <string>
 #include <vector>
 #include <netinet/in.h>
@@ -31,6 +29,10 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <cerrno>
+
+#include "utils/utils.hpp"
+#include "parsing/Parser.hpp"
+#include "parsing/Validation.hpp"
 #include "request/Request.hpp"
 #include "Response/Response.hpp"
 
@@ -52,7 +54,6 @@ private:
 
     void initSocket();
     void handleConnections(Parser &configFile);
-    void sendResponse(int clientSocket, const std::string &response);
     std::string generateHttpResponse(const std::string &filepath);
     void storeFirstLine(const std::string &request);
     void storeHeaders(const std::string &request);

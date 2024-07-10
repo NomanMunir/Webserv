@@ -6,12 +6,11 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 15:22:38 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/09 17:58:04 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/10 14:35:59 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Response.hpp"
-
 
 void Response::response404()
 {
@@ -92,74 +91,6 @@ bool Response::handleDirectory(std::string &fullPath, std::string &path, RouteCo
 	}
 	return (false);
 }
-ServerConfig Response::chooseServer(Request &request, Parser &configFile)
-{
-	size_t count = 0;
-	std::vector<ServerConfig>::iterator targetServer;
-	std::string requestHost = request.getHeaders().getValue("Host");
-	std::string requestPort = request.getHeaders().getValue("Port");
-	std::vector<ServerConfig> servers = configFile.getServers();
-	std::vector<ServerConfig>::iterator it = servers.begin();
-
-	for (; it != servers.end(); it++)
-	{
-		std::vector<std::vector<std::string> > ports = it->listen;
-
-		for (size_t i = 0; i < ports.size(); i++)
-		{
-			if (ports[i][1] == requestPort)
-				break;
-			else
-				continue;
-		}
-		std::vector<std::string> serverNames = it->serverName;
-		if (myFind(serverNames, requestHost))
-		{
-			targetServer = it;
-			count++;
-		}
-	}
-	if (count != 1)
-		return servers[0];
-	return *targetServer;
-}
-
-std::string findMatch(std::string &path, std::map<std::string, RouteConfig> routes)
-{
-	std::map<std::string, RouteConfig>::iterator it = routes.begin();
-	for (; it != routes.end(); it++)
-	{
-		std::string route =  trimChar(it->first, '/');
-		if (path == route)
-			return it->first;
-	}
-	if (it == routes.end())
-		return "";
-	return "";
-}
-
-RouteConfig Response::chooseRoute(std::string path, ServerConfig &server)
-{
-	std::map<std::string, RouteConfig> routes = server.routeMap;
-	RouteConfig targetRoute;
-	std::vector<std::string> splitPath = split(path, '/');
-	// std::cout << "splitPath size : " << splitPath.size() << std::endl;
-	for (size_t i = 0; i < splitPath.size(); i++)
-	{
-		// std::cout << " i : " << i << " splitPath : " << splitPath[i] << std::endl;
-		path = trimChar(path, '/');
-		// std::cout << "path : " << path << std::endl;
-		std::string route = findMatch(path, routes);
-		if (route != "")
-		{
-			// std::cout << "what is route : " << route << std::endl;
-			targetRoute = routes[route];
-			break;
-		}
-		path = path.substr(0, path.find_last_of('/'));
-	}
-	return targetRoute;
-}
 
 bool checkEndingSlash(std::string &fullPath)
 {
@@ -227,46 +158,98 @@ void Response::handlePOST(bool isPost, RouteConfig &targetRoute, std::string &pa
 	}
 }
 
-
-void Response::handleResponse(Request &request, Parser &configFile)
+void Response::handleResponse(Request &request)
 {
 	std::string method = request.getHeaders().getValue("method");
 	std::string uri = request.getHeaders().getValue("uri");
-	std::string requestHost = request.getHeaders().getValue("Host");
-	Body body = request.getBody();
-	ServerConfig targetServer = chooseServer(request, configFile);
-	RouteConfig targetRoute = chooseRoute(uri, targetServer);
-	std::cout << "targetRoute : " << targetRoute.root << std::endl;
-	if (!myFind(targetRoute.methods, method))
+	if (!myFind(this->targetRoute.methods, method))
+		sendError("403");
+		
+	handleGET(method == "GET", this->targetRoute, uri);
+	// handlePOST(method == "POST", targetRoute, uri, body);
+}
+
+void Response::defaultErrorPage(std::string errorCode)
+{
+	std::cout << "error msg : " << getErrorMsg(errorCode) << std::endl;
+    std::string body = "<html><head><title>Error " + errorCode + " " + getErrorMsg(errorCode) + "</title></head>"
+                       "<body style='background-color:lime; color:purple; font-family:Comic Sans MS;'>"
+                       "<center><h1 style='font-size:50px; border:5px dotted red;'>Oops! Error " + errorCode + " " + getErrorMsg(errorCode) +"</h1></center>"
+                       "<center><p style='font-size:30px; border:3px dashed orange;'>Something went terribly wrong!</p></center>"
+                       "<marquee behavior='scroll' direction='left' style='font-size:20px; color:blue;'>This is an ugly error page!</marquee>"
+                       "</body></html>";
+    response = "HTTP/1.1 " + errorCode + " " + getErrorMsg(errorCode) + "\r\n"
+               "Content-Type: text/html\r\n"
+               "Content-Length: " + std::to_string(body.size()) + "\r\n\r\n"
+               + body;
+}
+
+
+void Response::findErrorPage(std::string errorCode, std::map<std::string, std::string> errorPages)
+{
+	std::map<std::string, std::string>::iterator it = errorPages.find(errorCode);
+	if (it != errorPages.end())
 	{
-		std::cout << "error 403 Forbidden" << std::endl;
-		response404();
-		return;
+		std::ifstream file("." + it->second);
+		std::stringstream buffer;
+		buffer << file.rdbuf();
+		std::string body = buffer.str();
+		response = "HTTP/1.1 " + errorCode + " " + getErrorMsg(errorCode) + "\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 	}
-	handleGET(method == "GET", targetRoute, uri);
-	handlePOST(method == "POST", targetRoute, uri, body);
+	else
+		defaultErrorPage(errorCode);
 }
 
-Response::Response(Request &request, Parser &configFile)
+void Response::sendError(std::string errorCode)
 {
-	handleResponse(request, configFile);
+	std::vector<std::string> closeCodes;
+	closeCodes.push_back("400");
+	closeCodes.push_back("403");
+	closeCodes.push_back("404");
+	closeCodes.push_back("405");
+	closeCodes.push_back("413");
+	closeCodes.push_back("414");
+	closeCodes.push_back("500");
+	closeCodes.push_back("501");
+
+	std::map<std::string, std::string> errorPages = targetServer.errorPages;
+	findErrorPage(errorCode, errorPages);
+	responseClient(this->clientSocket, this->response);
+	if (myFind(closeCodes, errorCode))
+	{
+		close(this->clientSocket);
+		throw std::runtime_error("Error: " + errorCode);
+	}
 }
 
-Response::Response(std::string errorCode, ServerConfig &server)
-{
-	findErrorPage(errorCode, server.errorPages);
-	server.errorPages[errorCode];
-	
-}
+
+Response::Response(int clientFd) : clientSocket(clientFd) { }
+
 Response::~Response() { }
 
-void Response::sendResponse(int clientSocket)
-{
-	write(clientSocket, response.c_str(), response.size());
-}
 std::string Response::getResponse()
 {
-	return response;
+	return (response);
+}
+
+void Response::setTargetServer(ServerConfig server)
+{
+	targetServer = server;
+}
+
+void Response::setTargetRoute(RouteConfig route)
+{
+	targetRoute = route;
+}
+
+ServerConfig Response::getTargetServer()
+{
+	return targetServer;
+}
+
+RouteConfig Response::getTargetRoute()
+{
+	return targetRoute;
 }
 
 void Response::printResponse()
