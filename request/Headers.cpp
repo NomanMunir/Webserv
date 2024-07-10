@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 11:20:23 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/10 12:49:34 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/10 17:23:37 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ Headers &Headers::operator=(const Headers &h)
 		return *this;
 	headers = h.headers;
 	firstLine = h.firstLine;
+	this->rawHeaders = h.rawHeaders;
 	return *this;
 }
 
@@ -95,9 +96,9 @@ void Headers::parseFirstLine(Response &structResponse)
     headers["uri"] = uri;
 }
 
-void Headers::parseHeader(Response &structResponse, std::string &request)
+void Headers::parseHeader(Response &structResponse)
 {
-	request = request.substr(0, request.size() - 2);
+	std::string request = rawHeaders.substr(0, rawHeaders.size() - 2);
 	std::string line;
 	std::istringstream iss(request);
 	while (std::getline(iss, firstLine, '\n'))
@@ -139,11 +140,24 @@ void Headers::parseHeader(Response &structResponse, std::string &request)
 	parseRequestURI(structResponse);
 }
 
-Headers::Headers(Response &structResponse, std::string &request)
+Headers::Headers(int clientSocket, Response &structResponse)
 {
-	parseHeader(structResponse, request);
+    char buffer;
+
+	while (read(clientSocket, &buffer, 1) > 0)
+    {
+		if (!isascii(buffer))
+			structResponse.sendError("400");
+        this->rawHeaders.append(1, buffer);
+        if (this->rawHeaders.find("\r\n\r\n") != std::string::npos)
+            break;
+    }
 }
 
+std::string Headers::getRawHeaders()
+{
+	return this->rawHeaders;
+}
 Headers::~Headers() { }
 
 std::string Headers::getValue(std::string key)

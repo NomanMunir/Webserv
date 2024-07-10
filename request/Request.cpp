@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:31:21 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/10 14:00:30 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/10 17:53:35 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,22 +80,11 @@ RouteConfig chooseRoute(std::string path, ServerConfig server)
 	return targetRoute;
 }
 
-void Request::handleRequest(int clientSocket, Parser &parser, Response &structResponse)
+void Request::findServer(Response &structResponse, Parser &parser)
 {
-	
-	std::string requestHeader;
-    char buffer;
 	std::string host;
 	std::string port;
-	
-	while (read(clientSocket, &buffer, 1) > 0)
-    {
-		if (!isascii(buffer))
-			throw std::runtime_error("Non-ASCII character found in request header.");
-        requestHeader.append(1, buffer);
-        if (requestHeader.find("\r\n\r\n") != std::string::npos)
-            break;
-    }
+	std::string requestHeader = this->headers.getRawHeaders();
 	std::string::size_type hostPos = requestHeader.find("Host: ");
 	if (hostPos != std::string::npos)
 	{
@@ -121,10 +110,39 @@ void Request::handleRequest(int clientSocket, Parser &parser, Response &structRe
 		structResponse.setTargetServer(parser.getServers()[0]);
 		structResponse.sendError("400");
 	}
+}
 
-	headers = Headers(structResponse, requestHeader);
+bool Request::isBodyExistRequest(Parser &parser, Response &structResponse)
+{
+	
+	std::string length = headers.getValue("Content-Length");
+	std::string encoding = headers.getValue("Transfer-Encoding");
+	if (length.empty() && encoding.empty())
+		return false;
+	if (!length.empty())
+	{
+		if (length.empty() || !validateNumber("Content-Length", length))
+			structResponse.sendError("411");
+		if (std::atof(length.c_str()) > std::atof(parser.getDirectives()["client_body_size"].c_str()))
+			structResponse.sendError("413");
+	}
+	if (!encoding.empty())
+	{
+		if (encoding != "chunked")
+			structResponse.sendError("411");
+	}
+	return true;
+}
+
+void Request::handleRequest(int clientSocket, Parser &parser, Response &structResponse)
+{
+
+	this->headers = Headers(clientSocket, structResponse);
+	this->findServer(structResponse, parser);
+	this->headers.parseHeader(structResponse);
 	structResponse.setTargetRoute(chooseRoute(headers.getValue("uri"), structResponse.getTargetServer()));
-	// body = Body(clientSocket, headers, parser);
+	if (isBodyExistRequest(parser, structResponse))
+		this->body = Body(clientSocket, headers.getValue("Content-Length"));
 }
 
 Request::Request(int clientSocket, Parser &parser, Response &structResponse)

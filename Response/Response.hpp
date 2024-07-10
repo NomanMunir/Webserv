@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 15:21:58 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/10 14:29:05 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/10 16:37:11 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ class Response
 		ServerConfig targetServer;
 		RouteConfig targetRoute;
 		
-		void response404();
 		void defaultErrorPage(std::string errorCode);
 		void handleGET(bool isGet, RouteConfig &targetRoute, std::string &path);
 		void handlePOST(bool isPost, RouteConfig &targetRoute, std::string &path, Body &body);

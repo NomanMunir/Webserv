@@ -6,23 +6,11 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 15:22:38 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/10 14:35:59 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/10 17:37:15 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Response.hpp"
-
-void Response::response404()
-{
-	std::ifstream file("errors/404.html");
-	std::string line;
-	std::string body;
-	while (std::getline(file, line))
-	{
-		body += line + "\n";
-	}
-	response = "HTTP/1.1 404 Not Found\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
-}
 
 std::string listDirectory(const std::string& dirPath, const std::string& uriPath)
 {
@@ -59,11 +47,21 @@ int Response::checkType(std::string &path, RouteConfig &targetRoute)
 {
 	struct stat info;
 	if (stat(path.c_str(), &info) != 0)
-		return (0);
+	{
+		switch (errno)
+        {
+        case EACCES:
+            this->sendError("403");
+        case ENOENT:
+            this->sendError("404");
+        default:
+			this->sendError("500");
+        }
+	}
+	if (S_ISREG(info.st_mode))
+		return (2);
 	else if (S_ISDIR(info.st_mode))
 		return (1);
-	else if (S_ISREG(info.st_mode))
-		return (2);
 	return (0);
 }
 
@@ -85,10 +83,7 @@ bool Response::handleDirectory(std::string &fullPath, std::string &path, RouteCo
 		response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 	}
 	else
-	{
-		std::cout << "error 403 Forbidden" << std::endl;
-		response404();
-	}
+		this->sendError("403");
 	return (false);
 }
 
@@ -103,8 +98,6 @@ void Response::handleGET(bool isGet, RouteConfig &targetRoute, std::string &path
 	if (isGet)
 	{
 		std::string fullPath = targetRoute.root + path;
-
-		// std::cout << "FullPath : " << fullPath << std::endl;
 		int type = checkType(fullPath, targetRoute);
 		if (type == 2)
 		{
@@ -117,7 +110,7 @@ void Response::handleGET(bool isGet, RouteConfig &targetRoute, std::string &path
 		else if (type == 1)
 		{
 			if (!checkEndingSlash(fullPath))
-				response = "HTTP/1.1 301 OK\r\nContent-Type: text/html\r\nContent-Length: 6 \r\n\r\n hello\n";
+				this->sendError("301");
 			else
 			{
 				if(handleDirectory(fullPath, path, targetRoute))
@@ -131,8 +124,6 @@ void Response::handleGET(bool isGet, RouteConfig &targetRoute, std::string &path
 				
 			}
 		}
-		else if (type == 0)
-			response404();
 	}
 }
 
@@ -149,12 +140,12 @@ void Response::handlePOST(bool isPost, RouteConfig &targetRoute, std::string &pa
 			file.close();
 			response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: 6 \r\n\r\n hello\n";
 		}
-		else if (type == 1)
-		{
-			response404();
-		}
-		else if (type == 0)
-			response404();
+		// else if (type == 1)
+		// {
+		// 	response404();
+		// }
+		// else if (type == 0)
+		// 	response404();
 	}
 }
 
@@ -171,7 +162,6 @@ void Response::handleResponse(Request &request)
 
 void Response::defaultErrorPage(std::string errorCode)
 {
-	std::cout << "error msg : " << getErrorMsg(errorCode) << std::endl;
     std::string body = "<html><head><title>Error " + errorCode + " " + getErrorMsg(errorCode) + "</title></head>"
                        "<body style='background-color:lime; color:purple; font-family:Comic Sans MS;'>"
                        "<center><h1 style='font-size:50px; border:5px dotted red;'>Oops! Error " + errorCode + " " + getErrorMsg(errorCode) +"</h1></center>"

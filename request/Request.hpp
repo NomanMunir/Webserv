@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:25:54 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/10 13:55:13 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/10 17:56:49 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,9 @@ class Request
 		Body getBody();
 	private:
 		void handleRequest(int clientSocket, Parser &parser, Response &structResponse);
+		void findServer(Response &structResponse, Parser &parser);
+		bool isBodyExistRequest(Parser &parser, Response &structResponse);
+
 
 		
 		std::string request;
