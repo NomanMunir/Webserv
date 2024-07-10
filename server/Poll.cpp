@@ -10,17 +10,24 @@ Poll::~Poll()
 {
 
 }
-void Poll::addSocket(int fd, short events) 
+bool Poll::addSocket(int fd, short events) 
 {
-pollfd pfd;
-pfd.fd = fd;
-pfd.events = events;
-socketsFd.push_back(pfd);
+    pollfd pfd;
+    bzero(&pfd, sizeof(pfd));
+    if(fd < 0)
+    {
+        perror("Error: Invalid file descriptor");
+        return false;
+    }
+    pfd.fd = fd;
+    pfd.events = events;
+    socketsFd.push_back(pfd);
+    return true;
 }
 
 int Poll::waitForEvents(int timeout) 
 {
-return poll(socketsFd.data(), socketsFd.size(), timeout);
+    return poll(socketsFd.data(), socketsFd.size(), timeout);
 }
 
 pollfd Poll::getEvent(int index) 

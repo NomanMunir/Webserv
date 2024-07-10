@@ -13,7 +13,7 @@ class Poll
         // Poll(std::vector<int> socket_fd);
         Poll();
         ~Poll();
-        void    addSocket(int fd, short events);
+        bool    addSocket(int fd, short events);
         int waitForEvents(int timeout = -1);
         pollfd getEvent(int index);
         void removeSocket(int index);

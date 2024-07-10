@@ -36,10 +36,11 @@ private:
     void storeFirstLine(const std::string &request);
     void storeHeaders(const std::string &request);
     void printHeaders();
-
+    void exeptNewConnection();
     // bool parseRequestLine(std::istringstream &stream);
     // bool parseHeaders(std::istringstream &stream);
     // void sendBadRequest();
+    // void prepareAndSendResponse(int client_fd);
 };
 
 #endif // SERVER_HPP
