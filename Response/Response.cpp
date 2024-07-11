@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 15:22:38 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/10 17:37:15 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/11 17:04:30 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,10 @@ int Response::checkType(std::string &path, RouteConfig &targetRoute)
 		switch (errno)
         {
         case EACCES:
+		{
+			std::cout << "Error: " << "Eacces" << std::endl;
             this->sendError("403");
+		}
         case ENOENT:
             this->sendError("404");
         default:
@@ -83,7 +86,11 @@ bool Response::handleDirectory(std::string &fullPath, std::string &path, RouteCo
 		response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 	}
 	else
+	{
+		std::cout << "Error: " << "Handle Directory" << std::endl;
+		
 		this->sendError("403");
+	}
 	return (false);
 }
 
@@ -93,11 +100,23 @@ bool checkEndingSlash(std::string &fullPath)
 		return false;
 	return true;
 }
+
+std::string makeFullPath(std::string rootPath, std::string path)
+{
+	if (rootPath.back() == '/')  
+		rootPath.pop_back();
+	if (path.front() == '/')
+		path.erase(0, 1);
+	std::string fullPath = rootPath + "/" + path;
+	return fullPath;
+}
+
 void Response::handleGET(bool isGet, RouteConfig &targetRoute, std::string &path)
 {
 	if (isGet)
 	{
-		std::string fullPath = targetRoute.root + path;
+		std::string fullPath = makeFullPath(targetRoute.root, path);
+		std::cout << "FullPath : " << fullPath << std::endl;
 		int type = checkType(fullPath, targetRoute);
 		if (type == 2)
 		{
@@ -153,6 +172,7 @@ void Response::handleResponse(Request &request)
 {
 	std::string method = request.getHeaders().getValue("method");
 	std::string uri = request.getHeaders().getValue("uri");
+
 	if (!myFind(this->targetRoute.methods, method))
 		sendError("403");
 		
@@ -207,8 +227,9 @@ void Response::sendError(std::string errorCode)
 	responseClient(this->clientSocket, this->response);
 	if (myFind(closeCodes, errorCode))
 	{
-		close(this->clientSocket);
-		throw std::runtime_error("Error: " + errorCode);
+		// close(this->clientSocket);
+		
+		// throw std::runtime_error("Error: " + errorCode);
 	}
 }
 

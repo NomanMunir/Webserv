@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 14:41:04 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/10 14:11:32 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/11 17:13:03 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,12 +66,17 @@ void Server::handleConnections(Parser &configFile)
     while (true)
     {
         int clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddr, &clientLen);
-        Response response(clientSocket);
-        Request request(clientSocket, configFile, response);
-        response.handleResponse(request);
-        responseClient(clientSocket, response.getResponse());
-        if (close(clientSocket) == -1)
-		    throw std::runtime_error("Error closing client socket.");
+        if (clientSocket < 0)
+        {
+            std::cout <<"Error accepting client connection" << std::endl;
+            exit(1);
+        }
+            Response response(clientSocket);
+            Request request(clientSocket, configFile, response);
+            response.handleResponse(request);
+            responseClient(clientSocket, response.getResponse());
+            if (close(clientSocket) == -1)
+                throw std::runtime_error("Error closing client socket.");
     }
 }
 

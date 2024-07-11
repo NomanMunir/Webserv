@@ -250,86 +250,86 @@ A status-line consists of the protocol version, a space (SP), the status code, a
       - If the response status is 200 OK, Message body is send.
       - If the status is 204 No Content or 304 Not Modified, the response must not include a message body.
     
-    ## 6.1 Transfer-Encoding:
-      - Specifies the transfer codings that have been (or will be) applied to the message body.
-      - Insure Proper framing and transmission of dynamically generated or unknown-length content through chunked encoding.
-      - Distinguish between transfer encodings (encodings applied during the transmission process, such as chunked transfer) and content encodings (encodings applied to the representation of the content itself, such as compression).
-      - Additional endcdings can be applied to the message body, and additional Transfer-Encoding fields can be added to the message.
-      - In HEAD request (request of the header only without the mesage content) and in 304 (Not Modified) response, which both dont send message content, transfer-Encoding MAY be sent.
-      - Server must not include transfer-encoding header in case of a status code of 1xx (Informational), 204 (No Content), and any 2xx (Successful) response to a CONNECT request
-      - If transfer-encoding is unknown to the server, server MUST respond with 501 (Not Implemented).
-        - Servers and clients that only support HTTP/1.0 typically do not handle Transfer-Encoding correctly and may treat messages as malformed if Transfer-Encoding is present.
-        - A client should not send a request with Transfer-Encoding unless it knows the server supports HTTP/1.1 or later.
-        - Similarly, a server should not send a response with Transfer-Encoding unless the client's request indicates HTTP/1.1 compatibility.
-        - If multiple encodings are applied, chunked encoding should be the final one to ensure proper framing.
-        - A server/client must not apply chunked encoding more than once to a message body.
+  ## 6.1 Transfer-Encoding:
+    - Specifies the transfer codings that have been (or will be) applied to the message body.
+    - Insure Proper framing and transmission of dynamically generated or unknown-length content through chunked encoding.
+    - Distinguish between transfer encodings (encodings applied during the transmission process, such as chunked transfer) and content encodings (encodings applied to the representation of the content itself, such as compression).
+    - Additional endcdings can be applied to the message body, and additional Transfer-Encoding fields can be added to the message.
+    - In HEAD request (request of the header only without the mesage content) and in 304 (Not Modified) response, which both dont send message content, transfer-Encoding MAY be sent.
+    - Server must not include transfer-encoding header in case of a status code of 1xx (Informational), 204 (No Content), and any 2xx (Successful) response to a CONNECT request
+    - If transfer-encoding is unknown to the server, server MUST respond with 501 (Not Implemented).
+      - Servers and clients that only support HTTP/1.0 typically do not handle Transfer-Encoding correctly and may treat messages as malformed if Transfer-Encoding is present.
+      - A client should not send a request with Transfer-Encoding unless it knows the server supports HTTP/1.1 or later.
+      - Similarly, a server should not send a response with Transfer-Encoding unless the client's request indicates HTTP/1.1 compatibility.
+      - If multiple encodings are applied, chunked encoding should be the final one to ensure proper framing.
+      - A server/client must not apply chunked encoding more than once to a message body.
 
-      - Security Considerations:
-      - Mixing Transfer-Encoding with Content-Length can lead to security vulnerabilities. Servers should handle such cases cautiously by closing the connection after responding or reject them outright.
-       Server/ client recieving HTTP 1.0 that has transfer-encoding header, it is considered faultly and the connection is closed afterward. 
+    - Security Considerations:
+    - Mixing Transfer-Encoding with Content-Length can lead to security vulnerabilities. Servers should handle such cases cautiously by closing the connection after responding or reject them outright.
+      Server/ client recieving HTTP 1.0 that has transfer-encoding header, it is considered faultly and the connection is closed afterward. 
 
-    ## 6.2 Content Length:
-      - The Content-Length header field indicates the size of the message body in octets.
-      - The Content-Length field value is a decimal number.
-      - Purpose:
-        1. Framing Information allowing the recipient to know where the body ends.
-        2. Size of the Representation: For messages that do not include a body (e.g., HEAD responses), the Content-Length can indicate the size of the selected message.
+  ## 6.2 Content Length:
+    - The Content-Length header field indicates the size of the message body in octets.
+    - The Content-Length field value is a decimal number.
+    - Purpose:
+      1. Framing Information allowing the recipient to know where the body ends.
+      2. Size of the Representation: For messages that do not include a body (e.g., HEAD responses), the Content-Length can indicate the size of the selected message.
 
-    ## 6.3. Message Body Length:
-    Cases:
-    1. Responses to HEAD Requests and Specific Status Codes (1xx, 204, 304): 
-      - These responses are terminated by the first empty line after the header fields and do not contain a message body or trailer section.
+  ## 6.3. Message Body Length:
+  Cases:
+  1. Responses to HEAD Requests and Specific Status Codes (1xx, 204, 304): 
+    - These responses are terminated by the first empty line after the header fields and do not contain a message body or trailer section.
 
-    2. 2xx Responses to CONNECT Requests:
-      - These responses indicate that the connection becomes a tunnel immediately after the header fields, and any Content-Length or Transfer-Encoding headers should be ignored.
+  2. 2xx Responses to CONNECT Requests:
+    - These responses indicate that the connection becomes a tunnel immediately after the header fields, and any Content-Length or Transfer-Encoding headers should be ignored.
 
-    3. Transfer-Encoding vs. Content-Length:
-      - If both Transfer-Encoding and Content-Length headers are present, Transfer-Encoding takes precedence. Intermediaries must remove the Content-Length header or consider it as error.
+  3. Transfer-Encoding vs. Content-Length:
+    - If both Transfer-Encoding and Content-Length headers are present, Transfer-Encoding takes precedence. Intermediaries must remove the Content-Length header or consider it as error.
 
-    4. Chunked Transfer-Encoding:
-      - If the Transfer-Encoding header field ends with the chunked transfer coding, the message body length is determined by reading the chunked data until the end of the chunked transfer coding.
-      - If chunked is not the final encoding:
-        - In RESPONSE, the length is determined by reading until the server closes the connection.
-        - In REQUESR, the server must respond with a 400 (Bad Request) status code and close the connection.
+  4. Chunked Transfer-Encoding:
+    - If the Transfer-Encoding header field ends with the chunked transfer coding, the message body length is determined by reading the chunked data until the end of the chunked transfer coding.
+    - If chunked is not the final encoding:
+      - In RESPONSE, the length is determined by reading until the server closes the connection.
+      - In REQUESR, the server must respond with a 400 (Bad Request) status code and close the connection.
 
-    5. Invalid Content-Length:
-      - Request: The server must respond with 400 (Bad Request) and close the connection.
-      - Response: The client must discard the message body and close the connection.
-      - Response to proxy: The proxy must close the connection and discard the message body and send a 502 (Bad Gateway) response.
+  5. Invalid Content-Length:
+    - Request: The server must respond with 400 (Bad Request) and close the connection.
+    - Response: The client must discard the message body and close the connection.
+    - Response to proxy: The proxy must close the connection and discard the message body and send a 502 (Bad Gateway) response.
 
-    6. Valid Content-Length:
-      - It defines the expected message body length in octets. If the connection closes before receiving the indicated length, the message is considered incomplete.
-    
-    7. Message Body Length Determination:
-      - If none of the above conditions apply to a request message, the message body length is zero.
-      - For responses, the message body length is determined by the octets received before the server closes the connection. However, this method can lead to ambiguities if the connection is interrupted or length is reached, so length or encoding delimitations (not close-delimitation) are preferred.
+  6. Valid Content-Length:
+    - It defines the expected message body length in octets. If the connection closes before receiving the indicated length, the message is considered incomplete.
+  
+  7. Message Body Length Determination:
+    - If none of the above conditions apply to a request message, the message body length is zero.
+    - For responses, the message body length is determined by the octets received before the server closes the connection. However, this method can lead to ambiguities if the connection is interrupted or length is reached, so length or encoding delimitations (not close-delimitation) are preferred.
 
-    - A server may reject requests with a message body but without Content-Length by responding with 411 (Length Required).
-    - Clients should send a Content-Length header if the message body length is known to avoid issues with some services that might reject chunked transfer coding.
-    - Clients must either include a Content-Length header or use chunked transfer coding for messages with a body, ensuring the server can handle HTTP/1.1 or later.
-    
-    8. Extra Data After Final Response:
-      - If extra data remains after the final response, a user agent may discard it or attempt to determine if it belongs to the prior message.
-      - Clients must not process, cache, or forward such data to avoid cache poisoning.
+  - A server may reject requests with a message body but without Content-Length by responding with 411 (Length Required).
+  - Clients should send a Content-Length header if the message body length is known to avoid issues with some services that might reject chunked transfer coding.
+  - Clients must either include a Content-Length header or use chunked transfer coding for messages with a body, ensuring the server can handle HTTP/1.1 or later.
+  
+  8. Extra Data After Final Response:
+    - If extra data remains after the final response, a user agent may discard it or attempt to determine if it belongs to the prior message.
+    - Clients must not process, cache, or forward such data to avoid cache poisoning.
 
 ## 7. Transfer Codings
-    Allow a server to send a response in a series of chunks, rather than as a single continuous block of data. Useful when the total size of the response content is unknown at the start of transmission.
+  Allow a server to send a response in a series of chunks, rather than as a single continuous block of data. Useful when the total size of the response content is unknown at the start of transmission.
 
-  - **Syntax**:
-    ```
-    chunked-body   = *chunk
-                   last-chunk
-                   trailer-section
-                   CRLF
+- **Syntax**:
+  ```
+  chunked-body   = *chunk
+                  last-chunk
+                  trailer-section
+                  CRLF
 
-    chunk          = chunk-size [ chunk-ext ] CRLF
-                    chunk-data CRLF
-    chunk-size     = 1*HEXDIG
-    last-chunk     = 1*("0") [ chunk-ext ] CRLF
+  chunk          = chunk-size [ chunk-ext ] CRLF
+                  chunk-data CRLF
+  chunk-size     = 1*HEXDIG
+  last-chunk     = 1*("0") [ chunk-ext ] CRLF
 
-    chunk-data     = 1*OCTET ; a sequence of chunk-size octets
+  chunk-data     = 1*OCTET ; a sequence of chunk-size octets
 
-    ```
+  ```
   #### Structure of Chunked Transfer Coding
 
     1. **Chunked Body**:

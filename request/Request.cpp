@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:31:21 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/10 17:53:35 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/11 16:36:10 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,10 +57,9 @@ std::string findMatch(std::string &path, std::map<std::string, RouteConfig> rout
 	return "";
 }
 
-RouteConfig chooseRoute(std::string path, ServerConfig server)
+bool chooseRoute(std::string path, ServerConfig server, RouteConfig &targetRoute)
 {
 	std::map<std::string, RouteConfig> routes = server.routeMap;
-	RouteConfig targetRoute;
 	std::vector<std::string> splitPath = split(path, '/');
 	// std::cout << "splitPath size : " << splitPath.size() << std::endl;
 	for (size_t i = 0; i < splitPath.size(); i++)
@@ -73,11 +72,13 @@ RouteConfig chooseRoute(std::string path, ServerConfig server)
 		{
 			// std::cout << "what is route : " << route << std::endl;
 			targetRoute = routes[route];
-			break;
+			return true;
 		}
 		path = path.substr(0, path.find_last_of('/'));
 	}
-	return targetRoute;
+	if (routes.find("/") != routes.end())
+		return (targetRoute = routes["/"]), true;
+	return false;
 }
 
 void Request::findServer(Response &structResponse, Parser &parser)
@@ -136,11 +137,14 @@ bool Request::isBodyExistRequest(Parser &parser, Response &structResponse)
 
 void Request::handleRequest(int clientSocket, Parser &parser, Response &structResponse)
 {
-
 	this->headers = Headers(clientSocket, structResponse);
 	this->findServer(structResponse, parser);
 	this->headers.parseHeader(structResponse);
-	structResponse.setTargetRoute(chooseRoute(headers.getValue("uri"), structResponse.getTargetServer()));
+	ServerConfig server = structResponse.getTargetServer();
+	RouteConfig route;
+	if (!chooseRoute(headers.getValue("uri"), server, route))
+		structResponse.sendError("404");
+	structResponse.setTargetRoute(route);
 	if (isBodyExistRequest(parser, structResponse))
 		this->body = Body(clientSocket, headers.getValue("Content-Length"));
 }
