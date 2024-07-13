@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 15:22:38 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/11 17:04:30 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/13 09:45:17 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ bool checkEndingSlash(std::string &fullPath)
 	return true;
 }
 
-std::string makeFullPath(std::string rootPath, std::string path)
+std::string generateFullPath(std::string rootPath, std::string path)
 {
 	if (rootPath.back() == '/')  
 		rootPath.pop_back();
@@ -111,21 +111,27 @@ std::string makeFullPath(std::string rootPath, std::string path)
 	return fullPath;
 }
 
+void Response::generateResponseFromFile(std::string &path)
+{
+	std::ifstream file(path.c_str());
+	std::stringstream buffer;
+	buffer << file.rdbuf();
+	std::string body = buffer.str();
+	std::string extention = path.substr(path.find_last_of(".") + 1);
+	std::string mimeType = getMimeType(extention);
+	std::cout << "mimeType :" << mimeType << std::endl;
+	response = "HTTP/1.1 200 OK\r\nContent-Type: " + mimeType + "\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
+}
+
 void Response::handleGET(bool isGet, RouteConfig &targetRoute, std::string &path)
 {
 	if (isGet)
 	{
-		std::string fullPath = makeFullPath(targetRoute.root, path);
+		std::string fullPath = generateFullPath(targetRoute.root, path);
 		std::cout << "FullPath : " << fullPath << std::endl;
 		int type = checkType(fullPath, targetRoute);
 		if (type == 2)
-		{
-			std::ifstream file(fullPath.c_str());
-			std::stringstream buffer;
-			buffer << file.rdbuf();
-			std::string body = buffer.str();
-			response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
-		}
+			generateResponseFromFile(fullPath);
 		else if (type == 1)
 		{
 			if (!checkEndingSlash(fullPath))
@@ -133,14 +139,7 @@ void Response::handleGET(bool isGet, RouteConfig &targetRoute, std::string &path
 			else
 			{
 				if(handleDirectory(fullPath, path, targetRoute))
-				{
-					std::ifstream file(fullPath.c_str());
-					std::stringstream buffer;
-					buffer << file.rdbuf();
-					std::string body = buffer.str();
-					response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
-				}
-				
+					generateResponseFromFile(fullPath);
 			}
 		}
 	}

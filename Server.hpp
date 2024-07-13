@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 14:41:08 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/10 13:09:17 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/13 09:47:53 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,15 +52,8 @@ private:
     int serverSocket;
     struct sockaddr_in serverAddr;
 
-    void initSocket();
+    void initSocket(Parser &configFile);
     void handleConnections(Parser &configFile);
-    std::string generateHttpResponse(const std::string &filepath);
-    void storeFirstLine(const std::string &request);
-    void storeHeaders(const std::string &request);
-
-    // bool parseRequestLine(std::istringstream &stream);
-    // bool parseHeaders(std::istringstream &stream);
-    // void sendBadRequest();
 };
 
 #endif // SERVER_HPP

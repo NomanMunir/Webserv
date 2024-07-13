@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 14:41:04 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/11 17:13:03 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/13 10:55:38 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,43 +14,33 @@
 
 Server::Server(Parser &parser)
 {
-    initSocket();
+    initSocket(parser);
 }
 
-void Server::initSocket()
+void Server::initSocket(Parser &configFile) 
 {
     serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-    if (serverSocket < 0)
-    {
+    if (serverSocket < 0) {
         perror("Error opening socket");
         exit(1);
     }
-
-    bzero((char *)&serverAddr, sizeof(serverAddr));
+    std::memset((char *)&serverAddr, 0, sizeof(serverAddr));
     serverAddr.sin_family = AF_INET;
-    const char *ipAddress = "127.0.0.1";
-    serverAddr.sin_addr.s_addr = inet_addr(ipAddress);
+    serverAddr.sin_addr.s_addr = INADDR_ANY;
     serverAddr.sin_port = htons(8080);
 
     int e = 1;
-    if(setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &e,sizeof(e)) < 0)
-    {
+    if(setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, (char *)&e, sizeof(e)) < 0) {
         perror("Error setsockopt option");
         close(serverSocket);
         exit(1);
     }
-    //  if (fcntl(serverSocket, F_SETFL, O_NONBLOCK, FD_CLOEXEC) < 0)
-    // {
-    //     perror("Error non-Blocking server");
-    //     close(serverSocket);
-    //     exit(1);
-    // }
-    if (bind(serverSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0)
-    {
+    
+    if (bind(serverSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0) {
         perror("Error binding socket");
         exit(1);
     }
-    listen(serverSocket, 5);
+    listen(serverSocket, 10);
 }
 
 void Server::run(Parser &configFile)
@@ -60,89 +50,73 @@ void Server::run(Parser &configFile)
 
 void Server::handleConnections(Parser &configFile)
 {
+    std::cout << "Server is running on port 8080" << std::endl;
     struct sockaddr_in clientAddr;
     socklen_t clientLen = sizeof(clientAddr);
 
+    std::vector<int> clientSockets;
+    clientSockets.push_back(serverSocket);
+
     while (true)
     {
-        int clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddr, &clientLen);
-        if (clientSocket < 0)
+        fd_set readSet;
+        FD_ZERO(&readSet);
+
+        int maxFd = *std::max_element(clientSockets.begin(), clientSockets.end());
+        for (std::vector<int>::iterator it = clientSockets.begin(); it != clientSockets.end(); ++it)
         {
-            std::cout <<"Error accepting client connection" << std::endl;
+            FD_SET(*it, &readSet);
+        }
+
+        int activity = select(maxFd + 1, &readSet, NULL, NULL, NULL);
+
+        if ((activity < 0) && (errno != EINTR)) {
+            perror("Error in select");
             exit(1);
         }
-            Response response(clientSocket);
-            Request request(clientSocket, configFile, response);
-            response.handleResponse(request);
-            responseClient(clientSocket, response.getResponse());
-            if (close(clientSocket) == -1)
-                throw std::runtime_error("Error closing client socket.");
-    }
-}
 
-std::string Server::generateHttpResponse(const std::string &filepath)
-{
-    std::string path = filepath;
-    if (filepath == "/")
-        path = "." + filepath + "index.html";
-    std::ifstream file(path.c_str());
-    if (!file.is_open())
-    {
-        std::cerr << "Could not open the file: " << filepath << std::endl;
-        return "HTTP/1.1 404 Not Found\r\nContent-Type: text/plain\r\n\r\nFile not found";
-    }
+        if (FD_ISSET(serverSocket, &readSet)) {
+            int clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddr, &clientLen);
+            if (clientSocket < 0) {
+                std::cerr << "Error accepting client connection" << std::endl;
+                continue;
+            }
+            std::cout << "New connection, socket fd is " << clientSocket << ", ip is : " << inet_ntoa(clientAddr.sin_addr) << ", port : " << ntohs(clientAddr.sin_port) << std::endl;
 
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    file.close();
+            clientSockets.push_back(clientSocket);
+        }
 
-    std::string content = buffer.str();
-    std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(content.size()) + "\r\n\r\n" + content;
-
-    return response;
-}
-
-void Server::storeHeaders(const std::string &request)
-{
-    std::stringstream requestStream(request.c_str());
-    // bool headersDone = false;
-    std::getline(requestStream, startLine);
-    storeFirstLine(startLine);
-    std::string header;
-    while (std::getline(requestStream, header))
-    {
-        if (header == "\r" || header.empty())
-            break;
-        size_t colonPos = header.find(':');
-        if (colonPos != std::string::npos)
-        {
-            std::string key = header.substr(0, colonPos);
-            std::string value = header.substr(colonPos + 1);
-            size_t start = value.find_first_not_of(" \t");
-            if (start != std::string::npos)
-                value = value.substr(start);
-            headers[key] = value;
+         for (std::vector<int>::iterator it = clientSockets.begin() + 1; it != clientSockets.end(); ++it)
+         {
+            int clientSocket = *it;
+            if (FD_ISSET(clientSocket, &readSet))
+            {
+                Response response(clientSocket);
+                Request request(clientSocket, configFile, response);
+                response.handleResponse(request);
+                responseClient(clientSocket, response.getResponse());
+                close(clientSocket);
+                clientSockets.erase(it);
+                break;
+            }
         }
     }
-    // Read the body
-    std::map<std::string, std::string>::iterator it = headers.find("Content-Length");
-    if (it != headers.end())
-    {
-        size_t contentLength = std::atoi(it->second.c_str());
-        body.resize(contentLength);
-        requestStream.read(&body[0], contentLength);
-    }
-}
 
-void Server::storeFirstLine(const std::string &request)
-{
-    std::istringstream requestStream(request);
-    std::string method;
-    std::string uri;
-    std::string version;
-
-    requestStream >> method >> uri >> version;
-    headers["method"] = method;
-    headers["version"] = version;
-    headers["uri"] = uri;
+    // struct sockaddr_in clientAddr;
+    // socklen_t clientLen = sizeof(clientAddr);
+    // while (true)
+    // {
+    //     int clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddr, &clientLen);
+    //     if (clientSocket < 0)
+    //     {
+    //         std::cout <<"Error accepting client connection" << std::endl;
+    //         exit(1);
+    //     }
+    //         Response response(clientSocket);
+    //         Request request(clientSocket, configFile, response);
+    //         response.handleResponse(request);
+    //         responseClient(clientSocket, response.getResponse());
+    //         if (close(clientSocket) == -1)
+    //             throw std::runtime_error("Error closing client socket.");
+    // }
 }
