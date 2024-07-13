@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 15:22:38 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/13 09:45:17 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/13 14:37:23 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ std::string listDirectory(const std::string& dirPath, const std::string& uriPath
     DIR *dir;
     struct dirent *ent;
 	std::string newUriPath = (uriPath == "/") ? "" : uriPath;
-
     if ((dir = opendir(dirPath.c_str())) != NULL) {
         htmlContent += "<html><head><title>Index of " + dirPath + "</title></head><body>";
         htmlContent += "<h1>Index of " + dirPath + "</h1><hr><ul>";
@@ -30,7 +29,7 @@ std::string listDirectory(const std::string& dirPath, const std::string& uriPath
 
             if (filename == "." || filename == "..")
                 continue;
-            htmlContent += "<li><a href=\"" + newUriPath + "/" + filename + "\">" + filename + "</a></li>";
+            htmlContent += "<li><a href=\"" + newUriPath  + filename + "\">" + filename + "</a></li>";
         }
 
         htmlContent += "</ul><hr></body></html>";
@@ -103,7 +102,7 @@ bool checkEndingSlash(std::string &fullPath)
 
 std::string generateFullPath(std::string rootPath, std::string path)
 {
-	if (rootPath.back() == '/')  
+	if (rootPath.back() == '/')
 		rootPath.pop_back();
 	if (path.front() == '/')
 		path.erase(0, 1);
@@ -119,7 +118,6 @@ void Response::generateResponseFromFile(std::string &path)
 	std::string body = buffer.str();
 	std::string extention = path.substr(path.find_last_of(".") + 1);
 	std::string mimeType = getMimeType(extention);
-	std::cout << "mimeType :" << mimeType << std::endl;
 	response = "HTTP/1.1 200 OK\r\nContent-Type: " + mimeType + "\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 }
 

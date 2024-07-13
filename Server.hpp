@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 14:41:08 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/13 09:47:53 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/13 17:36:31 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,11 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <cerrno>
+#include <dirent.h>
+#include <poll.h>
+// #include <sys/epoll.h>
+#include <sys/event.h>
+#include <sys/time.h>
 
 #include "utils/utils.hpp"
 #include "parsing/Parser.hpp"
@@ -51,9 +56,14 @@ private:
 
     int serverSocket;
     struct sockaddr_in serverAddr;
+    std::vector<pollfd> pollfds;
 
     void initSocket(Parser &configFile);
-    void handleConnections(Parser &configFile);
+    // void handleConnections(Parser &configFile);
+    void handleConnectionsWithSelect(Parser &configFile);
+    void handleConnectionsWithPoll(Parser &configFile);
+    // void handleConnectionsWithEPoll(Parser &configFile);
+    void handleConnectionsWithKQueue(Parser &configFile);
 };
 
 #endif // SERVER_HPP
