@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 14:41:04 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/13 17:45:11 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/13 17:55:21 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,8 +193,7 @@ void Server::handleConnectionsWithKQueue(Parser &configFile)
     socklen_t clientLen = sizeof(clientAddr);
 
     int kqueueFd = kqueue();
-    if (kqueueFd == -1)
-    {
+    if (kqueueFd == -1) {
         perror("Error creating kqueue instance");
         exit(1);
     }
@@ -208,48 +207,42 @@ void Server::handleConnectionsWithKQueue(Parser &configFile)
         exit(1);
     }
 
-    struct kevent events[MAX_EVENTS];
+    std::vector<struct kevent> events(MAX_EVENTS);
 
-    while (true)
-    {
-        int nev = kevent(kqueueFd, NULL, 0, events, MAX_EVENTS, NULL);
-        if (nev == -1)
-        {
+    while (true) {
+        int nev = kevent(kqueueFd, NULL, 0, events.data(), events.size(), NULL);
+        if (nev == -1) {
             perror("Error in kevent");
             close(kqueueFd);
             exit(1);
         }
 
-        for (int i = 0; i < nev; ++i)
-        {
-            if (events[i].ident == serverSocket)
-            {
+        for (int i = 0; i < nev; ++i) {
+            if (events[i].ident == serverSocket) {
                 int clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddr, &clientLen);
-                if (clientSocket < 0)
-                {
+                if (clientSocket < 0) {
                     std::cerr << "Error accepting client connection" << std::endl;
                     continue;
                 }
-                std::cout << "New connection, socket fd is " << clientSocket << std::endl;
+                std::cout << "New connection, socket fd is " << clientSocket << ", ip is : " << inet_ntoa(clientAddr.sin_addr) << ", port : " << ntohs(clientAddr.sin_port) << std::endl;
 
                 EV_SET(&change, clientSocket, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
-                if (kevent(kqueueFd, &change, 1, NULL, 0, NULL) == -1)
-                {
+                if (kevent(kqueueFd, &change, 1, NULL, 0, NULL) == -1) {
                     perror("Error adding client socket to kqueue");
                     close(clientSocket);
                     continue;
                 }
-            } 
-            else
-            {
+            } else {
                 int clientSocket = events[i].ident;
                 Response response(clientSocket);
                 Request request(clientSocket, configFile, response);
                 response.handleResponse(request);
                 responseClient(clientSocket, response.getResponse());
+                
                 std::string keepAlive = request.getHeaders().getValue("Connection");
                 if (keepAlive == "keep-alive")
                     continue;
+
                 close(clientSocket);
                 EV_SET(&change, clientSocket, EVFILT_READ, EV_DELETE, 0, 0, NULL);
                 if (kevent(kqueueFd, &change, 1, NULL, 0, NULL) == -1) {

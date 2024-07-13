@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 14:41:08 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/13 17:36:31 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/13 17:55:24 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@
 #include "request/Request.hpp"
 #include "Response/Response.hpp"
 
-class Parser;
+#define MAX_EVENTS 64
 
 class Server
 {
@@ -49,8 +49,7 @@ public:
     Server(Parser &parser);
     void run(Parser &configFile);
     std::map<std::string, std::string> headers;
-    std::string startLine;
-    std::string body;
+    // std::vector<struct kevent> events(MAX_EVENTS);
 
 private:
 
