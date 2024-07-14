@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:46:04 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/13 10:49:35 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/14 17:01:12 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -359,7 +359,6 @@ std::string getMimeType(std::string extention)
     mime_types.insert(std::make_pair("avi", "video/x-msvideo"));
     mime_types.insert(std::make_pair("bmp", "image/bmp"));
     mime_types.insert(std::make_pair("gif", "image/gif"));
-    mime_types.insert(std::make_pair("ico", "image/vnd.microsoft.icon"));
     mime_types.insert(std::make_pair("jpeg", "image/jpeg"));
     mime_types.insert(std::make_pair("jpg", "image/jpeg"));
     mime_types.insert(std::make_pair("png", "image/png"));

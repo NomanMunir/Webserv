@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 11:20:23 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/10 17:23:37 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/14 17:49:37 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,8 @@ void Headers::parseFirstLine(Response &structResponse)
 		structResponse.sendError("501");
     headers["method"] = method;
     headers["version"] = version;
-    headers["uri"] = uri;
+	
+    headers["uri"] = split(uri, '?')[0];
 }
 
 void Headers::parseHeader(Response &structResponse)
@@ -138,6 +139,7 @@ void Headers::parseHeader(Response &structResponse)
 		headers[key] = value;
 	}
 	parseRequestURI(structResponse);
+	// printHeaders();
 }
 
 Headers::Headers(int clientSocket, Response &structResponse)
@@ -146,12 +148,15 @@ Headers::Headers(int clientSocket, Response &structResponse)
 
 	while (read(clientSocket, &buffer, 1) > 0)
     {
+		std::cout <<buffer;
 		if (!isascii(buffer))
 			structResponse.sendError("400");
         this->rawHeaders.append(1, buffer);
         if (this->rawHeaders.find("\r\n\r\n") != std::string::npos)
             break;
     }
+	std::cout << "rawHeaders : " << this->rawHeaders << std::endl;
+	// parseHeader(structResponse);
 }
 
 std::string Headers::getRawHeaders()

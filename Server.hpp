@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 14:41:08 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/13 17:55:24 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/14 10:22:38 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ private:
     std::vector<pollfd> pollfds;
 
     void initSocket(Parser &configFile);
-    // void handleConnections(Parser &configFile);
+    void handleConnections(Parser &configFile);
     void handleConnectionsWithSelect(Parser &configFile);
     void handleConnectionsWithPoll(Parser &configFile);
     // void handleConnectionsWithEPoll(Parser &configFile);

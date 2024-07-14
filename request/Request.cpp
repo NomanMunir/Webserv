@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:31:21 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/11 16:36:10 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/14 17:48:00 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,12 +84,14 @@ bool chooseRoute(std::string path, ServerConfig server, RouteConfig &targetRoute
 void Request::findServer(Response &structResponse, Parser &parser)
 {
 	std::string host;
-	std::string port;
 	std::string requestHeader = this->headers.getRawHeaders();
+
 	std::string::size_type hostPos = requestHeader.find("Host: ");
+	std::cout << "requestHeader : " << requestHeader << std::endl;
 	if (hostPos != std::string::npos)
 	{
 		std::string::size_type endHostPos = requestHeader.find("\r\n", hostPos);	
+		std::cout << "hi2 \n";
 		if (endHostPos != std::string::npos)
 			host = requestHeader.substr(hostPos + 6, endHostPos - hostPos - 6);
 			std::vector<std::string> tokens = split(host, ':');
@@ -108,9 +110,11 @@ void Request::findServer(Response &structResponse, Parser &parser)
 	}
 	else
 	{
+		std::cout << "hi3 \n";
 		structResponse.setTargetServer(parser.getServers()[0]);
 		structResponse.sendError("400");
 	}
+	
 }
 
 bool Request::isBodyExistRequest(Parser &parser, Response &structResponse)
@@ -138,7 +142,9 @@ bool Request::isBodyExistRequest(Parser &parser, Response &structResponse)
 void Request::handleRequest(int clientSocket, Parser &parser, Response &structResponse)
 {
 	this->headers = Headers(clientSocket, structResponse);
+
 	this->findServer(structResponse, parser);
+	
 	this->headers.parseHeader(structResponse);
 	ServerConfig server = structResponse.getTargetServer();
 	RouteConfig route;

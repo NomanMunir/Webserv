@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 15:22:38 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/13 14:37:23 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/14 17:42:33 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,11 +51,15 @@ int Response::checkType(std::string &path, RouteConfig &targetRoute)
         {
         case EACCES:
 		{
-			std::cout << "Error: " << "Eacces" << std::endl;
             this->sendError("403");
+			break;
 		}
         case ENOENT:
+		{
+			std::cout << "Error: " << "Check Type" << std::endl;
             this->sendError("404");
+			break;
+		}
         default:
 			this->sendError("500");
         }
@@ -72,7 +76,6 @@ bool Response::handleDirectory(std::string &fullPath, std::string &path, RouteCo
 	for (size_t i = 0; i < targetRoute.defaultFile.size(); i++)
 	{
 		std::string newPath = fullPath + targetRoute.defaultFile[i];
-		std::cout << "NewPath : " << newPath << std::endl;
 		if (isFile(newPath))
 		{
 			fullPath = newPath;
@@ -197,6 +200,7 @@ void Response::findErrorPage(std::string errorCode, std::map<std::string, std::s
 	std::map<std::string, std::string>::iterator it = errorPages.find(errorCode);
 	if (it != errorPages.end())
 	{
+		std::cout << "Error Page: " << it->second << std::endl;
 		std::ifstream file("." + it->second);
 		std::stringstream buffer;
 		buffer << file.rdbuf();
@@ -222,12 +226,12 @@ void Response::sendError(std::string errorCode)
 	std::map<std::string, std::string> errorPages = targetServer.errorPages;
 	findErrorPage(errorCode, errorPages);
 	responseClient(this->clientSocket, this->response);
-	if (myFind(closeCodes, errorCode))
-	{
-		// close(this->clientSocket);
+	// if (myFind(closeCodes, errorCode))
+	// {
+	// 	// close(this->clientSocket);
 		
-		// throw std::runtime_error("Error: " + errorCode);
-	}
+	// 	// throw std::runtime_error("Error: " + errorCode);
+	// }
 }
 
 

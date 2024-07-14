@@ -43,3 +43,5 @@
 
 [ ] substring creating problems.
 [ ] check for file types and set appropriate values.
+
+[ ] check Accept header before sending response.

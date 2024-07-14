@@ -6,12 +6,18 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 14:41:04 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/13 17:55:21 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/14 17:14:24 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 #define MAX_EVENTS 64
+#define PORT 8080
+
+void setNonBlocking(int fd) {
+    int flags = fcntl(fd, F_GETFL, 0);
+    fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+}
 
 Server::Server(Parser &parser)
 {
@@ -28,7 +34,7 @@ void Server::initSocket(Parser &configFile)
     std::memset((char *)&serverAddr, 0, sizeof(serverAddr));
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_addr.s_addr = INADDR_ANY;
-    serverAddr.sin_port = htons(8080);
+    serverAddr.sin_port = htons(PORT);
 
     int e = 1;
     if(setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, (char *)&e, sizeof(e)) < 0) {
@@ -42,18 +48,12 @@ void Server::initSocket(Parser &configFile)
         exit(1);
     }
 
-     if (listen(serverSocket, 5) < 0)
-     {
+    if (listen(serverSocket, 115) < 0)
+    {
         perror("Error listening on socket");
         exit(1);
     }
-
-    // pollfd serverPollfd;
-    // serverPollfd.fd = serverSocket;
-    // serverPollfd.events = POLLIN;
-    // pollfds.push_back(serverPollfd);
-
-    std::cout << "Server is running on port 8080" << std::endl;
+    std::cout << "Server is running on port " << PORT << std::endl;
 }
 
 void Server::run(Parser &configFile)
@@ -63,6 +63,11 @@ void Server::run(Parser &configFile)
 
 void Server::handleConnectionsWithPoll(Parser &configFile)
 {
+
+    pollfd serverPollfd;
+    serverPollfd.fd = serverSocket;
+    serverPollfd.events = POLLIN;
+    pollfds.push_back(serverPollfd);
     while (true)
     {
         int activity = poll(&pollfds[0], pollfds.size(), -1);
@@ -110,7 +115,6 @@ void Server::handleConnectionsWithPoll(Parser &configFile)
 
 void Server::handleConnectionsWithSelect(Parser &configFile)
 {
-    std::cout << "Server is running on port 8080" << std::endl;
     struct sockaddr_in clientAddr;
     socklen_t clientLen = sizeof(clientAddr);
 
@@ -188,7 +192,6 @@ void Server::handleConnectionsWithSelect(Parser &configFile)
 
 void Server::handleConnectionsWithKQueue(Parser &configFile)
 {
-    std::cout << "Server is running on port 8080" << std::endl;
     struct sockaddr_in clientAddr;
     socklen_t clientLen = sizeof(clientAddr);
 
@@ -209,7 +212,8 @@ void Server::handleConnectionsWithKQueue(Parser &configFile)
 
     std::vector<struct kevent> events(MAX_EVENTS);
 
-    while (true) {
+    while (true)
+    {
         int nev = kevent(kqueueFd, NULL, 0, events.data(), events.size(), NULL);
         if (nev == -1) {
             perror("Error in kevent");
@@ -217,22 +221,27 @@ void Server::handleConnectionsWithKQueue(Parser &configFile)
             exit(1);
         }
 
-        for (int i = 0; i < nev; ++i) {
-            if (events[i].ident == serverSocket) {
+        for (int i = 0; i < nev; ++i)
+        {
+            if (events[i].ident == serverSocket)
+            {
                 int clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddr, &clientLen);
-                if (clientSocket < 0) {
+                if (clientSocket < 0)
+                {
                     std::cerr << "Error accepting client connection" << std::endl;
                     continue;
                 }
                 std::cout << "New connection, socket fd is " << clientSocket << ", ip is : " << inet_ntoa(clientAddr.sin_addr) << ", port : " << ntohs(clientAddr.sin_port) << std::endl;
 
                 EV_SET(&change, clientSocket, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
-                if (kevent(kqueueFd, &change, 1, NULL, 0, NULL) == -1) {
+                if (kevent(kqueueFd, &change, 1, NULL, 0, NULL) == -1)
+                {
                     perror("Error adding client socket to kqueue");
                     close(clientSocket);
                     continue;
                 }
-            } else {
+            } else
+            {
                 int clientSocket = events[i].ident;
                 Response response(clientSocket);
                 Request request(clientSocket, configFile, response);
@@ -254,8 +263,75 @@ void Server::handleConnectionsWithKQueue(Parser &configFile)
 }
 
 
+void Server::handleConnections(Parser &configFile)
+{
+    int kq = kqueue();
+    if (kq == -1)
+    {
+        perror("Error creating kqueue");
+        exit(1);
+    }
+
+    struct kevent changeList[MAX_EVENTS];
+    struct kevent eventList[MAX_EVENTS];
+    setNonBlocking(serverSocket);
+    EV_SET(&changeList[0], serverSocket, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
+
+    while (true)
+    {
+        int eventCount = kevent(kq, changeList, 1, eventList, MAX_EVENTS, NULL);
+        if (eventCount == -1)
+        {
+            perror("Error in kevent");
+            close(serverSocket);
+            exit(1);
+        }
+
+        for (int i = 0; i < eventCount; ++i)
+        {
+            if (eventList[i].ident == serverSocket)
+            {
+                struct sockaddr_in clientAddr;
+                socklen_t clientLen = sizeof(clientAddr);
+                int clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddr, &clientLen);
+                if (clientSocket < 0)
+                {
+                    perror("Error accepting client connection");
+                    continue;
+                }
+                std::cout << "New connection, socket fd is " << clientSocket << ", ip is : " << inet_ntoa(clientAddr.sin_addr) << ", port : " << ntohs(clientAddr.sin_port) << std::endl;
+                
+                setNonBlocking(clientSocket);
+
+                EV_SET(&changeList[0], clientSocket, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
+                kevent(kq, changeList, 1, NULL, 0, NULL);
+            }
+            else if (eventList[i].filter == EVFILT_READ)
+            {
+                int clientSocket = eventList[i].ident;
+
+                Response response(clientSocket);
+                Request request(clientSocket, configFile, response);
+                response.handleResponse(request);
+                responseClient(clientSocket, response.getResponse());
+
+                std::string keepAlive = request.getHeaders().getValue("Connection");
+                if (keepAlive != "keep-alive")
+                {
+                    close(clientSocket);
+                    EV_SET(&changeList[0], clientSocket, EVFILT_READ, EV_DELETE, 0, 0, NULL);
+                    kevent(kq, changeList, 1, NULL, 0, NULL);
+                }
+                else
+                {
+                    EV_SET(&changeList[0], clientSocket, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
+                    kevent(kq, changeList, 1, NULL, 0, NULL);
+                }
+            }
+        }
+    }
+}
 // void Server::handleConnections(Parser &configFile) {
-//     std::cout << "Server is running on port 8080" << std::endl;
 //     struct sockaddr_in clientAddr;
 //     socklen_t clientLen = sizeof(clientAddr);
 
