@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 14:41:08 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/14 10:22:38 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/20 17:45:12 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,28 +39,24 @@
 #include "parsing/Parser.hpp"
 #include "parsing/Validation.hpp"
 #include "request/Request.hpp"
-#include "Response/Response.hpp"
-
-#define MAX_EVENTS 64
+#include "response/Response.hpp"
 
 class Server
 {
 public:
-    Server(Parser &parser);
+    Server();
     void run(Parser &configFile);
-    std::map<std::string, std::string> headers;
-    // std::vector<struct kevent> events(MAX_EVENTS);
+    int getServersocket() const;
 
 private:
-
     int serverSocket;
     struct sockaddr_in serverAddr;
-    std::vector<pollfd> pollfds;
 
-    void initSocket(Parser &configFile);
+    void initServerSocket();
+
     void handleConnections(Parser &configFile);
     void handleConnectionsWithSelect(Parser &configFile);
-    void handleConnectionsWithPoll(Parser &configFile);
+    // void handleConnectionsWithPoll(Parser &configFile);
     // void handleConnectionsWithEPoll(Parser &configFile);
     void handleConnectionsWithKQueue(Parser &configFile);
 };

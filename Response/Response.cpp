@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 15:22:38 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/14 17:42:33 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/20 17:45:31 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ int Response::checkType(std::string &path, RouteConfig &targetRoute)
 		}
         case ENOENT:
 		{
-			std::cout << "Error: " << "Check Type" << std::endl;
+			// std::cout << "Error: " << "Check Type" << std::endl;
             this->sendError("404");
 			break;
 		}
@@ -85,7 +85,7 @@ bool Response::handleDirectory(std::string &fullPath, std::string &path, RouteCo
 	if (targetRoute.directoryListing)
 	{
 		std::string body = listDirectory(fullPath, path);
-		response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
+		response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 	}
 	else
 	{
@@ -121,7 +121,7 @@ void Response::generateResponseFromFile(std::string &path)
 	std::string body = buffer.str();
 	std::string extention = path.substr(path.find_last_of(".") + 1);
 	std::string mimeType = getMimeType(extention);
-	response = "HTTP/1.1 200 OK\r\nContent-Type: " + mimeType + "\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
+	response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: " + mimeType + "\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 }
 
 void Response::handleGET(bool isGet, RouteConfig &targetRoute, std::string &path)
@@ -129,7 +129,7 @@ void Response::handleGET(bool isGet, RouteConfig &targetRoute, std::string &path
 	if (isGet)
 	{
 		std::string fullPath = generateFullPath(targetRoute.root, path);
-		std::cout << "FullPath : " << fullPath << std::endl;
+		// std::cout << "FullPath : " << fullPath << std::endl;
 		int type = checkType(fullPath, targetRoute);
 		if (type == 2)
 			generateResponseFromFile(fullPath);
@@ -157,7 +157,7 @@ void Response::handlePOST(bool isPost, RouteConfig &targetRoute, std::string &pa
 			std::ofstream file(fullPath.c_str());
 			file << body.getBody();
 			file.close();
-			response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: 6 \r\n\r\n hello\n";
+			response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nContent-Length: 6 \r\n\r\n hello\n";
 		}
 		// else if (type == 1)
 		// {
@@ -175,7 +175,7 @@ void Response::handleResponse(Request &request)
 
 	if (!myFind(this->targetRoute.methods, method))
 		sendError("403");
-		
+
 	handleGET(method == "GET", this->targetRoute, uri);
 	// handlePOST(method == "POST", targetRoute, uri, body);
 }
@@ -190,6 +190,7 @@ void Response::defaultErrorPage(std::string errorCode)
                        "</body></html>";
     response = "HTTP/1.1 " + errorCode + " " + getErrorMsg(errorCode) + "\r\n"
                "Content-Type: text/html\r\n"
+			   "Connection: keep-alive\r\n"
                "Content-Length: " + std::to_string(body.size()) + "\r\n\r\n"
                + body;
 }
@@ -200,7 +201,7 @@ void Response::findErrorPage(std::string errorCode, std::map<std::string, std::s
 	std::map<std::string, std::string>::iterator it = errorPages.find(errorCode);
 	if (it != errorPages.end())
 	{
-		std::cout << "Error Page: " << it->second << std::endl;
+		// std::cout << "Error Page: " << it->second << std::endl;
 		std::ifstream file("." + it->second);
 		std::stringstream buffer;
 		buffer << file.rdbuf();

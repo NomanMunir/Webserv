@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:46:20 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/13 09:15:46 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/20 14:17:50 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ bool myFind(std::vector<std::string> &v, std::string &s);
 void initializeVector(std::vector<std::string> &v, const std::string s[], size_t size);
 void initializeVector(std::vector<std::string> &v, std::string s[], size_t size);
 std::string getErrorMsg(std::string errorCode);
-void responseClient(int fd, std::string response);
+bool responseClient(int fd, std::string response);
 std::string getMimeType(std::string extention);
 
 #endif // UTILS_HPP	

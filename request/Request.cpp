@@ -6,12 +6,12 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:31:21 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/14 17:48:00 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/20 17:45:42 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
-#include "../Response/Response.hpp"
+#include "../response/Response.hpp"
 
 ServerConfig chooseServer(Parser &configFile, std::string requestHost, std::string requestPort)
 {
@@ -86,12 +86,12 @@ void Request::findServer(Response &structResponse, Parser &parser)
 	std::string host;
 	std::string requestHeader = this->headers.getRawHeaders();
 
+	// std::cout << "requestHeader : " << requestHeader << std::endl;
 	std::string::size_type hostPos = requestHeader.find("Host: ");
-	std::cout << "requestHeader : " << requestHeader << std::endl;
 	if (hostPos != std::string::npos)
 	{
 		std::string::size_type endHostPos = requestHeader.find("\r\n", hostPos);	
-		std::cout << "hi2 \n";
+		// std::cout << "hi2 \n";
 		if (endHostPos != std::string::npos)
 			host = requestHeader.substr(hostPos + 6, endHostPos - hostPos - 6);
 			std::vector<std::string> tokens = split(host, ':');
@@ -126,7 +126,7 @@ bool Request::isBodyExistRequest(Parser &parser, Response &structResponse)
 		return false;
 	if (!length.empty())
 	{
-		if (length.empty() || !validateNumber("Content-Length", length))
+		if (!validateNumber("Content-Length", length))
 			structResponse.sendError("411");
 		if (std::atof(length.c_str()) > std::atof(parser.getDirectives()["client_body_size"].c_str()))
 			structResponse.sendError("413");
@@ -141,6 +141,7 @@ bool Request::isBodyExistRequest(Parser &parser, Response &structResponse)
 
 void Request::handleRequest(int clientSocket, Parser &parser, Response &structResponse)
 {
+	
 	this->headers = Headers(clientSocket, structResponse);
 
 	this->findServer(structResponse, parser);

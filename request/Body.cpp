@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 14:11:50 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/11 17:28:22 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/15 09:19:08 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ void Body::parseBody(int clientSocket, std::string &length)
 {
     char buffer;
     // Transfer-Encoding takes precedence over Content-Length.
+    std::cout << "Length: " << length << std::endl;
     if (!length.empty())
     {
         while (read(clientSocket, &buffer, 1) > 0)

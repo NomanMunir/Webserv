@@ -6,30 +6,37 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 14:41:04 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/14 17:14:24 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/20 17:39:02 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
-#define MAX_EVENTS 64
+#include "Connections.hpp"
 #define PORT 8080
 
-void setNonBlocking(int fd) {
+void setNonBlocking(int fd)
+{
     int flags = fcntl(fd, F_GETFL, 0);
     fcntl(fd, F_SETFL, flags | O_NONBLOCK);
 }
 
-Server::Server(Parser &parser)
+int Server::getServersocket() const
 {
-    initSocket(parser);
+    return serverSocket;
 }
 
-void Server::initSocket(Parser &configFile) 
+Server::Server()
+{
+    initServerSocket();
+}
+
+
+void Server::initServerSocket() 
 {
     serverSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (serverSocket < 0) {
         perror("Error opening socket");
-        exit(1);
+        throw std::runtime_error("Error opening socket");
     }
     std::memset((char *)&serverAddr, 0, sizeof(serverAddr));
     serverAddr.sin_family = AF_INET;
@@ -40,77 +47,84 @@ void Server::initSocket(Parser &configFile)
     if(setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, (char *)&e, sizeof(e)) < 0) {
         perror("Error setsockopt option");
         close(serverSocket);
-        exit(1);
+        throw std::runtime_error("Error setsockopt option");
     }
     
     if (bind(serverSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0) {
         perror("Error binding socket");
-        exit(1);
+        throw std::runtime_error("Error binding socket");
     }
 
-    if (listen(serverSocket, 115) < 0)
+    if (listen(serverSocket, 3) < 0)
     {
         perror("Error listening on socket");
-        exit(1);
+        throw std::runtime_error("Error listening on socket");
     }
     std::cout << "Server is running on port " << PORT << std::endl;
 }
 
 void Server::run(Parser &configFile)
 {
-    handleConnectionsWithKQueue(configFile);
+    handleConnections(configFile);
 }
 
-void Server::handleConnectionsWithPoll(Parser &configFile)
+void Server::handleConnections(Parser &configFile)
 {
-
-    pollfd serverPollfd;
-    serverPollfd.fd = serverSocket;
-    serverPollfd.events = POLLIN;
-    pollfds.push_back(serverPollfd);
-    while (true)
-    {
-        int activity = poll(&pollfds[0], pollfds.size(), -1);
-        if (activity < 0 && errno != EINTR) {
-            perror("Error in poll");
-            exit(1);
-        }
-
-        if (pollfds[0].revents & POLLIN) {
-            int clientSocket = accept(serverSocket, nullptr, nullptr);
-            if (clientSocket < 0) {
-                std::cerr << "Error accepting client connection" << std::endl;
-                continue;
-            }
-            std::cout << "New connection, socket fd is " << clientSocket << std::endl;
-
-            pollfd clientPollfd;
-            clientPollfd.fd = clientSocket;
-            clientPollfd.events = POLLIN;
-            pollfds.push_back(clientPollfd);
-        }
-        for (size_t i = 1; i < pollfds.size(); ++i)
-        {
-            if (pollfds[i].revents & POLLIN)
-            {
-                Response response(pollfds[i].fd);
-                Request request(pollfds[i].fd, configFile, response);
-                response.handleResponse(request);
-                responseClient(pollfds[i].fd, response.getResponse());
-                std::string keepAive = request.getHeaders().getValue("Connection");
-                if (keepAive != "keep-alive")
-                {
-                    if (close(pollfds[i].fd) == -1)
-                    {
-                        perror("Error closing client socket");
-                        exit(1);
-                    }
-                    pollfds.erase(pollfds.begin() + i);
-                }
-            }
-        }
-    }
+    Connections connections(serverSocket);
+    connections.loop(configFile);
 }
+
+
+// void Server::handleConnectionsWithPoll(Parser &configFile)
+// {
+
+//     pollfd serverPollfd;
+//     serverPollfd.fd = serverSocket;
+//     serverPollfd.events = POLLIN;
+//     pollfds.push_back(serverPollfd);
+//     while (true)
+//     {
+//         int activity = poll(&pollfds[0], pollfds.size(), -1);
+//         if (activity < 0 && errno != EINTR) {
+//             perror("Error in poll");
+//             exit(1);
+//         }
+
+//         if (pollfds[0].revents & POLLIN) {
+//             int clientSocket = accept(serverSocket, nullptr, nullptr);
+//             if (clientSocket < 0) {
+//                 std::cerr << "Error accepting client connection" << std::endl;
+//                 continue;
+//             }
+//             std::cout << "New connection, socket fd is " << clientSocket << std::endl;
+
+//             pollfd clientPollfd;
+//             clientPollfd.fd = clientSocket;
+//             clientPollfd.events = POLLIN;
+//             pollfds.push_back(clientPollfd);
+//         }
+//         for (size_t i = 1; i < pollfds.size(); ++i)
+//         {
+//             if (pollfds[i].revents & POLLIN)
+//             {
+//                 Response response(pollfds[i].fd);
+//                 Request request(pollfds[i].fd, configFile, response);
+//                 response.handleResponse(request);
+//                 responseClient(pollfds[i].fd, response.getResponse());
+//                 std::string keepAive = request.getHeaders().getValue("Connection");
+//                 if (keepAive != "keep-alive")
+//                 {
+//                     if (close(pollfds[i].fd) == -1)
+//                     {
+//                         perror("Error closing client socket");
+//                         exit(1);
+//                     }
+//                     pollfds.erase(pollfds.begin() + i);
+//                 }
+//             }
+//         }
+//     }
+// }
 
 
 void Server::handleConnectionsWithSelect(Parser &configFile)
@@ -137,9 +151,11 @@ void Server::handleConnectionsWithSelect(Parser &configFile)
             exit(1);
         }
 
-        if (FD_ISSET(serverSocket, &readSet)) {
+        if (FD_ISSET(serverSocket, &readSet))
+        {
             int clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddr, &clientLen);
-            if (clientSocket < 0) {
+            if (clientSocket < 0)
+            {
                 std::cerr << "Error accepting client connection" << std::endl;
                 continue;
             }
@@ -156,7 +172,7 @@ void Server::handleConnectionsWithSelect(Parser &configFile)
                 Response response(clientSocket);
                 Request request(clientSocket, configFile, response);
                 std::string keepAlive = request.getHeaders().getValue("Connection");
-                
+
                 response.handleResponse(request);
                 responseClient(clientSocket, response.getResponse());
                 if (keepAlive != "keep-alive")
@@ -189,22 +205,24 @@ void Server::handleConnectionsWithSelect(Parser &configFile)
 }
 
 
-
 void Server::handleConnectionsWithKQueue(Parser &configFile)
 {
     struct sockaddr_in clientAddr;
     socklen_t clientLen = sizeof(clientAddr);
 
     int kqueueFd = kqueue();
-    if (kqueueFd == -1) {
+    if (kqueueFd == -1)
+    {
         perror("Error creating kqueue instance");
         exit(1);
     }
 
     struct kevent change;
+    setNonBlocking(serverSocket);
     EV_SET(&change, serverSocket, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
 
-    if (kevent(kqueueFd, &change, 1, NULL, 0, NULL) == -1) {
+    if (kevent(kqueueFd, &change, 1, NULL, 0, NULL) == -1)
+    {
         perror("Error adding server socket to kqueue");
         close(kqueueFd);
         exit(1);
@@ -215,7 +233,8 @@ void Server::handleConnectionsWithKQueue(Parser &configFile)
     while (true)
     {
         int nev = kevent(kqueueFd, NULL, 0, events.data(), events.size(), NULL);
-        if (nev == -1) {
+        if (nev == -1)
+        {
             perror("Error in kevent");
             close(kqueueFd);
             exit(1);
@@ -232,7 +251,7 @@ void Server::handleConnectionsWithKQueue(Parser &configFile)
                     continue;
                 }
                 std::cout << "New connection, socket fd is " << clientSocket << ", ip is : " << inet_ntoa(clientAddr.sin_addr) << ", port : " << ntohs(clientAddr.sin_port) << std::endl;
-
+                setNonBlocking(clientSocket);
                 EV_SET(&change, clientSocket, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
                 if (kevent(kqueueFd, &change, 1, NULL, 0, NULL) == -1)
                 {
@@ -240,76 +259,10 @@ void Server::handleConnectionsWithKQueue(Parser &configFile)
                     close(clientSocket);
                     continue;
                 }
-            } else
+            }
+            else
             {
                 int clientSocket = events[i].ident;
-                Response response(clientSocket);
-                Request request(clientSocket, configFile, response);
-                response.handleResponse(request);
-                responseClient(clientSocket, response.getResponse());
-                
-                std::string keepAlive = request.getHeaders().getValue("Connection");
-                if (keepAlive == "keep-alive")
-                    continue;
-
-                close(clientSocket);
-                EV_SET(&change, clientSocket, EVFILT_READ, EV_DELETE, 0, 0, NULL);
-                if (kevent(kqueueFd, &change, 1, NULL, 0, NULL) == -1) {
-                    perror("Error removing client socket from kqueue");
-                }
-            }
-        }
-    }
-}
-
-
-void Server::handleConnections(Parser &configFile)
-{
-    int kq = kqueue();
-    if (kq == -1)
-    {
-        perror("Error creating kqueue");
-        exit(1);
-    }
-
-    struct kevent changeList[MAX_EVENTS];
-    struct kevent eventList[MAX_EVENTS];
-    setNonBlocking(serverSocket);
-    EV_SET(&changeList[0], serverSocket, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
-
-    while (true)
-    {
-        int eventCount = kevent(kq, changeList, 1, eventList, MAX_EVENTS, NULL);
-        if (eventCount == -1)
-        {
-            perror("Error in kevent");
-            close(serverSocket);
-            exit(1);
-        }
-
-        for (int i = 0; i < eventCount; ++i)
-        {
-            if (eventList[i].ident == serverSocket)
-            {
-                struct sockaddr_in clientAddr;
-                socklen_t clientLen = sizeof(clientAddr);
-                int clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddr, &clientLen);
-                if (clientSocket < 0)
-                {
-                    perror("Error accepting client connection");
-                    continue;
-                }
-                std::cout << "New connection, socket fd is " << clientSocket << ", ip is : " << inet_ntoa(clientAddr.sin_addr) << ", port : " << ntohs(clientAddr.sin_port) << std::endl;
-                
-                setNonBlocking(clientSocket);
-
-                EV_SET(&changeList[0], clientSocket, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
-                kevent(kq, changeList, 1, NULL, 0, NULL);
-            }
-            else if (eventList[i].filter == EVFILT_READ)
-            {
-                int clientSocket = eventList[i].ident;
-
                 Response response(clientSocket);
                 Request request(clientSocket, configFile, response);
                 response.handleResponse(request);
@@ -318,19 +271,65 @@ void Server::handleConnections(Parser &configFile)
                 std::string keepAlive = request.getHeaders().getValue("Connection");
                 if (keepAlive != "keep-alive")
                 {
-                    close(clientSocket);
-                    EV_SET(&changeList[0], clientSocket, EVFILT_READ, EV_DELETE, 0, 0, NULL);
-                    kevent(kq, changeList, 1, NULL, 0, NULL);
-                }
-                else
-                {
-                    EV_SET(&changeList[0], clientSocket, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
-                    kevent(kq, changeList, 1, NULL, 0, NULL);
+                    EV_SET(&change, clientSocket, EVFILT_READ, EV_DELETE, 0, 0, NULL);
+                    if (kevent(kqueueFd, &change, 1, NULL, 0, NULL) == -1)
+                    perror("Error removing client socket from kqueue");
+                    if (close(clientSocket) == -1)
+                        perror("Error closing client socket");    
                 }
             }
         }
     }
 }
+
+// void Server::handleConnections(Parser &configFile)
+// {
+    
+//     int kqueueFd = kqueue();
+//     if (kqueueFd == -1)
+//     {
+//         perror("Error creating kqueue instance");
+//         exit(1);
+//     }
+
+//     struct kevent change;
+//     EV_SET(&change, serverSocket, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
+
+//     if (kevent(kqueueFd, &change, 1, NULL, 0, NULL) == -1)
+//     {
+//         perror("Error adding server socket to kqueue");
+//         close(kqueueFd);
+//         exit(1);
+//     }
+
+//     std::vector<struct kevent> events(MAX_EVENTS);
+
+//     while (true)
+//     {
+//         int nev = kevent(kqueueFd, NULL, 0, events.data(), events.size(), NULL);
+//         if (nev == -1)
+//         {
+//             perror("Error in kevent");
+//             close(kqueueFd);
+//         }
+
+//         for (int i = 0; i < nev; ++i)
+//         {
+//             if (events[i].ident == serverSocket)
+//             {
+//                 if (!addClientToQueue(change, kqueueFd))
+//                     continue;
+//             }
+//             else if (events[i].filter == EVFILT_READ)
+//             {
+//                 if (!handleClient(events[i].ident, configFile, kqueueFd, change))
+//                     continue;
+//             }
+//         }
+//     }
+// }
+
+
 // void Server::handleConnections(Parser &configFile) {
 //     struct sockaddr_in clientAddr;
 //     socklen_t clientLen = sizeof(clientAddr);

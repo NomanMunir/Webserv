@@ -6,12 +6,12 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 11:20:23 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/14 17:49:37 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/20 17:45:48 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Headers.hpp"
-#include "../Response/Response.hpp"
+#include "../response/Response.hpp"
 
 Headers::Headers(const Headers &h)
 {
@@ -139,7 +139,6 @@ void Headers::parseHeader(Response &structResponse)
 		headers[key] = value;
 	}
 	parseRequestURI(structResponse);
-	// printHeaders();
 }
 
 Headers::Headers(int clientSocket, Response &structResponse)
@@ -148,14 +147,13 @@ Headers::Headers(int clientSocket, Response &structResponse)
 
 	while (read(clientSocket, &buffer, 1) > 0)
     {
-		std::cout <<buffer;
 		if (!isascii(buffer))
 			structResponse.sendError("400");
         this->rawHeaders.append(1, buffer);
         if (this->rawHeaders.find("\r\n\r\n") != std::string::npos)
             break;
     }
-	std::cout << "rawHeaders : " << this->rawHeaders << std::endl;
+	// std::cout << "rawHeaders : " << this->rawHeaders << std::endl;
 	// parseHeader(structResponse);
 }
 

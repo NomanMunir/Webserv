@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:46:04 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/14 17:01:12 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/20 17:23:28 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -222,9 +222,15 @@ void printServers(std::vector<ServerConfig> servers)
     }
 }
 
-void responseClient(int fd, std::string response)
+bool responseClient(int fd, std::string response)
 {
-    write(fd, response.c_str(), response.size());
+        ssize_t bytesSent = send(fd, response.c_str(), response.size(), 0);
+        if (bytesSent == -1)
+        {
+            perror("Error sending response to client");
+            return (false);
+        }
+        return (true);
 }
 
 std::string getErrorMsg(std::string errorCode)

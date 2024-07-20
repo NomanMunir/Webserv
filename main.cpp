@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 17:07:42 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/13 10:09:55 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/20 17:37:36 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int main(int ac, const char **av)
             av[1] = "config1.conf";
         Parser parser(av[1]);
         Validation validation(parser);
-        Server server(parser);
+        Server server;
         server.run(parser);
     }
     catch (std::exception &e)
