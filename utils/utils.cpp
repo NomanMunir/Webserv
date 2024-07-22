@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:46:04 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/20 17:23:28 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/22 17:10:19 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,6 +165,10 @@ static void initializeLimits(std::map<std::string, std::vector<int> > &limits)
     limits["Content-Length"] = std::vector<int>();
     limits["Content-Length"].push_back(0);
     limits["Content-Length"].push_back(1000000); // 0 to 1,000,000 bytes (1 MB)
+
+    limits["num"] = std::vector<int>();
+    limits["num"].push_back(0);
+    limits["num"].push_back(2147483647);
 }
 
 bool validateNumber(std::string key, std::string value)
@@ -227,7 +231,8 @@ bool responseClient(int fd, std::string response)
         ssize_t bytesSent = send(fd, response.c_str(), response.size(), 0);
         if (bytesSent == -1)
         {
-            perror("Error sending response to client");
+            perror("Error sending response to client fd ");
+            std::cout << fd << std::endl;
             return (false);
         }
         return (true);

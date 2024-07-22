@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 15:22:38 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/20 17:45:31 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/22 17:09:57 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,11 +124,32 @@ void Response::generateResponseFromFile(std::string &path)
 	response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: " + mimeType + "\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 }
 
+void Response::handleRedirect(std::map<std::string, std::string> &redirect)
+{
+	float statusCode = std::atof(redirect.begin()->first.c_str());
+	if (statusCode > 299 && statusCode < 400)
+	{
+		response = "HTTP/1.1 " + redirect.begin()->first + " " + getErrorMsg(redirect.begin()->first) + "\r\nLocation: " + redirect.begin()->second + "\r\n\r\n";
+	}
+	else
+	{
+		std::string body = redirect.begin()->second;
+		response = "HTTP/1.1 " + redirect.begin()->first + " " + getErrorMsg(redirect.begin()->first) + "\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
+	}
+}
+
 void Response::handleGET(bool isGet, RouteConfig &targetRoute, std::string &path)
 {
 	if (isGet)
-	{
+	{ 
 		std::string fullPath = generateFullPath(targetRoute.root, path);
+		std::cout << "redirect: " << targetRoute.redirect << std::endl;
+		// if (targetRoute.redirect.begin()->first != "")
+		// {
+		// 	std::cout << "Redirect" << std::endl;
+		// 	handleRedirect(targetRoute.redirect);
+		// 	return;	
+		// }
 		// std::cout << "FullPath : " << fullPath << std::endl;
 		int type = checkType(fullPath, targetRoute);
 		if (type == 2)
@@ -201,7 +222,6 @@ void Response::findErrorPage(std::string errorCode, std::map<std::string, std::s
 	std::map<std::string, std::string>::iterator it = errorPages.find(errorCode);
 	if (it != errorPages.end())
 	{
-		// std::cout << "Error Page: " << it->second << std::endl;
 		std::ifstream file("." + it->second);
 		std::stringstream buffer;
 		buffer << file.rdbuf();
@@ -226,17 +246,17 @@ void Response::sendError(std::string errorCode)
 
 	std::map<std::string, std::string> errorPages = targetServer.errorPages;
 	findErrorPage(errorCode, errorPages);
-	responseClient(this->clientSocket, this->response);
-	// if (myFind(closeCodes, errorCode))
-	// {
-	// 	// close(this->clientSocket);
-		
-	// 	// throw std::runtime_error("Error: " + errorCode);
-	// }
+	if (myFind(closeCodes, errorCode))
+		isConClosed = true;
 }
 
 
-Response::Response(int clientFd) : clientSocket(clientFd) { }
+bool Response::getIsConClosed()
+{
+	return isConClosed;
+}
+
+Response::Response(int clientFd) : clientSocket(clientFd), isConClosed(false) { }
 
 Response::~Response() { }
 

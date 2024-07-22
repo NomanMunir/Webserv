@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 11:20:23 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/20 17:45:48 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/22 11:02:26 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ void Headers::parseFirstLine(Response &structResponse)
 
 void Headers::parseHeader(Response &structResponse)
 {
-	std::string request = rawHeaders.substr(0, rawHeaders.size() - 2);
+	std::string request = rawHeaders.substr(0, rawHeaders.size() - 2); // -2 is removing the last \r\n
 	std::string line;
 	std::istringstream iss(request);
 	while (std::getline(iss, firstLine, '\n'))

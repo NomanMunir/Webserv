@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 15:21:58 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/13 09:31:58 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/22 16:31:55 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ class Response
 		RouteConfig getTargetRoute();
 		void sendError(std::string errorCode);
 		void handleResponse(Request &request);
+		bool getIsConClosed();
 
 	private:
 		std::map<int, std::string> statusCodes;
@@ -40,6 +41,7 @@ class Response
 		int clientSocket;
 		ServerConfig targetServer;
 		RouteConfig targetRoute;
+		bool isConClosed;
 		
 		void defaultErrorPage(std::string errorCode);
 		void handleGET(bool isGet, RouteConfig &targetRoute, std::string &path);
@@ -49,6 +51,7 @@ class Response
 		int checkType(std::string &path, RouteConfig &targetRoute);
 		bool handleDirectory(std::string &fullPath, std::string &path, RouteConfig &targetRoute);
 		void generateResponseFromFile(std::string &path);
+		void handleRedirect(std::map<std::string, std::string> &redirect);
 
 
 };

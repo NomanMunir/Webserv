@@ -6,13 +6,13 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 14:41:04 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/20 17:39:02 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/21 10:34:55 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 #include "Connections.hpp"
-#define PORT 8080
+#define PORT 80
 
 void setNonBlocking(int fd)
 {
@@ -74,57 +74,6 @@ void Server::handleConnections(Parser &configFile)
     connections.loop(configFile);
 }
 
-
-// void Server::handleConnectionsWithPoll(Parser &configFile)
-// {
-
-//     pollfd serverPollfd;
-//     serverPollfd.fd = serverSocket;
-//     serverPollfd.events = POLLIN;
-//     pollfds.push_back(serverPollfd);
-//     while (true)
-//     {
-//         int activity = poll(&pollfds[0], pollfds.size(), -1);
-//         if (activity < 0 && errno != EINTR) {
-//             perror("Error in poll");
-//             exit(1);
-//         }
-
-//         if (pollfds[0].revents & POLLIN) {
-//             int clientSocket = accept(serverSocket, nullptr, nullptr);
-//             if (clientSocket < 0) {
-//                 std::cerr << "Error accepting client connection" << std::endl;
-//                 continue;
-//             }
-//             std::cout << "New connection, socket fd is " << clientSocket << std::endl;
-
-//             pollfd clientPollfd;
-//             clientPollfd.fd = clientSocket;
-//             clientPollfd.events = POLLIN;
-//             pollfds.push_back(clientPollfd);
-//         }
-//         for (size_t i = 1; i < pollfds.size(); ++i)
-//         {
-//             if (pollfds[i].revents & POLLIN)
-//             {
-//                 Response response(pollfds[i].fd);
-//                 Request request(pollfds[i].fd, configFile, response);
-//                 response.handleResponse(request);
-//                 responseClient(pollfds[i].fd, response.getResponse());
-//                 std::string keepAive = request.getHeaders().getValue("Connection");
-//                 if (keepAive != "keep-alive")
-//                 {
-//                     if (close(pollfds[i].fd) == -1)
-//                     {
-//                         perror("Error closing client socket");
-//                         exit(1);
-//                     }
-//                     pollfds.erase(pollfds.begin() + i);
-//                 }
-//             }
-//         }
-//     }
-// }
 
 
 void Server::handleConnectionsWithSelect(Parser &configFile)
@@ -281,6 +230,61 @@ void Server::handleConnectionsWithKQueue(Parser &configFile)
         }
     }
 }
+
+
+
+// void Server::handleConnectionsWithPoll(Parser &configFile)
+// {
+
+//     pollfd serverPollfd;
+//     serverPollfd.fd = serverSocket;
+//     serverPollfd.events = POLLIN;
+//     pollfds.push_back(serverPollfd);
+//     while (true)
+//     {
+//         int activity = poll(&pollfds[0], pollfds.size(), -1);
+//         if (activity < 0 && errno != EINTR) {
+//             perror("Error in poll");
+//             exit(1);
+//         }
+
+//         if (pollfds[0].revents & POLLIN) {
+//             int clientSocket = accept(serverSocket, nullptr, nullptr);
+//             if (clientSocket < 0) {
+//                 std::cerr << "Error accepting client connection" << std::endl;
+//                 continue;
+//             }
+//             std::cout << "New connection, socket fd is " << clientSocket << std::endl;
+
+//             pollfd clientPollfd;
+//             clientPollfd.fd = clientSocket;
+//             clientPollfd.events = POLLIN;
+//             pollfds.push_back(clientPollfd);
+//         }
+//         for (size_t i = 1; i < pollfds.size(); ++i)
+//         {
+//             if (pollfds[i].revents & POLLIN)
+//             {
+//                 Response response(pollfds[i].fd);
+//                 Request request(pollfds[i].fd, configFile, response);
+//                 response.handleResponse(request);
+//                 responseClient(pollfds[i].fd, response.getResponse());
+//                 std::string keepAive = request.getHeaders().getValue("Connection");
+//                 if (keepAive != "keep-alive")
+//                 {
+//                     if (close(pollfds[i].fd) == -1)
+//                     {
+//                         perror("Error closing client socket");
+//                         exit(1);
+//                     }
+//                     pollfds.erase(pollfds.begin() + i);
+//                 }
+//             }
+//         }
+//     }
+// }
+
+
 
 // void Server::handleConnections(Parser &configFile)
 // {

@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 15:49:37 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/20 17:44:55 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/22 11:15:55 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,17 @@
 #include "request/Request.hpp"
 
 Connections::~Connections() { }
+
+Connections::Connections(int fd) : serverSocket(fd)
+{
+	this->kqueueFd = kqueue();
+	if (this->kqueueFd == -1)
+	{
+		std::cerr << "Error: " << strerror(errno) << std::endl;
+		throw std::exception();
+	}
+	setClient(fd);
+}
 
 static void setNonBlocking(int fd)
 {
@@ -25,26 +36,32 @@ static void setNonBlocking(int fd)
 void Connections::removeClient(int fd)
 {
 	EV_SET(&this->change, fd, EVFILT_READ, EV_DELETE, 0, 0, NULL);
+    std::cout <<"Connection closed by client on socket fd " << fd << std::endl;
+
 	if (kevent(this->kqueueFd, &this->change, 1, NULL, 0, NULL) == -1)
 	{
 		std::cerr << "Error: " << strerror(errno) << std::endl;
+        close(fd);
 		throw std::exception();
 	}
 	close(fd);
 }
 void Connections::setClient(int fd)
 {
-	EV_SET(&this->change, fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
+	// EV_SET(&this->change, fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
+	setNonBlocking(fd);
+    EV_SET(&change, fd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
 	if (kevent(this->kqueueFd, &this->change, 1, NULL, 0, NULL) == -1)
 	{
 		std::cerr << "Error: " << strerror(errno) << std::endl;
+        close(fd);
 		throw std::exception();
 	}
 }
 
 bool Connections::peekRequest(int clientSocket)
 {
-    char buffer[1024];
+    char buffer[1];
 
     ssize_t bytesRead = recv(clientSocket, buffer, 1, MSG_PEEK);
     if (bytesRead < 0)
@@ -53,18 +70,12 @@ bool Connections::peekRequest(int clientSocket)
         return (true);
     }
     else if (bytesRead == 0)
-    {
-        std::cout <<"Connection closed by client" << std::endl;
         return (true);
-    }
     else
     {
         buffer[bytesRead] = '\0';
         if (strlen(buffer) == 0)
-        {
-            std::cout << "Connection closed by client" << std::endl;
             return (true);
-        }
     }
     return false;
 }
@@ -84,46 +95,25 @@ bool Connections::handleClient(int clientSocket, Parser &configFile)
         // Handle the response and send it to the client
         response.handleResponse(request);
         std::string clientResponse = response.getResponse();
-        
         if (!responseClient(clientSocket, clientResponse))
             removeClient(clientSocket);
+        if (response.getIsConClosed())
+        {
+            removeClient(clientSocket);
+            return (false);
+        }
 
         std::string keepAlive = request.getHeaders().getValue("Connection");
         if (keepAlive != "keep-alive")
-        {
-            EV_SET(&change, clientSocket, EVFILT_READ, EV_DELETE, 0, 0, NULL);
-            if (kevent(kqueueFd, &change, 1, NULL, 0, NULL) == -1)
-                perror("Error removing client socket from kqueue");
-            close(clientSocket);
-        }
+            removeClient(clientSocket);
     }
     catch (const std::exception &e)
     {
         std::cerr << "Error handling request: " << e.what() << std::endl;
-        EV_SET(&change, clientSocket, EVFILT_READ, EV_DELETE, 0, 0, NULL);
-        if (kevent(kqueueFd, &change, 1, NULL, 0, NULL) == -1)
-            perror("Error removing client socket from kqueue");
-        close(clientSocket);
+        removeClient(clientSocket);
         return (false);
     }
     return (true);
-}
-
-Connections::Connections(int fd) : serverSocket(fd)
-{
-	this->kqueueFd = kqueue();
-	if (this->kqueueFd == -1)
-	{
-		std::cerr << "Error: " << strerror(errno) << std::endl;
-		throw std::exception();
-	}
-	setNonBlocking(fd);
-	EV_SET(&change, fd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
-	if (kevent(this->kqueueFd, &this->change, 1, NULL, 0, NULL) == -1)
-	{
-		std::cerr << "Error: " << strerror(errno) << std::endl;
-		throw std::exception();
-	}
 }
 
 bool Connections::addClient()
@@ -137,14 +127,7 @@ bool Connections::addClient()
         return false;
     }
     std::cout << "New connection, socket fd is " << clientSocket << ", ip is : " << inet_ntoa(clientAddr.sin_addr) << ", port : " << ntohs(clientAddr.sin_port) << std::endl;
-	setNonBlocking(clientSocket);
-    EV_SET(&change, clientSocket, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
-    if (kevent(kqueueFd, &change, 1, NULL, 0, NULL) == -1)
-    {
-        perror("Error adding client socket to kqueue");
-        close(clientSocket);
-        return false;
-    }
+    setClient(clientSocket);
     return true;
 }
 

@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/30 13:35:44 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/07 17:42:41 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/22 17:47:41 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,17 @@ void Validation::validateMethods(std::vector<std::string> methods)
     }
 }
 
+void Validation::validateReturn(std::string &redirect)
+{
+	// std::cout << "redirect[return]: " << redirect << std::endl;
+	std::vector <std::string> tokens = split(redirect, ' ');
+	// std::cout << "tokens: " << tokens.size() << std::endl;
+	// std::cout << "tokens[0]: " << tokens[0] << std::endl;
+	// std::cout << "tokens[1]: " << tokens[1] << std::endl;
+	if (tokens.size() > 2 || tokens.size() == 0 || !validateNumber("error_pages", tokens[0]))
+		throw std::runtime_error("Error: invalid configuration file " + redirect);
+}
+
 void Validation::validateRouteMap(std::map<std::string, RouteConfig> &routeMap)
 {
 	if (routeMap.begin()->first == "")
@@ -32,10 +43,14 @@ void Validation::validateRouteMap(std::map<std::string, RouteConfig> &routeMap)
 	for (std::map<std::string, RouteConfig>::iterator it = routeMap.begin(); it != routeMap.end(); it++)
 	{
         validateMethods(it->second.methods);
-
+		if (it->second.redirect != "")
+		{
+		std::cout << "redirect: " << it->second.redirect << std::endl;
+			validateReturn(it->second.redirect);
+			
+		}
 		isDirectory(it->second.root);
 		isDirectory(it->second.root + "/" + it->first);
-		isDirectory(it->second.root + "/" + it->second.redirect);
 		isDirectory(it->second.cgiPath);
 		isDirectory(it->second.uploadDir);
 		// for (size_t i = 0; i < it->second.defaultFile.size(); i++)

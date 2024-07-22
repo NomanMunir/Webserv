@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:31:21 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/20 17:45:42 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/21 11:41:43 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,6 @@ void Request::findServer(Response &structResponse, Parser &parser)
 	}
 	else
 	{
-		std::cout << "hi3 \n";
 		structResponse.setTargetServer(parser.getServers()[0]);
 		structResponse.sendError("400");
 	}

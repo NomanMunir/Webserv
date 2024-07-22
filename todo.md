@@ -40,8 +40,19 @@
 [*] it needs a server does not metter even if it's empty. it will still run.
 [*] if the location key is "hi" not "/hi" what to do
 [*] if root has slash at the end
+[*] substring creating problems.
+[*] check for file types and set appropriate values.
+[*] check Accept header before sending response.
 
-[ ] substring creating problems.
-[ ] check for file types and set appropriate values.
 
-[ ] check Accept header before sending response.
+
+[ ] if there are more server in the config file. we need to set them up for listening.
+
+[ ] Post and delete request;
+
+[ ] genrate a proper response with proper response headers for the request
+
+[ ] chunked encoding.
+
+[ ] redirect 
+[*] 404 close connection.

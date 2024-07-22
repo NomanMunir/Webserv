@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/30 13:36:21 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/03 12:05:11 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/22 17:07:38 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ class Validation
 		bool validateErrorPages(std::string key, std::string value);		
 		void validateDirectives(std::map<std::string, std::string> directives);
 		void validateRouteMap(std::map<std::string, RouteConfig> &routeMap);
+		void validateReturn(std::string &redirect);
 
 };
 

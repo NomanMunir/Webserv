@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:52:26 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/08 16:03:41 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/22 17:45:44 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void Parser::setRouteBlock(std::string &key, std::string &value)
         routeConfig.methods = split(value, ' ');
     else
     {
-        if (key == "redirect")
+        if (key == "return")
             routeConfig.redirect = value;
         else if (key == "root")
             routeConfig.root = value;
@@ -43,7 +43,7 @@ void Parser::checkLocationBlock()
     std::string value = tokens[1]; 
     tokens.erase(tokens.begin(), tokens.begin() + 2);
     const std::string keyArray[] = {
-        "methods", "redirect", "root", "directory_listing",
+        "methods", "return", "root", "directory_listing",
         "default_file", "cgi_path", "cgi", "upload_dir"
     };
     std::vector<std::string> keys;
@@ -147,8 +147,10 @@ void Parser::checkServerBlock()
         {
             if (it->first == value)
                 throw std::runtime_error("Error: invalid configuration file " + value);
-        }   
+        }
+        setDefaultRoute();
         serverConfig.routeMap[value] = routeConfig;
+        resetRoute();
         tokens.erase(tokens.begin());
     }
     else
@@ -233,6 +235,20 @@ void Parser::tokanize(std::stringstream &buffer)
     }
 }
 
+void Parser::setDefaultRoute()
+{
+    if (routeConfig.methods.empty())
+        routeConfig.methods.push_back("GET");
+    if (routeConfig.redirect.empty())
+        routeConfig.redirect = "";
+    if (routeConfig.root.empty())
+        routeConfig.root = "/Users/nmunir/Desktop/Webserv";
+    if (routeConfig.cgiPath.empty())
+        routeConfig.cgiPath = "/Users/nmunir/Desktop/Webserv";
+    if (routeConfig.uploadDir.empty())
+        routeConfig.uploadDir = "/Users/nmunir/Desktop/Webserv";
+}
+
 void Parser::setDefault()
 {
     for (size_t i = 0; i < servers.size(); i++)
@@ -262,10 +278,22 @@ void Parser::setDefault()
             servers[i].routeMap[""].defaultFile.push_back("index.html");
             servers[i].routeMap[""].cgiPath = "/Users/nmunir/Desktop/Webserv";
             servers[i].routeMap[""].uploadDir = "/Users/nmunir/Desktop/Webserv";
-            servers[i].routeMap[""].redirect = "/";
+            servers[i].routeMap[""].redirect = "";
         }
     }
 
+}
+
+void Parser::resetRoute()
+{
+    routeConfig.methods.clear();
+    routeConfig.redirect = "";
+    routeConfig.root = "";
+    routeConfig.directoryListing = false;
+    routeConfig.defaultFile.clear();
+    routeConfig.cgiPath = "";
+    routeConfig.uploadDir = "";
+    serverConfig.routeMap[""] = routeConfig;
 }
 
 void Parser::reset()
@@ -275,17 +303,7 @@ void Parser::reset()
     serverConfig.errorPages.clear();
     serverConfig.clientBodySizeLimit = "";
     serverConfig.routeMap.clear();
-    
-    serverConfig.routeMap.clear();
-    routeConfig.methods.clear();
-    routeConfig.redirect = "";
-    routeConfig.root = "";
-    routeConfig.directoryListing = false;
-    routeConfig.defaultFile.clear();
-    routeConfig.cgiPath = "";
-    routeConfig.uploadDir = "";
-    routeConfig.redirect = "";
-    serverConfig.routeMap[""] = routeConfig;
+    resetRoute();
 }
 
 Parser::~Parser() {}

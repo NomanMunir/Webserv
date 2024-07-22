@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 15:49:37 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/20 17:26:07 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/21 10:25:37 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@
 #include <vector>
 #include "parsing/Parser.hpp"
 
-#define MAX_EVENTS 100
+#define MAX_EVENTS 128
 
 class Connections
 {
