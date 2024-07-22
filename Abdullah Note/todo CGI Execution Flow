@@ -1,0 +1,28 @@
+Step-by-Step CGI Execution Flow
+CGI Request Recognition
+
+Your server identifies a request that requires CGI handling based on the request URI or file extension (e.g., .cgi, .pl).
+Environment Setup
+
+Populate environment variables with information about the request.
+Executing the CGI Script
+
+Fork a new process.
+Set up input/output for the CGI script.
+Interprocess Communication
+
+The parent process handles the client connection.
+The child process executes the CGI script.
+Handling Script Output
+
+Read and parse the script's output.
+Send headers and content back to the client.
+
+
+Summary
+Recognize CGI Requests: Identify requests that require CGI handling.
+Set Environment Variables: Populate the environment variables based on the request.
+Execute CGI Script: Fork a new process and execute the CGI script, redirecting input and output as needed.
+Interprocess Communication: Use pipes for communication between the parent and child processes.
+Handle Script Output: Parse the output from the CGI script and send the headers and content back to the client.
+This flow ensures that your server can handle CGI requests properly, providing the necessary environment and executing the script to generate a response.

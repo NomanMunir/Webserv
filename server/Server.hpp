@@ -36,7 +36,7 @@ private:
     void storeFirstLine(const std::string &request);
     void storeHeaders(const std::string &request);
     void printHeaders();
-    void exeptNewConnection();
+    void acceptNewConnection();
     // bool parseRequestLine(std::istringstream &stream);
     // bool parseHeaders(std::istringstream &stream);
     // void sendBadRequest();

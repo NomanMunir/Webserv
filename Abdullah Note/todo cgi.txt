@@ -1,0 +1,64 @@
+Setting Environment: 
+Before executing the CGI script, your server must populate these environment variables based on the incoming request.
+
+Key Environment Variables
+Here are some of the key environment variables that need to be set:
+
+REQUEST_METHOD:
+
+Indicates the method used for the request (e.g., GET, POST, PUT, DELETE).
+Example: REQUEST_METHOD=GET
+QUERY_STRING:
+
+Contains the query string part of the URL, which comes after the ? in the URL for GET requests.
+Example: QUERY_STRING=name=John&age=30
+CONTENT_TYPE:
+
+Specifies the media type of the body of the request for POST and PUT requests.
+Example: CONTENT_TYPE=application/x-www-form-urlencoded
+CONTENT_LENGTH:
+
+Indicates the size of the body of the request in bytes. This is used for POST and PUT requests.
+Example: CONTENT_LENGTH=27
+SCRIPT_NAME:
+
+The virtual path to the CGI script being executed.
+Example: SCRIPT_NAME=/cgi-bin/script.cgi
+SERVER_NAME:
+
+The name of the server host (e.g., localhost or the domain name).
+Example: SERVER_NAME=www.example.com
+SERVER_PORT:
+
+The port number on which the request was received.
+Example: SERVER_PORT=80
+SERVER_PROTOCOL:
+
+The name and version of the information protocol this request came in with (e.g., HTTP/1.1).
+Example: SERVER_PROTOCOL=HTTP/1.1
+REMOTE_ADDR:
+
+The IP address of the client sending the request.
+Example: REMOTE_ADDR=192.168.1.1
+REMOTE_PORT:
+
+The port number from which the request was sent.
+Example: REMOTE_PORT=53784
+HTTP_* Headers:
+
+All incoming HTTP headers are converted into environment variables. For example, the User-Agent header becomes HTTP_USER_AGENT.
+Example: HTTP_USER_AGENT=Mozilla/5.0
+
+
+
+Setting Environment Variables:
+
+The setenv function is used to set the environment variables.
+The first argument is the name of the environment variable.
+The second argument is the value to set.
+The third argument is 1, which means to overwrite the existing value if the variable already exists.
+Executing the CGI Script:
+
+The execv function is used to execute the CGI script.
+It replaces the current process image with a new process image specified by the path to the CGI script.
+If execv fails, it returns -1, and an error message is printed.

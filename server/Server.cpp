@@ -90,35 +90,25 @@ void Server::handleConnections()
 				// creat new function to handle the new connection
 				if (event.fd == serverSocket)
 				{
-					exeptNewConnection();
+					acceptNewConnection();
 				}
                 else
                 {
                     client_fd = event.fd;
 					handleRequest(client_fd);
+					// if(headers["method"] == "POST")
+					// {
+					// 	// handlePostRequest(client_fd);
+					// }
+					// // prepareAndSendResponse(client_fd);
+					
 					std::cout << "iteration" << i<< std::endl;
                 	close(client_fd);
 					pollManager.removeSocket(i); // Remove from poll list
 					--i;      
                     std::cout << "iteration" << i<< std::endl;
                 }
-                // if(event.revents & POLLOUT)
-				// {
-				// 	 prepareAndSendResponse(client_fd);
 
-				// 	// Close client connection after handling request                  
-				// 		// Adjust index to account for erased element
-				// }
-                    
-                // if(event.revents & POLLIN)
-                // {
-
-                // }
-                // else
-                // {
-                //     std::cout << "event.fd: " << event.fd << std::endl;
-                //     std::cout << "Error: Unknown event" << std::endl;
-                // }
 			}
 		}
 	}
@@ -141,8 +131,17 @@ void Server::printHeaders()
 		std::cout << it->first << ": " << it->second << std::endl;
 	}
 }
-
-void Server::exeptNewConnection()
+/**
+ * @brief Accept new connection
+ * 		- Accept new connection
+ * 			- Add client socket to poll list
+ * 			- Set client socket to non-blocking
+ * @param void
+ * @return void
+ * 		- No return value
+ * 		- Add client socket to poll list
+ */
+void Server::acceptNewConnection()
 {
     socklen_t	clientLen;
 	int			client_fd;
