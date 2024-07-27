@@ -6,7 +6,7 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 14:41:08 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/20 17:45:12 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/24 15:49:37 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@
 class Server
 {
 public:
-    Server();
+    Server(Parser &configFile);
     void run(Parser &configFile);
     int getServersocket() const;
 
@@ -52,7 +52,7 @@ private:
     int serverSocket;
     struct sockaddr_in serverAddr;
 
-    void initServerSocket();
+    void initServerSocket(Parser &configFile);
 
     void handleConnections(Parser &configFile);
     void handleConnectionsWithSelect(Parser &configFile);

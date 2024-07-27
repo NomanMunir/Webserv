@@ -45,7 +45,7 @@ void Validation::validateRouteMap(std::map<std::string, RouteConfig> &routeMap)
         validateMethods(it->second.methods);
 		if (it->second.redirect != "")
 		{
-		std::cout << "redirect: " << it->second.redirect << std::endl;
+		// std::cout << "redirect: " << it->second.redirect << std::endl;
 			validateReturn(it->second.redirect);
 			
 		}

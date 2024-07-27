@@ -94,6 +94,7 @@ void Headers::parseFirstLine(Response &structResponse)
     headers["method"] = method;
     headers["version"] = version;
 	
+	std::cout << "URI: in parseFirstLine: " << uri << std::endl;
     headers["uri"] = split(uri, '?')[0];
 }
 

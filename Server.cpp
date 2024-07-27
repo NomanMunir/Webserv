@@ -6,13 +6,13 @@
 /*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 14:41:04 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/21 10:34:55 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/24 15:50:35 by nmunir           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 #include "Connections.hpp"
-#define PORT 80
+#define PORT 8080
 
 void setNonBlocking(int fd)
 {
@@ -25,13 +25,12 @@ int Server::getServersocket() const
     return serverSocket;
 }
 
-Server::Server()
+Server::Server(Parser &configFile)
 {
-    initServerSocket();
+    initServerSocket(configFile);
 }
 
-
-void Server::initServerSocket() 
+void Server::initServerSocket(Parser &configFile) 
 {
     serverSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (serverSocket < 0) {
@@ -73,8 +72,6 @@ void Server::handleConnections(Parser &configFile)
     Connections connections(serverSocket);
     connections.loop(configFile);
 }
-
-
 
 void Server::handleConnectionsWithSelect(Parser &configFile)
 {

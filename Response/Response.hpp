@@ -51,7 +51,8 @@ class Response
 		int checkType(std::string &path, RouteConfig &targetRoute);
 		bool handleDirectory(std::string &fullPath, std::string &path, RouteConfig &targetRoute);
 		void generateResponseFromFile(std::string &path);
-		void handleRedirect(std::map<std::string, std::string> &redirect);
+		void handleRedirect(std::string redirect);
+
 
 
 };

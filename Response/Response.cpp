@@ -71,11 +71,55 @@ int Response::checkType(std::string &path, RouteConfig &targetRoute)
 	return (0);
 }
 
+std::string join(const std::vector<std::string> &tokens, char delimiter)
+{
+    std::string joined;
+    for (size_t i = 0; i < tokens.size(); ++i)
+    {
+        if (i > 0)
+            joined += delimiter;
+        joined += tokens[i];
+    }
+    return joined;
+}
+
+std::string resolvePath(std::string &fullPath, std::string &defaultFile)
+{
+	std::vector<std::string> rootTokens = split(fullPath, '/');
+    std::vector<std::string> pathTokens = split(defaultFile, '/');
+
+    std::vector<std::string> resolvedTokens = rootTokens;
+	std::cout << "pathtokens: " << pathTokens.size() << std::endl;
+    for (size_t i = 0; i < pathTokens.size(); ++i)
+    {
+        if (pathTokens[i] == "..")
+        {
+            if (!resolvedTokens.empty())
+                resolvedTokens.pop_back();
+        }
+        else if (pathTokens[i] != ".")
+            resolvedTokens.push_back(pathTokens[i]);
+    }
+
+    return (join(resolvedTokens, '/'));
+}
 bool Response::handleDirectory(std::string &fullPath, std::string &path, RouteConfig &targetRoute)
 {
+	std::string newPath;
 	for (size_t i = 0; i < targetRoute.defaultFile.size(); i++)
 	{
-		std::string newPath = fullPath + targetRoute.defaultFile[i];
+		if (targetRoute.defaultFile[i][0] == '/')
+			newPath = targetRoute.defaultFile[i];
+		else
+			newPath = resolvePath(fullPath, targetRoute.defaultFile[i]);
+		std::cout << "New Path: " << newPath << std::endl;
+		// std::string newPath = fullPath + targetRoute.defaultFile[i];
+		if (newPath.find(targetRoute.root) != 0)
+		{
+			std::cout << "Error: " << "What are you trying to access oui?" << std::endl;
+			this->sendError("403");
+			return (false);
+		}
 		if (isFile(newPath))
 		{
 			fullPath = newPath;
@@ -90,7 +134,6 @@ bool Response::handleDirectory(std::string &fullPath, std::string &path, RouteCo
 	else
 	{
 		std::cout << "Error: " << "Handle Directory" << std::endl;
-		
 		this->sendError("403");
 	}
 	return (false);
@@ -124,33 +167,41 @@ void Response::generateResponseFromFile(std::string &path)
 	response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: " + mimeType + "\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 }
 
-void Response::handleRedirect(std::map<std::string, std::string> &redirect)
+void Response::handleRedirect(std::string redirect)
 {
-	float statusCode = std::atof(redirect.begin()->first.c_str());
-	if (statusCode > 299 && statusCode < 400)
+	std::vector<std::string> tokens = split(redirect, ' ');
+	float errorCode = std::atof(tokens[0].c_str());
+
+	if (tokens.size() == 2)
 	{
-		response = "HTTP/1.1 " + redirect.begin()->first + " " + getErrorMsg(redirect.begin()->first) + "\r\nLocation: " + redirect.begin()->second + "\r\n\r\n";
+		if (errorCode >= 300 && errorCode < 400)
+			response = "HTTP/1.1 " + tokens[0] + " " + getErrorMsg(tokens[0]) + "\r\nLocation: " + tokens[1] + "\r\n\r\n";
+		else
+			response = "HTTP/1.1" + tokens[0] + " " + getErrorMsg(tokens[0]) + "\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(tokens[1].size()) + "\r\n\r\n" + tokens[1] + "\n";
 	}
-	else
+	else if (tokens.size() == 1)
 	{
-		std::string body = redirect.begin()->second;
-		response = "HTTP/1.1 " + redirect.begin()->first + " " + getErrorMsg(redirect.begin()->first) + "\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
+		std::cout << "Error: " << "Handle Redirect" << std::endl;
+		response = "HTTP/1.1 " + tokens[0] + " " + getErrorMsg(tokens[0]) + "\r\n\r\n";
 	}
 }
 
 void Response::handleGET(bool isGet, RouteConfig &targetRoute, std::string &path)
 {
+	std::cout << "Path : " << path << std::endl;
 	if (isGet)
-	{ 
+	{
 		std::string fullPath = generateFullPath(targetRoute.root, path);
-		std::cout << "redirect: " << targetRoute.redirect << std::endl;
-		// if (targetRoute.redirect.begin()->first != "")
-		// {
-		// 	std::cout << "Redirect" << std::endl;
-		// 	handleRedirect(targetRoute.redirect);
-		// 	return;	
-		// }
-		// std::cout << "FullPath : " << fullPath << std::endl;
+		std::cout << "Redirect " << targetRoute.redirect << std::endl;
+		if (targetRoute.redirect != "")
+		{
+			std::cout << "Redirect" << std::endl;
+			handleRedirect(targetRoute.redirect);
+			std::cout << "Response: " << response << std::endl;
+			return;
+		}
+
+		std::cout << "FullPath : " << fullPath << std::endl;
 		int type = checkType(fullPath, targetRoute);
 		if (type == 2)
 			generateResponseFromFile(fullPath);
