@@ -26,6 +26,18 @@ std::string trimChar(const std::string s, char c)
     return (start == std::string::npos) ? "" : s.substr(start, end - start + 1);
 }
 
+std::string join(const std::vector<std::string> &tokens, char delimiter)
+{
+    std::string joined;
+    for (size_t i = 0; i < tokens.size(); ++i)
+    {
+        if (i > 0)
+            joined += delimiter;
+        joined += tokens[i];
+    }
+    return joined;
+}
+
 std::vector<std::string> split(const std::string &s, char delimiter)
 {
     std::vector<std::string> tokens;
@@ -36,6 +48,14 @@ std::vector<std::string> split(const std::string &s, char delimiter)
         tokens.push_back(trim(token));
     }
     return tokens;
+}
+
+void removeCharsFromString(std::string &str, std::string charsToRemove)
+{
+    for (size_t i = 0; i < charsToRemove.size(); i++)
+    {
+        str.erase(std::remove(str.begin(), str.end(), charsToRemove[i]), str.end());
+    }
 }
 
 void isDirectory(const std::string &path)
@@ -186,7 +206,6 @@ bool validateNumber(std::string key, std::string value)
         return false;
     return true;
 }
-
 
 void printServers(std::vector<ServerConfig> servers)
 {

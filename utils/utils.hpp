@@ -34,7 +34,9 @@
 struct ServerConfig;
 
 std::string trim(const std::string &s);
+std::string join(const std::vector<std::string> &tokens, char delimiter);
 std::string trimChar(const std::string s, char c);
+void removeCharsFromString(std::string &str, std::string charsToRemove);
 std::vector<std::string> split(const std::string &s, char delimiter);
 void isFile(const std::string &path);
 bool isFile(std::string &path);

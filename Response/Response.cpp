@@ -12,7 +12,7 @@
 
 #include "Response.hpp"
 
-std::string listDirectory(const std::string& dirPath, const std::string& uriPath)
+std::string Response::listDirectory(const std::string& dirPath, const std::string& uriPath)
 {
     std::string htmlContent;
 
@@ -38,6 +38,7 @@ std::string listDirectory(const std::string& dirPath, const std::string& uriPath
     } else {
         // Could not open directory
         std::cerr << "Error: Could not open directory " << dirPath << std::endl;
+		this->sendError("404");
     }
     return htmlContent;
 }
@@ -69,18 +70,6 @@ int Response::checkType(std::string &path, RouteConfig &targetRoute)
 	else if (S_ISDIR(info.st_mode))
 		return (1);
 	return (0);
-}
-
-std::string join(const std::vector<std::string> &tokens, char delimiter)
-{
-    std::string joined;
-    for (size_t i = 0; i < tokens.size(); ++i)
-    {
-        if (i > 0)
-            joined += delimiter;
-        joined += tokens[i];
-    }
-    return joined;
 }
 
 std::string resolvePath(std::string &fullPath, std::string &defaultFile)
@@ -169,21 +158,29 @@ void Response::generateResponseFromFile(std::string &path)
 
 void Response::handleRedirect(std::string redirect)
 {
-	std::vector<std::string> tokens = split(redirect, ' ');
-	float errorCode = std::atof(tokens[0].c_str());
+	std::cout << "Redirect: " << redirect << std::endl;
+	std::stringstream ss(redirect);
+	int errorCode;
+	ss >> errorCode;
+	std::string value;
+	std::getline(ss, value, '\0');
+	removeCharsFromString(value, "\"'");
+	std::cout << "Error Code: " << errorCode << std::endl;
+	std::cout << "Value: " << value << std::endl;
+	// int errorCode = std::atoi(tokens[0].c_str());
 
-	if (tokens.size() == 2)
+	if (!value.empty())
 	{
 		if (errorCode >= 300 && errorCode < 400)
-			response = "HTTP/1.1 " + tokens[0] + " " + getErrorMsg(tokens[0]) + "\r\nLocation: " + tokens[1] + "\r\n\r\n";
+		{
+			std::string tokenWithSlash = value[0] == '/' ? value : "/" + value;
+			response = "HTTP/1.1 " + std::to_string(errorCode) + " " + getErrorMsg(std::to_string(errorCode)) + "\r\nLocation: " + tokenWithSlash + "\r\n\r\n";
+		}
 		else
-			response = "HTTP/1.1" + tokens[0] + " " + getErrorMsg(tokens[0]) + "\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(tokens[1].size()) + "\r\n\r\n" + tokens[1] + "\n";
+			response = "HTTP/1.1" + std::to_string(errorCode) + " " + getErrorMsg(std::to_string(errorCode)) + "\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(value.size()) + "\r\n\r\n" + value + "\n";
 	}
-	else if (tokens.size() == 1)
-	{
-		std::cout << "Error: " << "Handle Redirect" << std::endl;
-		response = "HTTP/1.1 " + tokens[0] + " " + getErrorMsg(tokens[0]) + "\r\n\r\n";
-	}
+	else
+		sendError(std::to_string(errorCode));
 }
 
 void Response::handleGET(bool isGet, RouteConfig &targetRoute, std::string &path)
@@ -231,12 +228,12 @@ void Response::handlePOST(bool isPost, RouteConfig &targetRoute, std::string &pa
 			file.close();
 			response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nContent-Length: 6 \r\n\r\n hello\n";
 		}
-		// else if (type == 1)
-		// {
-		// 	response404();
-		// }
-		// else if (type == 0)
-		// 	response404();
+		else if (type == 1)
+		{
+			sendError("403");
+		}
+		else if (type == 0)
+			sendError("403");
 	}
 }
 
@@ -244,12 +241,13 @@ void Response::handleResponse(Request &request)
 {
 	std::string method = request.getHeaders().getValue("method");
 	std::string uri = request.getHeaders().getValue("uri");
+	Body body = request.getBody();
 
 	if (!myFind(this->targetRoute.methods, method))
 		sendError("403");
 
 	handleGET(method == "GET", this->targetRoute, uri);
-	// handlePOST(method == "POST", targetRoute, uri, body);
+	handlePOST(method == "POST", targetRoute, uri, body);
 }
 
 void Response::defaultErrorPage(std::string errorCode)

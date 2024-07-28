@@ -54,9 +54,8 @@
 
 [ ] chunked encoding.
 
-[ ] redirect 
-[ ] full path in redirect
-[ ] message "hello world"
-[ ] only error code
-[ ] only redirect
+[*] redirect 
+[*] full path in redirect
+[*] message "hello world"
+[*] only error code
 [*] 404 close connection.

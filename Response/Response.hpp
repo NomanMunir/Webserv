@@ -47,8 +47,9 @@ class Response
 		void handleGET(bool isGet, RouteConfig &targetRoute, std::string &path);
 		void handlePOST(bool isPost, RouteConfig &targetRoute, std::string &path, Body &body);
 		void findErrorPage(std::string errorCode, std::map<std::string, std::string> errorPages);
-		
+
 		int checkType(std::string &path, RouteConfig &targetRoute);
+		std::string listDirectory(const std::string& dirPath, const std::string& uriPath);
 		bool handleDirectory(std::string &fullPath, std::string &path, RouteConfig &targetRoute);
 		void generateResponseFromFile(std::string &path);
 		void handleRedirect(std::string redirect);

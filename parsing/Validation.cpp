@@ -28,10 +28,11 @@ void Validation::validateReturn(std::string &redirect)
 {
 	// std::cout << "redirect[return]: " << redirect << std::endl;
 	std::vector <std::string> tokens = split(redirect, ' ');
+
 	// std::cout << "tokens: " << tokens.size() << std::endl;
 	// std::cout << "tokens[0]: " << tokens[0] << std::endl;
 	// std::cout << "tokens[1]: " << tokens[1] << std::endl;
-	if (tokens.size() > 2 || tokens.size() == 0 || !validateNumber("error_pages", tokens[0]))
+	if (tokens.size() == 0 || !validateNumber("error_pages", tokens[0]))
 		throw std::runtime_error("Error: invalid configuration file " + redirect);
 }
 
