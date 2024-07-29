@@ -14,7 +14,6 @@
 #define CONNECTIONS_HPP
 
 #include <iostream>
-#include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
@@ -28,7 +27,6 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <fcntl.h>
-#include <vector>
 #include "parsing/Parser.hpp"
 
 #define MAX_EVENTS 128

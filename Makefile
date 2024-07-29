@@ -1,13 +1,21 @@
 NAME = webserv
 
 CXX = c++
-CXXFLAGS = #-g3 -fsanitize=address #-std=c++98 -Wall -Wextra -Werror 
+CXXFLAGS = -g3 -fsanitize=address #-std=c++98 -Wall -Wextra -Werror 
 
-SRCS = main.cpp Server.cpp Connections.cpp \
+SRCS = main.cpp Server.cpp \
 		parsing/Parser.cpp parsing/Validation.cpp \
 		request/Headers.cpp request/Request.cpp request/Body.cpp \
 		response/Response.cpp \
 		utils/utils.cpp \
+		# ConnectionsPoll.cpp \
+		#Connections.cpp \
+
+		ifeq ($(shell uname), Linux)
+			SRCS += ConnectionsPoll.cpp
+		else
+			SRCS += Connections.cpp
+		endif
 
 OBJS = $(SRCS:.cpp=.o)
 

@@ -31,8 +31,8 @@
 #include <cerrno>
 #include <dirent.h>
 #include <poll.h>
-// #include <sys/epoll.h>
-#include <sys/event.h>
+#include <sys/epoll.h>
+// #include <sys/event.h>
 #include <sys/time.h>
 
 #include "utils/utils.hpp"
@@ -47,6 +47,7 @@ public:
     Server(Parser &configFile);
     void run(Parser &configFile);
     int getServersocket() const;
+    std::vector<pollfd> pollfds;
 
 private:
     int serverSocket;
@@ -56,7 +57,7 @@ private:
 
     void handleConnections(Parser &configFile);
     void handleConnectionsWithSelect(Parser &configFile);
-    // void handleConnectionsWithPoll(Parser &configFile);
+    void handleConnectionsWithPoll(Parser &configFile);
     // void handleConnectionsWithEPoll(Parser &configFile);
     void handleConnectionsWithKQueue(Parser &configFile);
 };
