@@ -8,8 +8,6 @@ SRCS = main.cpp Server.cpp \
 		request/Headers.cpp request/Request.cpp request/Body.cpp \
 		response/Response.cpp \
 		utils/utils.cpp \
-		# ConnectionsPoll.cpp \
-		#Connections.cpp \
 
 		ifeq ($(shell uname), Linux)
 			SRCS += ConnectionsPoll.cpp

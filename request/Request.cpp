@@ -152,7 +152,13 @@ void Request::handleRequest(int clientSocket, Parser &parser, Response &structRe
 		structResponse.sendError("404");
 	structResponse.setTargetRoute(route);
 	if (isBodyExistRequest(parser, structResponse))
-		this->body = Body(clientSocket, headers.getValue("Content-Length"));
+	{
+		this->body = Body(clientSocket);
+		if (headers.getValue("Content-Length") != "")
+			body.parseBody(headers.getValue("Content-Length"));
+		else if (headers.getValue("Transfer-Encoding") == "chunked")
+			body.parseChunked();
+	}
 }
 
 Request::Request(int clientSocket, Parser &parser, Response &structResponse)

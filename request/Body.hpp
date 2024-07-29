@@ -25,17 +25,19 @@
 class Body
 {
 	public:
-		Body(int clientSocket, std::string length);
+		Body(int fd);
 		Body(){};
 		~Body();
 		Body(const Body &b);
 		Body &operator=(const Body &b);
 		void printBody();
 		std::string getBody();
+		void parseBody(std::string length);
+		void parseChunked();
 
 	private:
 		std::string body;
-		void parseBody(int clientSocket, std::string &length);
+		int clientSocket;
 };
 
 #endif // BODY_HPP
