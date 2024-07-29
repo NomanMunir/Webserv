@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Body.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
+/*   By: abashir <abashir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 14:11:50 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/15 09:19:08 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/29 12:30:34 by abashir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ Body::~Body() { }
 Body::Body(const Body &b)
 {
 	body = b.body;
+    this->clientSocket = b.clientSocket;
 }
 
 Body &Body::operator=(const Body &b)
@@ -26,6 +27,7 @@ Body &Body::operator=(const Body &b)
 	if (this == &b)
 		return *this;
 	body = b.body;
+    this->clientSocket = b.clientSocket;
 	return *this;
 }
 
@@ -61,17 +63,38 @@ void Body::parseChunked() {
     }
 }
 
-void Body::parseBody(std::string length) {
+void Body::parseBody(std::string length)
+{
     char buffer;
     // Transfer-Encoding takes precedence over Content-Length.
     std::cout << "Length: " << length << std::endl;
-    if (!length.empty()) {
-        while (recv(clientSocket, &buffer, 1, 0) > 0) {
+    std::cout << "Parse Body\n";
+    std::cout << "socket: " << this->clientSocket << std::endl;
+    if (!length.empty())
+    {
+        while (read(this->clientSocket, &buffer, 1) > 0)
+        {
+            std::cout << "Buffer: " << buffer << std::endl;
             body.append(1, buffer);
             if (std::atof(length.c_str()) == body.size())
                 break;
         }
     }
+    std::cout << body << std::endl;
 }
+
+// void Body::parseBody(std::string length) {
+//     char buffer;
+//     // Transfer-Encoding takes precedence over Content-Length.
+//     std::cout << "Length: " << length << std::endl;
+//     std::cout << "Parse Body\n";
+//     if (!length.empty()) {
+//         while (recv(clientSocket, &buffer, 1, 0) > 0) {
+//             body.append(1, buffer);
+//             if (std::atof(length.c_str()) == body.size())
+//                 break;
+//         }
+//     }
+// }
 
 std::string Body::getBody() { return body; }

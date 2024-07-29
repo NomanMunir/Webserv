@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
+/*   By: abashir <abashir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 14:41:04 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/24 15:50:35 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/29 10:58:03 by abashir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
-// #include "Connections.hpp"
-#include "ConnectionsPoll.hpp"
-#define PORT 8080
+#include "Connections.hpp"
+// #include "ConnectionsPoll.hpp"
+#define PORT 80
 
 void setNonBlocking(int fd)
 {

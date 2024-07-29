@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Body.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
+/*   By: abashir <abashir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 14:10:31 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/10 17:57:34 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/29 11:53:12 by abashir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,8 @@ class Body
 {
 	public:
 		Body(int fd);
-		Body(){};
-		~Body();
+		Body() {};
+		~Body();	
 		Body(const Body &b);
 		Body &operator=(const Body &b);
 		void printBody();

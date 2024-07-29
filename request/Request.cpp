@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
+/*   By: abashir <abashir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:31:21 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/21 11:41:43 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/29 11:57:07 by abashir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,6 +159,8 @@ void Request::handleRequest(int clientSocket, Parser &parser, Response &structRe
 		else if (headers.getValue("Transfer-Encoding") == "chunked")
 			body.parseChunked();
 	}
+	headers.printHeaders();
+	body.printBody();
 }
 
 Request::Request(int clientSocket, Parser &parser, Response &structResponse)

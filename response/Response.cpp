@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
+/*   By: abashir <abashir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 15:22:38 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/22 17:09:57 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/29 11:33:37 by abashir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,21 +219,23 @@ void Response::handlePOST(bool isPost, RouteConfig &targetRoute, std::string &pa
 {
 	if (isPost)
 	{
-		std::string fullPath = targetRoute.root + path;
-		int type = checkType(fullPath, targetRoute);
-		if (type == 2)
-		{
-			std::ofstream file(fullPath.c_str());
-			file << body.getBody();
-			file.close();
-			response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nContent-Length: 6 \r\n\r\n hello\n";
-		}
-		else if (type == 1)
-		{
-			sendError("403");
-		}
-		else if (type == 0)
-			sendError("403");
+		std::cout << "handle POST\n";
+		body.printBody();
+		// std::string fullPath = targetRoute.root + path;
+		// int type = checkType(fullPath, targetRoute);
+		// if (type == 2)
+		// {
+		// 	std::ofstream file(fullPath.c_str());
+		// 	file << body.getBody();
+		// 	file.close();
+		// 	response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nContent-Length: 6 \r\n\r\n hello\n";
+		// }
+		// else if (type == 1)
+		// {
+		// 	sendError("403");
+		// }
+		// else if (type == 0)
+		// 	sendError("403");
 	}
 }
 

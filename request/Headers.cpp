@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Headers.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
+/*   By: abashir <abashir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 11:20:23 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/22 11:02:26 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/29 12:06:55 by abashir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,8 +93,6 @@ void Headers::parseFirstLine(Response &structResponse)
 		structResponse.sendError("501");
     headers["method"] = method;
     headers["version"] = version;
-	
-	std::cout << "URI: in parseFirstLine: " << uri << std::endl;
     headers["uri"] = split(uri, '?')[0];
 }
 

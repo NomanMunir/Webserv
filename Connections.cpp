@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Connections.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
+/*   By: abashir <abashir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 15:49:37 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/22 11:15:55 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/07/29 10:59:25 by abashir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,20 +62,15 @@ void Connections::setClient(int fd)
 bool Connections::peekRequest(int clientSocket)
 {
     char buffer[1];
-
-    ssize_t bytesRead = recv(clientSocket, buffer, 1, MSG_PEEK);
+    ssize_t bytesRead = recv(clientSocket, buffer, sizeof(buffer), MSG_PEEK);
     if (bytesRead < 0)
     {
         perror("Error reading from client socket");
-        return (true);
+        return true;
     }
     else if (bytesRead == 0)
-        return (true);
-    else
     {
-        buffer[bytesRead] = '\0';
-        if (strlen(buffer) == 0)
-            return (true);
+        return true;
     }
     return false;
 }
