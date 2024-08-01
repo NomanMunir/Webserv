@@ -23,33 +23,27 @@
 #include <sstream>
 #include "./Body.hpp"
 
-class Request
-{
-	public:
-		Request();
-		~Request();
-		Request(const Request &c);
-		Request& operator=(const Request &c);
+class Request {
+public:
+    Request();
+    ~Request();
+    Request(const Request &c);
+    Request& operator=(const Request &c);
 
-    	bool appendData(const std::string &data, Response &response, Parser &configFile);
-		bool isComplete() const;
-		std::string getRequest();
-		Headers getHeaders();
-		Body getBody();
-		void setComplete(bool complete);
-		void reset();
-	private:
-		void handleRequest(Parser &parser, Response &structResponse);
-		void findServer(Response &structResponse, Parser &parser);
-		bool isBodyExistRequest(Parser &parser, Response &structResponse);
+    bool appendData(const std::string &data, Response &response, Parser &configFile);
+    bool isComplete() const;
+    Headers getHeaders();
+    Body getBody();
 
+private:
+    std::string rawData;
+    Headers headers;
+    Body body;
+    bool complete;
 
-		
-		std::string request;
-		std::string rawData;
-		Headers headers;
-		Body body;
-		bool complete;
+    void parseHeaders();
+    void parseBody();
 };
+
 
 #endif // REQUEST_HPP

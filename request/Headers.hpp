@@ -26,20 +26,23 @@ class Response;
 class Headers
 {
 	public:
-		Headers(int clientSocket, Response &structResponse);
+		Headers(std::string &rawData, Response &structResponse);
 		Headers(){};
 		~Headers();
 		Headers(const Headers &h);
 		Headers &operator=(const Headers &h);
+
 		void printHeaders();
 		std::string getValue(std::string key);
 		std::string getRawHeaders();
 		void parseHeader(Response &structResponse);
+		bool isComplete() const;
 
 	private:
 		std::map<std::string, std::string> headers;
 		std::string firstLine;
 		std::string rawHeaders;
+		bool complete;
 		
 		void parseFirstLine(Response &structResponse);
 		void parseRequestURI(Response &structResponse);

@@ -44,20 +44,21 @@ class Server
 public:
     Server(Parser &configFile);
     void run(Parser &configFile);
-    int getServersocket() const;
+    std::vector<int> getServersockets() const;
     std::vector<pollfd> pollfds;
 
 private:
-    int serverSocket;
-    struct sockaddr_in serverAddr;
+    std::vector<int> serverSockets;
+    std::vector<struct sockaddr_in> serverAddrs;
 
-    void initServerSocket(Parser &configFile);
+    void initServerSockets(Parser &configFile);
 
     void handleConnections(Parser &configFile);
+
     void handleConnectionsWithSelect(Parser &configFile);
-    void handleConnectionsWithPoll(Parser &configFile);
+    // void handleConnectionsWithPoll(Parser &configFile);
     // void handleConnectionsWithEPoll(Parser &configFile);
-    void handleConnectionsWithKQueue(Parser &configFile);
+    // void handleConnectionsWithKQueue(Parser &configFile);
 };
 
 #endif // SERVER_HPP

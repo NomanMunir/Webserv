@@ -55,6 +55,7 @@ class Parser
 		~Parser();
 		std::vector<ServerConfig> getServers();
 		std::map<std::string, std::string> getDirectives();
+		std::vector<std::string> getPorts();
 
 	private:
 		void setServerBlock(std::string &key, std::string &value);

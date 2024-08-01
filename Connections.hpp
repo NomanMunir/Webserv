@@ -27,33 +27,45 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <fcntl.h>
+#include <unordered_map>
+
 #include "parsing/Parser.hpp"
+#include "Client.hpp"
 
-#define MAX_EVENTS 128
+#define MAX_EVENTS 1024
 
-class Connections
-{
-	private:
-		int serverSocket;
-		struct sockaddr_in serverAddr;
-		int kqueueFd;
-		struct kevent change;
-		struct kevent events[MAX_EVENTS];
-
-
-		void setClient(int fd);
-		void removeClient(int fd);
-		bool addClient();
-		bool peekRequest(int clientSocket);
-		bool handleClient(int clientSocket, Parser &configFile);
+class Connections {
+private:
+    std::vector<int> serverSockets;
+    int kqueueFd;
+    struct kevent changeList[MAX_EVENTS];
+    struct kevent events[MAX_EVENTS];
+    // static const int MAX_EVENTS = 1024;
+    std::unordered_map<int, Client> clients;
+    Parser configFile;
 
 
-	public:
-		Connections(int fd);
-		~Connections();
+    void setNonBlocking(int fd);
+    void setClient(int fd);
+    void removeClient(int fd);
+    bool peekRequest(int clientSocket);
+    bool handleClient(int clientSocket, Parser &configFile);
+    void setTimeout(int fd);
+    void setWriteEvent(int clientFd);
+    void setServer(int fd);
+    bool addClient(int serverSocket);
 
-		void loop(Parser &configFile);
-		
+    void handleReadEvent(int clientFd);
+    void handleWriteEvent(int clientFd);
+    void handleTimeoutEvent(int clientFd);
+
+public:
+    Connections(std::vector<int> fds, Parser &configFile);
+    ~Connections();
+    Connections(const Connections &c);
+    Connections &operator=(const Connections &c);
+
+    void loop();
 };
 
 #endif // CONNECTIONS_HPP

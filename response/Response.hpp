@@ -23,8 +23,13 @@
 class Response
 {
 	public:
+		Response();
 		Response(int clientFd);
 		~Response();
+		Response(const Response &c);
+		Response& operator=(const Response &c);
+
+
 		std::string getResponse();
 		void printResponse();
 		void setTargetServer(ServerConfig server);
@@ -34,6 +39,7 @@ class Response
 		void sendError(std::string errorCode);
 		void handleResponse(Request &request);
 		bool getIsConClosed();
+		void reset();
 
 	private:
 		std::map<int, std::string> statusCodes;

@@ -30,6 +30,7 @@ class Body
 		~Body();	
 		Body(const Body &b);
 		Body &operator=(const Body &b);
+
 		void printBody();
 		std::string getBody();
 		void parseBody(std::string length);

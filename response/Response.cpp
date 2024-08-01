@@ -189,7 +189,6 @@ void Response::handleGET(bool isGet, RouteConfig &targetRoute, std::string &path
 	if (isGet)
 	{
 		std::string fullPath = generateFullPath(targetRoute.root, path);
-		std::cout << "Redirect " << targetRoute.redirect << std::endl;
 		if (targetRoute.redirect != "")
 		{
 			std::cout << "Redirect" << std::endl;
@@ -219,7 +218,7 @@ void Response::handlePOST(bool isPost, RouteConfig &targetRoute, std::string &pa
 {
 	if (isPost)
 	{
-		std::cout << "handle POST\n";
+		
 		body.printBody();
 		// std::string fullPath = targetRoute.root + path;
 		// int type = checkType(fullPath, targetRoute);
@@ -243,13 +242,14 @@ void Response::handleResponse(Request &request)
 {
 	std::string method = request.getHeaders().getValue("method");
 	std::string uri = request.getHeaders().getValue("uri");
-	Body body = request.getBody();
+	// Body body = request.getBody();
 
 	if (!myFind(this->targetRoute.methods, method))
 		sendError("403");
 
 	handleGET(method == "GET", this->targetRoute, uri);
-	handlePOST(method == "POST", targetRoute, uri, body);
+
+	// handlePOST(method == "POST", this->targetRoute, uri, body);
 }
 
 void Response::defaultErrorPage(std::string errorCode)
@@ -339,4 +339,27 @@ RouteConfig Response::getTargetRoute()
 void Response::printResponse()
 {
 	std::cout << "Response: " << response << std::endl;
+}
+
+
+Response::Response() : clientSocket(-1), isConClosed(false) { }
+
+Response::Response(const Response &c) : statusCodes(c.statusCodes), response(c.response), clientSocket(c.clientSocket), targetServer(c.targetServer), targetRoute(c.targetRoute), isConClosed(c.isConClosed) { }
+
+Response& Response::operator=(const Response &c)
+{
+	if (this == &c)
+		return *this;
+	statusCodes = c.statusCodes;
+	response = c.response;
+	clientSocket = c.clientSocket;
+	targetServer = c.targetServer;
+	targetRoute = c.targetRoute;
+	isConClosed = c.isConClosed;
+	return *this;
+}
+
+void Response::reset()
+{
+	response = "";
 }

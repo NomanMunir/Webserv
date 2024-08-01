@@ -1,0 +1,23 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "c++",
+            "args": [
+                "-std=c++98",        // Specify your desired standard
+                "-g",                // Include debug information
+                "${workspaceFolder}/*.cpp",  // Adjust this to your project's structure
+                "-o",
+                "${workspaceFolder}/webserv"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"],
+            "detail": "Generated task by C++ Quick Start"
+        }
+    ]
+}

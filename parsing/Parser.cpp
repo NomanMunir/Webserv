@@ -336,3 +336,14 @@ std::map<std::string, std::string> Parser::getDirectives()
 {
     return directives;
 }
+
+std::vector<std::string> Parser::getPorts()
+{
+    std::vector<std::string> ports;
+    for (size_t i = 0; i < servers.size(); i++)
+    {
+        for (size_t j = 0; j < servers[i].listen.size(); j++)
+            ports.push_back(servers[i].listen[j][1]);
+    }
+    return ports;
+}

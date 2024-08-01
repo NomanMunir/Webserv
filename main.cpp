@@ -22,6 +22,10 @@ int main(int ac, const char **av)
             av[1] = "config1.conf";
         Parser parser(av[1]);
         // printServers(parser.getServers());
+        // printports
+        std::vector<std::string> ports = parser.getPorts();
+        for (std::vector<std::string>::iterator it = ports.begin(); it != ports.end(); it++)
+            std::cout << *it << std::endl;
         Validation validation(parser);
         Server server(parser);
         server.run(parser);

@@ -17,6 +17,8 @@ Headers::Headers(const Headers &h)
 {
 	headers = h.headers;
 	firstLine = h.firstLine;
+	this->rawHeaders = h.rawHeaders;
+	complete = h.complete;
 }
 
 Headers &Headers::operator=(const Headers &h)
@@ -26,6 +28,7 @@ Headers &Headers::operator=(const Headers &h)
 	headers = h.headers;
 	firstLine = h.firstLine;
 	this->rawHeaders = h.rawHeaders;
+	complete = h.complete;
 	return *this;
 }
 
@@ -138,27 +141,26 @@ void Headers::parseHeader(Response &structResponse)
 		headers[key] = value;
 	}
 	parseRequestURI(structResponse);
+	complete = true;
 }
 
-Headers::Headers(int clientSocket, Response &structResponse)
+Headers::Headers(std::string &rawData, Response &structResponse) : complete(false)
 {
-    char buffer;
 
-	while (read(clientSocket, &buffer, 1) > 0)
-    {
-		if (!isascii(buffer))
-			structResponse.sendError("400");
-        this->rawHeaders.append(1, buffer);
-        if (this->rawHeaders.find("\r\n\r\n") != std::string::npos)
-            break;
-    }
-	// std::cout << "rawHeaders : " << this->rawHeaders << std::endl;
-	// parseHeader(structResponse);
+	if (rawData.find("\r\n\r\n") == std::string::npos)
+		structResponse.sendError("400");
+	else
+		this->rawHeaders = rawData.substr(0, rawData.find("\r\n\r\n") + 4);
 }
 
 std::string Headers::getRawHeaders()
 {
 	return this->rawHeaders;
+}
+
+bool Headers::isComplete() const
+{
+	return complete;
 }
 Headers::~Headers() { }
 

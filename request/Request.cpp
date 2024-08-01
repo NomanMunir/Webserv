@@ -1,16 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Request.cpp                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: abashir <abashir@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/02 12:31:21 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/29 11:57:07 by abashir          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "Request.hpp"
 #include "../response/Response.hpp"
 
 ServerConfig chooseServer(Parser &configFile, std::string requestHost, std::string requestPort)
@@ -138,39 +125,68 @@ bool Request::isBodyExistRequest(Parser &parser, Response &structResponse)
 	return true;
 }
 
-void Request::handleRequest(int clientSocket, Parser &parser, Response &structResponse)
+void Request::handleRequest(Parser &parser, Response &structResponse) 
 {
-	
-	this->headers = Headers(clientSocket, structResponse);
+    try {
+        // Step 1: Parse Headers
+        this->headers = Headers(rawData, structResponse);
+        this->headers.parseHeader(structResponse);
 
-	this->findServer(structResponse, parser);
-	
-	this->headers.parseHeader(structResponse);
-	ServerConfig server = structResponse.getTargetServer();
-	RouteConfig route;
-	if (!chooseRoute(headers.getValue("uri"), server, route))
-		structResponse.sendError("404");
-	structResponse.setTargetRoute(route);
-	if (isBodyExistRequest(parser, structResponse))
-	{
-		this->body = Body(clientSocket);
-		if (headers.getValue("Content-Length") != "")
-			body.parseBody(headers.getValue("Content-Length"));
-		else if (headers.getValue("Transfer-Encoding") == "chunked")
-			body.parseChunked();
-	}
-	headers.printHeaders();
-	body.printBody();
+        // Step 2: Determine Target Server
+        this->findServer(structResponse, parser);
+        ServerConfig server = structResponse.getTargetServer();
+
+        // Step 3: Determine Target Route
+        RouteConfig route;
+        if (!chooseRoute(headers.getValue("uri"), server, route)) {
+            structResponse.sendError("404");
+            return;
+        }
+        structResponse.setTargetRoute(route);
+
+        // Step 4: Parse Body (if present)
+        // if (isBodyExistRequest(parser, structResponse)) {
+        //     this->body = Body(clientSocket);
+        //     if (!headers.getValue("Content-Length").empty())
+        //         body.parseBody(headers.getValue("Content-Length"));
+        //     else if (headers.getValue("Transfer-Encoding") == "chunked")
+        //         body.parseChunked();
+        // }
+
+        // headers.printHeaders();
+        // body.printBody();
+
+    } catch (const std::exception &e) {
+        std::cerr << "Error handling request: " << e.what() << std::endl;
+        structResponse.sendError("500"); // Internal Server Error
+    }
 }
 
-Request::Request(int clientSocket, Parser &parser, Response &structResponse)
+bool Request::appendData(const std::string &data, Response &response, Parser &configFile) 
 {
-	if (clientSocket == -1)
+    rawData += data;
+    if (!complete)
 	{
-		std::cerr << "Error accepting client connection." << std::endl;
-		return;
-	}
-	handleRequest(clientSocket, parser, structResponse);
+		std::cout << "rawData : " << rawData << std::endl;
+        for (int i = 0; i < rawData.size(); i++)
+        {
+            if (!isascii(rawData[i]))
+                response.sendError("400");
+        }
+        handleRequest(configFile, response);
+        if (headers.isComplete()) 
+        {
+            complete = true;  // Or set some condition for complete request
+        	//     parseBody();
+        }
+    }
+    return complete;
+}
+
+Request::Request() : complete(false) {}
+
+bool Request::isComplete() const {
+    return complete;
 }
 
 Headers Request::getHeaders()
@@ -183,3 +199,28 @@ Body Request::getBody()
 	return body;
 }
 Request::~Request() { }
+
+void Request::setComplete(bool complete)
+{
+	this->complete = complete;
+}
+
+Request::Request(const Request &c) : rawData(c.rawData), headers(c.headers), body(c.body), complete(c.complete) {}
+
+Request& Request::operator=(const Request &c) 
+{
+    if (this != &c) 
+	{
+        rawData = c.rawData;
+        headers = c.headers;
+        body = c.body;
+        complete = c.complete;
+    }
+    return *this;
+}
+
+void Request::reset()
+{
+	rawData.clear();
+	complete = false;
+}
