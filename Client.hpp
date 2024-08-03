@@ -12,6 +12,8 @@ private:
     std::string readBuffer;
     std::string writeBuffer;
     bool writePending;
+    bool keepAlive;
+
     Request request;
     Response response;
 
@@ -28,7 +30,8 @@ public:
     bool isWritePending() const;
     void setWritePending(bool pending);
     bool isReadPending() const;
-
+    bool isKeepAlive();
+    void setKeepAlive(bool keepAlive);
 
     Request& getRequest();
     Response& getResponse();

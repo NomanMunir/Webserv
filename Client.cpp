@@ -20,6 +20,16 @@ Request& Client::getRequest() { return request; }
 
 Response& Client::getResponse() { return response; }
 
+bool Client::isKeepAlive() {
+	std::string connection = request.getHeaders().getValue("Connection");
+	if (connection == "keep-alive")
+		return true;
+	else if (connection == "close")
+		return false;
+	return false;
+}
+
+
 Client::Client(const Client &c) : clientFd(c.clientFd), readBuffer(c.readBuffer), writeBuffer(c.writeBuffer), writePending(c.writePending), request(c.request), response(c.response) {}
 
 Client& Client::operator=(const Client &c) {
