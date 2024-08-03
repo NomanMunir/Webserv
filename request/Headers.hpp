@@ -37,6 +37,7 @@ class Headers
 		std::string getRawHeaders();
 		void parseHeader(Response &structResponse);
 		bool isComplete() const;
+		void reset();
 
 	private:
 		std::map<std::string, std::string> headers;

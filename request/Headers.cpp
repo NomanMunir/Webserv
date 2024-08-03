@@ -162,6 +162,14 @@ bool Headers::isComplete() const
 {
 	return complete;
 }
+
+void Headers::reset()
+{
+	headers.clear();
+	firstLine.clear();
+	rawHeaders.clear();
+	complete = false;
+}
 Headers::~Headers() { }
 
 std::string Headers::getValue(std::string key)

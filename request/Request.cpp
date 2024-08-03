@@ -167,7 +167,7 @@ bool Request::appendData(const std::string &data, Response &response, Parser &co
     rawData += data;
     if (!complete)
 	{
-		std::cout << "rawData : " << rawData << std::endl;
+		// std::cout << "rawData : " << rawData << std::endl;
         for (int i = 0; i < rawData.size(); i++)
         {
             if (!isascii(rawData[i]))
@@ -222,5 +222,6 @@ Request& Request::operator=(const Request &c)
 void Request::reset()
 {
 	rawData.clear();
+	headers.reset();
 	complete = false;
 }

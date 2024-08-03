@@ -52,6 +52,8 @@ private:
     bool handleClient(int clientSocket, Parser &configFile);
     void setTimeout(int fd);
     void setWriteEvent(int clientFd);
+    void removeWriteEvent(int clientFd);
+
     void setServer(int fd);
     bool addClient(int serverSocket);
 

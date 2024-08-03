@@ -79,10 +79,10 @@ void Connections::setClient(int fd)
 {
     setNonBlocking(fd);
     EV_SET(&changeList[0], fd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
-    EV_SET(&changeList[1], fd, EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);  // Enable when write is pending
-    EV_SET(&changeList[2], fd, EVFILT_TIMER, EV_ADD | EV_ENABLE, 0, 3000, NULL);  // 30 seconds timeout
+    // EV_SET(&changeList[1], fd, EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);  // Enable when write is pending
+    // EV_SET(&changeList[2], fd, EVFILT_/TIMER, EV_ADD | EV_ENABLE, 0, 3000, NULL);  // 30 seconds timeout
 
-    if (kevent(kqueueFd, changeList, 3, NULL, 0, NULL) == -1)
+    if (kevent(kqueueFd, changeList, 1, NULL, 0, NULL) == -1)
     {
         std::cerr << "Error: " << strerror(errno) << std::endl;
         close(fd);
@@ -95,24 +95,24 @@ void Connections::setClient(int fd)
 void Connections::removeClient(int fd) 
 {
     EV_SET(&changeList[0], fd, EVFILT_READ, EV_DELETE, 0, 0, NULL);
-    EV_SET(&changeList[1], fd, EVFILT_WRITE, EV_DELETE, 0, 0, NULL);
-    EV_SET(&changeList[2], fd, EVFILT_TIMER, EV_DELETE, 0, 0, NULL);
+    // EV_SET(&changeList[1], fd, EVFILT_WRITE, EV_DELETE, 0, 0, NULL);
+    // EV_SET(&changeList[2], fd, EVFILT_TIMER, EV_DELETE, 0, 0, NULL);
 
-    if (kevent(kqueueFd, changeList, 3, NULL, 0, NULL) == -1)
+    if (kevent(kqueueFd, changeList, 1, NULL, 0, NULL) == -1)
         std::cerr << "Error: " << strerror(errno) << std::endl;
     clients.erase(fd);
     close(fd);
-    // struct kevent evSet;
-    // EV_SET(&evSet, fd, EVFILT_TIMER, EV_DELETE, 0, 0, NULL);
-    // if (kevent(kqueueFd, &evSet, 1, NULL, 0, NULL) == -1) 
-    //     std::cerr << "Error unregistering timer event: " << strerror(errno) << std::endl;
+    struct kevent evSet;
+    EV_SET(&evSet, fd, EVFILT_TIMER, EV_DELETE, 0, 0, NULL);
+    if (kevent(kqueueFd, &evSet, 1, NULL, 0, NULL) == -1) 
+        std::cerr << "Error unregistering timer event: " << strerror(errno) << std::endl;
     std::cout << "Connection closed by client on socket fd " << fd << std::endl;
 }
 
 
 void Connections::setTimeout(int fd) 
 {
-    EV_SET(&changeList[0], fd, EVFILT_TIMER, EV_ADD | EV_ENABLE, 0, 3000, NULL); // 5 seconds timeout
+    EV_SET(&changeList[0], fd, EVFILT_TIMER, EV_ADD | EV_ENABLE, 0, 5000, NULL); // 5 seconds timeout
     if (kevent(kqueueFd, changeList, 1, NULL, 0, NULL) == -1)
     {
         std::cerr << "Error: " << strerror(errno) << std::endl;
@@ -132,7 +132,7 @@ bool Connections::addClient(int serverSocket) {
     }
     std::cout << "New connection, socket fd is " << clientSocket << ", ip is : " << inet_ntoa(clientAddr.sin_addr) << ", port : " << ntohs(clientAddr.sin_port) << std::endl;
     setClient(clientSocket);
-    // setTimeout(clientSocket);
+    setTimeout(clientSocket);
     return true;
 }
 
@@ -157,7 +157,6 @@ void Connections::loop()
 
             if (events[i].filter == EVFILT_TIMER)
             {
-                std::cout << "Timeout here " << events[i].ident << std::endl;
                 handleTimeoutEvent(events[i].ident);
             }
             else if (events[i].filter == EVFILT_READ) 
@@ -209,6 +208,17 @@ void Connections::handleReadEvent(int clientFd) {
     }
 }
 
+void Connections::removeWriteEvent(int clientFd) {
+    struct kevent evSet;
+    EV_SET(&evSet, clientFd, EVFILT_WRITE, EV_DELETE, 0, 0, NULL);
+
+    if (kevent(kqueueFd, &evSet, 1, NULL, 0, NULL) == -1) {
+        std::cerr << "Error removing write event: " << strerror(errno) << std::endl;
+        close(clientFd);
+        clients.erase(clientFd);
+    }
+}
+
 void Connections::setWriteEvent(int clientFd) 
 {
     struct kevent evSet;
@@ -238,11 +248,7 @@ void Connections::handleWriteEvent(int clientFd) {
 {
         client.setWritePending(false);
         // Remove write event if no more data to send
-        struct kevent evSet;
-        EV_SET(&evSet, clientFd, EVFILT_WRITE, EV_DELETE, 0, 0, NULL);
-        if (kevent(kqueueFd, &evSet, 1, NULL, 0, NULL) == -1) {
-            std::cerr << "Error unregistering write event: " << strerror(errno) << std::endl;
-        }
+        removeWriteEvent(clientFd);
         client.getRequest().reset();
         client.getResponse().reset();
         // Check if connection should be closed after response
@@ -255,9 +261,8 @@ void Connections::handleWriteEvent(int clientFd) {
 
 void Connections::handleTimeoutEvent(int clientFd) 
 {
-    std::cout << "Timeout for client " << clientFd << std::endl;
+    std::cout << "Timeout event on client: " << clientFd << std::endl;
     removeClient(clientFd);
-
 }
 
 // Connections::~Connections() { }

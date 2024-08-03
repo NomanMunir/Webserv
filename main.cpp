@@ -24,8 +24,8 @@ int main(int ac, const char **av)
         // printServers(parser.getServers());
         // printports
         std::vector<std::string> ports = parser.getPorts();
-        for (std::vector<std::string>::iterator it = ports.begin(); it != ports.end(); it++)
-            std::cout << *it << std::endl;
+        // for (std::vector<std::string>::iterator it = ports.begin(); it != ports.end(); it++)
+        //     std::cout << *it << std::endl;
         Validation validation(parser);
         Server server(parser);
         server.run(parser);
