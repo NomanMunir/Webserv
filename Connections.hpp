@@ -60,6 +60,8 @@ private:
     void handleReadEvent(int clientFd);
     void handleWriteEvent(int clientFd);
     void handleTimeoutEvent(int clientFd);
+    bool handleChunkedData(Client &client);
+
 
 public:
     Connections(std::vector<int> fds, Parser &configFile);

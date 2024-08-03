@@ -218,8 +218,8 @@ void Response::handlePOST(bool isPost, RouteConfig &targetRoute, std::string &pa
 {
 	if (isPost)
 	{
-		
-		body.printBody();
+		std::cout << "Post" << std::endl;
+		// body.printBody();
 		// std::string fullPath = targetRoute.root + path;
 		// int type = checkType(fullPath, targetRoute);
 		// if (type == 2)
@@ -242,14 +242,15 @@ void Response::handleResponse(Request &request)
 {
 	std::string method = request.getHeaders().getValue("method");
 	std::string uri = request.getHeaders().getValue("uri");
-	// Body body = request.getBody();
+	Body body = request.getBody();
+	// std::cout << "Body: " << body.getContent() << std::endl;
 
 	if (!myFind(this->targetRoute.methods, method))
 		sendError("403");
 
 	handleGET(method == "GET", this->targetRoute, uri);
 
-	// handlePOST(method == "POST", this->targetRoute, uri, body);
+	handlePOST(method == "POST", this->targetRoute, uri, body);
 }
 
 void Response::defaultErrorPage(std::string errorCode)
@@ -307,8 +308,6 @@ bool Response::getIsConClosed()
 	return isConClosed;
 }
 
-Response::Response(int clientFd) : clientSocket(clientFd), isConClosed(false) { }
-
 Response::~Response() { }
 
 std::string Response::getResponse()
@@ -342,9 +341,9 @@ void Response::printResponse()
 }
 
 
-Response::Response() : clientSocket(-1), isConClosed(false) { }
+Response::Response() : isConClosed(false) { }
 
-Response::Response(const Response &c) : statusCodes(c.statusCodes), response(c.response), clientSocket(c.clientSocket), targetServer(c.targetServer), targetRoute(c.targetRoute), isConClosed(c.isConClosed) { }
+Response::Response(const Response &c) : statusCodes(c.statusCodes), response(c.response), targetServer(c.targetServer), targetRoute(c.targetRoute), isConClosed(c.isConClosed) { }
 
 Response& Response::operator=(const Response &c)
 {
@@ -352,7 +351,6 @@ Response& Response::operator=(const Response &c)
 		return *this;
 	statusCodes = c.statusCodes;
 	response = c.response;
-	clientSocket = c.clientSocket;
 	targetServer = c.targetServer;
 	targetRoute = c.targetRoute;
 	isConClosed = c.isConClosed;

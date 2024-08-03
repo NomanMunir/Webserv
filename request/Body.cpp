@@ -12,14 +12,21 @@
 
 #include "Body.hpp"
 
-Body::Body(int fd): body(""), clientSocket(fd) {}
+Body::Body(std::string data)
+{
+    if (data.find("\r\n\r\n") != std::string::npos)
+        body = data.substr(data.find("\r\n\r\n") + 4);
+    else
+        body = "";
+}
+
+Body::Body(): body("") { }
 
 Body::~Body() { }
 
 Body::Body(const Body &b)
 {
 	body = b.body;
-    this->clientSocket = b.clientSocket;
 }
 
 Body &Body::operator=(const Body &b)
@@ -27,8 +34,7 @@ Body &Body::operator=(const Body &b)
 	if (this == &b)
 		return *this;
 	body = b.body;
-    this->clientSocket = b.clientSocket;
-	return *this;
+    return *this;
 }
 
 void Body::printBody()
@@ -36,52 +42,52 @@ void Body::printBody()
 	std::cout << "Body: " << body << std::endl;
 }
 
-void Body::parseChunked() {
-    char buffer;
-    std::string chunkSize;
-    std::string chunk;
-    int size = 0;
-    while (recv(clientSocket, &buffer, 1, 0) > 0) {
-        if (buffer == '\r') {
-            recv(clientSocket, &buffer, 1, 0);
-            if (buffer == '\n') {
-                size = std::stoi(chunkSize, 0, 16);
-                if (size == 0)
-                    break;
-                while (recv(clientSocket, &buffer, 1, 0) > 0) {
-                    chunk.append(1, buffer);
-                    if (size == chunk.size())
-                        break;
-                }
-                body += chunk;
-                chunkSize.clear();
-                chunk.clear();
-            }
-        } else {
-            chunkSize.append(1, buffer);
-        }
-    }
-}
+// void Body::parseChunked() {
+//     char buffer;
+//     std::string chunkSize;
+//     std::string chunk;
+//     int size = 0;
+//     while (recv(clientSocket, &buffer, 1, 0) > 0) {
+//         if (buffer == '\r') {
+//             recv(clientSocket, &buffer, 1, 0);
+//             if (buffer == '\n') {
+//                 size = std::stoi(chunkSize, 0, 16);
+//                 if (size == 0)
+//                     break;
+//                 while (recv(clientSocket, &buffer, 1, 0) > 0) {
+//                     chunk.append(1, buffer);
+//                     if (size == chunk.size())
+//                         break;
+//                 }
+//                 body += chunk;
+//                 chunkSize.clear();
+//                 chunk.clear();
+//             }
+//         } else {
+//             chunkSize.append(1, buffer);
+//         }
+//     }
+// }
 
-void Body::parseBody(std::string length)
-{
-    char buffer;
-    // Transfer-Encoding takes precedence over Content-Length.
-    std::cout << "Length: " << length << std::endl;
-    std::cout << "Parse Body\n";
-    std::cout << "socket: " << this->clientSocket << std::endl;
-    if (!length.empty())
-    {
-        while (read(this->clientSocket, &buffer, 1) > 0)
-        {
-            std::cout << "Buffer: " << buffer << std::endl;
-            body.append(1, buffer);
-            if (std::atof(length.c_str()) == body.size())
-                break;
-        }
-    }
-    std::cout << body << std::endl;
-}
+// void Body::parseBody(std::string length)
+// {
+//     char buffer;
+//     // Transfer-Encoding takes precedence over Content-Length.
+//     // std::cout << "Length: " << length << std::endl;
+//     // std::cout << "Parse Body\n";
+//     // std::cout << "socket: " << this->clientSocket << std::endl;
+//     if (!length.empty())
+//     {
+//         while (read(this->clientSocket, &buffer, 1) > 0)
+//         {
+//             std::cout << "Buffer: " << buffer << std::endl;
+//             body.append(1, buffer);
+//             if (std::atof(length.c_str()) == body.size())
+//                 break;
+//         }
+//     }
+//     std::cout << body << std::endl;
+// }
 
 // void Body::parseBody(std::string length) {
 //     char buffer;
@@ -97,4 +103,4 @@ void Body::parseBody(std::string length)
 //     }
 // }
 
-std::string Body::getBody() { return body; }
+std::string& Body::getContent() { return this->body; }

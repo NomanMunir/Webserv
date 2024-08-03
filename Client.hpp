@@ -12,6 +12,7 @@ private:
     std::string readBuffer;
     std::string writeBuffer;
     bool writePending;
+    bool readPending;
     bool keepAlive;
 
     Request request;
@@ -27,9 +28,12 @@ public:
     int getClientFd() const;
     std::string& getReadBuffer();
     std::string& getWriteBuffer();
+    void reset();
+
     bool isWritePending() const;
     void setWritePending(bool pending);
     bool isReadPending() const;
+    void setReadPending(bool pending);
     bool isKeepAlive();
     void setKeepAlive(bool keepAlive);
 

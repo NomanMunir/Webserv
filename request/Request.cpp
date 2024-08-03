@@ -145,13 +145,13 @@ void Request::handleRequest(Parser &parser, Response &structResponse)
         structResponse.setTargetRoute(route);
 
         // Step 4: Parse Body (if present)
-        // if (isBodyExistRequest(parser, structResponse)) {
-        //     this->body = Body(clientSocket);
-        //     if (!headers.getValue("Content-Length").empty())
-        //         body.parseBody(headers.getValue("Content-Length"));
-        //     else if (headers.getValue("Transfer-Encoding") == "chunked")
-        //         body.parseChunked();
-        // }
+        if (isBodyExistRequest(parser, structResponse)) {
+            this->body = Body(this->rawData);
+            // if (!headers.getValue("Content-Length").empty())
+            //     body.parseBody(headers.getValue("Content-Length"));
+            // else if (headers.getValue("Transfer-Encoding") == "chunked")
+            //     body.parseChunked();
+        }
 
         // headers.printHeaders();
         // body.printBody();
@@ -203,6 +203,13 @@ Request::~Request() { }
 void Request::setComplete(bool complete)
 {
 	this->complete = complete;
+}
+
+bool Request::isChunked()
+{
+	if(headers.getValue("Transfer-Encoding") == "chunked")
+		return true;
+	return false;
 }
 
 Request::Request(const Request &c) : rawData(c.rawData), headers(c.headers), body(c.body), complete(c.complete) {}

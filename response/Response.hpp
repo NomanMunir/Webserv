@@ -15,16 +15,16 @@
 #ifndef RESPONSE_HPP
 #define RESPONSE_HPP
 
-#include "../parsing/Parser.hpp"
 #include <dirent.h>
 #include <cstring>
+
+#include "../parsing/Parser.hpp"
 #include "../request/Request.hpp"
 
 class Response
 {
 	public:
 		Response();
-		Response(int clientFd);
 		~Response();
 		Response(const Response &c);
 		Response& operator=(const Response &c);

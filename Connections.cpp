@@ -25,18 +25,14 @@ Connections::Connections(std::vector<int> fds, Parser &configFile) : serverSocke
         throw std::exception();
     }
 
-    for (size_t i = 0; i < serverSockets.size(); i++) 
-    {
+    for (size_t i = 0; i < serverSockets.size(); i++)
         setServer(serverSockets[i]);
-    }
 }
 
 Connections::Connections(const Connections &c) : serverSockets(c.serverSockets), kqueueFd(c.kqueueFd), configFile(c.configFile)
 {
-    for (size_t i = 0; i < serverSockets.size(); i++) 
-    {
+    for (size_t i = 0; i < serverSockets.size(); i++)
         setServer(serverSockets[i]);
-    }
 }
 
 Connections &Connections::operator=(const Connections &c)
@@ -47,17 +43,14 @@ Connections &Connections::operator=(const Connections &c)
     kqueueFd = c.kqueueFd;
     configFile = c.configFile;
     for (size_t i = 0; i < serverSockets.size(); i++) 
-    {
         setServer(serverSockets[i]);
-    }
     return *this;
 }
 
-Connections::~Connections() {
+Connections::~Connections()
+{
     for (size_t i = 0; i < serverSockets.size(); i++) 
-    {
         close(serverSockets[i]);
-    }
     close(kqueueFd);
 }
 
@@ -79,7 +72,7 @@ void Connections::setClient(int fd)
 {
     setNonBlocking(fd);
     EV_SET(&changeList[0], fd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
-    EV_SET(&changeList[1], fd, EVFILT_TIMER, EV_ADD | EV_ENABLE, 0, 30000, NULL);
+    EV_SET(&changeList[1], fd, EVFILT_TIMER, EV_ADD | EV_ENABLE, 0, 3000000, NULL);
 
     if (kevent(kqueueFd, changeList, 2, NULL, 0, NULL) == -1)
     {
@@ -100,18 +93,6 @@ void Connections::removeClient(int fd)
     clients.erase(fd);
     close(fd);
     std::cout << "Connection closed by client on socket fd " << fd << std::endl;
-}
-
-
-void Connections::setTimeout(int fd)
-{
-    EV_SET(&changeList[0], fd, EVFILT_TIMER, EV_ADD | EV_ENABLE, 0, 0, NULL); // 5 seconds timeout
-    if (kevent(kqueueFd, changeList, 1, NULL, 0, NULL) == -1)
-    {
-        std::cerr << "Error: " << strerror(errno) << std::endl;
-        close(fd);
-        throw std::exception();
-    }
 }
 
 bool Connections::addClient(int serverSocket) {
@@ -172,33 +153,130 @@ void Connections::loop()
     }
 }
 
+bool Connections::handleChunkedData(Client &client)
+{
+    std::string &buffer = client.getReadBuffer();
+    std::string &body = client.getRequest().getBody().getContent();
+    std::cout << "chunked data: " << buffer << std::endl;
+    std::string::size_type pos = 0;
+    while (true) {
+        std::string::size_type chunkSizeEnd = buffer.find("\r\n", pos);
+        if (chunkSizeEnd == std::string::npos) {
+            return false;
+        }
+
+        std::string chunkSizeHex = buffer.substr(pos, chunkSizeEnd - pos);
+        size_t chunkSize;
+        std::istringstream(chunkSizeHex) >> std::hex >> chunkSize;
+        pos = chunkSizeEnd + 2;
+
+        if (chunkSize == 0) {
+            buffer.erase(0, pos + 2);
+            client.getRequest().setComplete(true);
+            return true;
+        }
+
+        if (buffer.size() < pos + chunkSize + 2) {
+            return false;
+        }
+
+        body.append(buffer, pos, chunkSize);
+        pos += chunkSize + 2;
+    }
+}
+
 void Connections::handleReadEvent(int clientFd)
 {
     Client &client = clients.at(clientFd);
-    char buffer[1024];
-    ssize_t bytesRead = recv(clientFd, buffer, sizeof(buffer), 0);
-    if (bytesRead <= 0) {
-        if (bytesRead == 0) {
+    char buffer[10240];
+    ssize_t bytesRead;
+
+        while (true) {
+        bytesRead = recv(clientFd, buffer, sizeof(buffer), 0);
+        if (bytesRead < 0) {
+            if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                // No more data to read, break out of the loop
+                break;
+            } else {
+                perror("recv");
+                removeClient(clientFd);
+                return;
+            }
+        } else if (bytesRead == 0) {
+            // Client disconnected
             std::cout << "Client disconnected: " << clientFd << std::endl;
+            removeClient(clientFd);
+            return;
         } else {
-            perror("recv");
+            // Append received data to the client's read buffer
+            client.getReadBuffer().append(buffer, bytesRead);
         }
+    }
+        std::cout << "Chunked data: " << client.getReadBuffer() << std::endl;
+     if (client.getRequest().isChunked()) {
+        if (!handleChunkedData(client)) {
+            return;
+       }
+    }
+    else
+    {
+        // Process the request if the full request has been received
+        if (client.getRequest().appendData(client.getReadBuffer(), client.getResponse(), this->configFile) 
+        && client.getRequest().isComplete())
+        {
+            client.getResponse().handleResponse(client.getRequest());
+            client.getWriteBuffer() = client.getResponse().getResponse();
+            client.setWritePending(true);
+            client.setReadPending(false);
+            client.getReadBuffer().clear();
+            this->setWriteEvent(clientFd);
+        }
+    }
+}
+
+void Connections::handleWriteEvent(int clientFd) {
+    Client &client = clients.at(clientFd);
+    if (!client.isWritePending()) return;
+
+    ssize_t bytesWritten = send(clientFd, client.getWriteBuffer().c_str(), client.getWriteBuffer().size(), 0);
+    if (bytesWritten < 0) {
+        perror("send");
         removeClient(clientFd);
         return;
     }
-    client.getReadBuffer().append(buffer, bytesRead);
 
-    // Process the request if the full request has been received
-    if (client.getRequest().appendData(client.getReadBuffer(), client.getResponse(), this->configFile) 
-    && client.getRequest().isComplete())
+    // Remove sent data from the buffer
+    client.getWriteBuffer().erase(0, bytesWritten);
+    if (client.getWriteBuffer().empty()) 
     {
-        client.getResponse().handleResponse(client.getRequest());
-        client.getWriteBuffer() = client.getResponse().getResponse();
-        client.setWritePending(true);
-        client.getReadBuffer().clear();
-        this->setWriteEvent(clientFd);
+        client.setWritePending(false);
+        // Remove write event if no more data to send
+        removeWriteEvent(clientFd);
+    
+        if (!client.isKeepAlive()) 
+        {
+            std::cout<<"Closed bc of IsKeepAlive " << clientFd << std::endl;
+            removeClient(clientFd);
+            return;
+        }
+
+        EV_SET(&changeList[1], clientFd, EVFILT_TIMER, EV_ADD | EV_ENABLE, 0, 3000000, NULL);
+        if (kevent(kqueueFd, changeList, 1, NULL, 0, NULL) == -1)
+        {
+            std::cerr << "Error resetting keep-alive timer: " << strerror(errno) << std::endl;
+            removeClient(clientFd);
+        }
+        else
+            client.reset();
     }
 }
+
+void Connections::handleTimeoutEvent(int clientFd) 
+{
+    std::cout << "Timeout event on client: " << clientFd << std::endl;
+    removeClient(clientFd);
+}
+
 
 void Connections::removeWriteEvent(int clientFd) {
     struct kevent evSet;
@@ -223,47 +301,15 @@ void Connections::setWriteEvent(int clientFd)
     }
 }
 
-void Connections::handleWriteEvent(int clientFd) {
-    Client &client = clients.at(clientFd);
-    if (!client.isWritePending()) return;
-
-    ssize_t bytesWritten = send(clientFd, client.getWriteBuffer().c_str(), client.getWriteBuffer().size(), 0);
-    if (bytesWritten < 0) {
-        perror("send");
-        removeClient(clientFd);
-        return;
-    }
-
-    // Remove sent data from the buffer
-    client.getWriteBuffer().erase(0, bytesWritten);
-    if (client.getWriteBuffer().empty()) 
+void Connections::setTimeout(int fd)
 {
-        client.setWritePending(false);
-        // Remove write event if no more data to send
-        removeWriteEvent(clientFd);
-    
-        if (!client.isKeepAlive()) 
-        {
-            std::cout<<"Closed bc of IsKeepAlive " << clientFd << std::endl;
-            removeClient(clientFd);
-            return;
-        }
-        EV_SET(&changeList[1], clientFd, EVFILT_TIMER, EV_ADD | EV_ENABLE, 0, 30000, NULL);  // Reset 30 seconds timeout
-        if (kevent(kqueueFd, changeList, 1, NULL, 0, NULL) == -1) {
-            std::cerr << "Error resetting keep-alive timer: " << strerror(errno) << std::endl;
-            removeClient(clientFd);
-        } else {
-            client.getRequest().reset();
-            client.getResponse().reset();
-        }
+    EV_SET(&changeList[0], fd, EVFILT_TIMER, EV_ADD | EV_ENABLE, 0, 0, NULL); // 5 seconds timeout
+    if (kevent(kqueueFd, changeList, 1, NULL, 0, NULL) == -1)
+    {
+        std::cerr << "Error: " << strerror(errno) << std::endl;
+        close(fd);
+        throw std::exception();
     }
-}
-
-
-void Connections::handleTimeoutEvent(int clientFd) 
-{
-    std::cout << "Timeout event on client: " << clientFd << std::endl;
-    removeClient(clientFd);
 }
 
 // Connections::~Connections() { }

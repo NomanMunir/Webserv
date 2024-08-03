@@ -38,6 +38,7 @@ class Request
 		Body getBody();
 		void setComplete(bool complete);
 		void reset();
+		bool isChunked();
 	private:
 		void handleRequest(Parser &parser, Response &structResponse);
 		void findServer(Response &structResponse, Parser &parser);
