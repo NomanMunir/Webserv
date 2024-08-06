@@ -143,6 +143,10 @@ void Headers::parseHeader(Response &structResponse)
 			else
 				headers["Port"] = "80";
 		}
+		if (key == "Transfer-Encoding" && value != "chunked")
+			structResponse.sendError("501");
+		if (key == "Content-Length" && !validateNumber("Content-Length", value))
+			structResponse.sendError("400");
 		if (key.empty() || value.empty())
 			structResponse.sendError("400");
 		headers[key] = value;

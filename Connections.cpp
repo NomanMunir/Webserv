@@ -190,12 +190,27 @@ void Connections::handleReadEvent(int clientFd)
     Client &client = clients.at(clientFd);
     Headers& header = client.getRequest().getHeaders();
 
-    if (!ft_recv(clientFd, header.getRawHeaders(), "\r\n\r\n"))
+    if (!ft_recv_header(clientFd, header.getRawHeaders()))
         return (removeClient(clientFd));
     header.parseHeader(client.getResponse());
 
     if (client.getRequest().getHeaders().isComplete())
     {
+        if (client.getRequest().isBodyExist(configFile, client.getResponse()))
+        {
+            if (client.getRequest().isChunked())
+            {
+                if (!handleChunkedData(client))
+                    return;
+            }
+            else
+            {
+                int contentLength = atoi(client.getRequest().getHeaders().getValue("Content-Length").c_str());
+                if (client.getRequest().getBody().readBody(clientFd, contentLength))
+                    return (removeClient(clientFd));
+                client.getRequest().getBody().printBody();
+            }
+        }
         client.getRequest().handleRequest(this->configFile, client.getResponse());
         if (client.getRequest().isComplete())
         {

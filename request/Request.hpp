@@ -39,10 +39,10 @@ class Request
 		void reset();
 		bool isChunked();
 		void handleRequest(Parser &parser, Response &structResponse);
+		bool isBodyExist(Parser &parser, Response &structResponse);
 
 	private:
 		void findServer(Response &structResponse, Parser &parser);
-		bool isBodyExist(Parser &parser, Response &structResponse);
 
 		std::string request;
 		std::string rawData;

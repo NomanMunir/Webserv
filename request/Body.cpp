@@ -18,6 +18,8 @@ Body::~Body() { }
 
 std::string& Body::getBody() { return this->body; }
 
+void Body::setIsChunked(bool isChunked) { this->isChunked = isChunked; }
+
 Body::Body(const Body &b)
 {
 	body = b.body;
@@ -33,6 +35,13 @@ Body &Body::operator=(const Body &b)
     return *this;
 }
 
+bool Body::readBody(int clientSocket, int contentLength)
+{
+	if (!ft_recv_body(clientFd, this->body, contentLength))
+		return false;
+	return true;
+}
+
 void Body::printBody()
 {
 	std::cout << "Body: " << body << std::endl;
@@ -42,6 +51,8 @@ bool Body::isComplete() const
 {
 	return complete;
 }
+
+
 
 // void Body::parseChunked() {
 //     char buffer;

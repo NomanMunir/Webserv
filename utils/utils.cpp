@@ -12,11 +12,11 @@
 
 #include "utils.hpp"
 
-bool ft_recv(int fd, std::string &buffer, std::string delimiter)
+bool ft_recv_header(int fd, std::string &buffer)
 {
     int bytesRead;
     char c[1];
-    while (buffer.find(delimiter) == std::string::npos)
+    while (buffer.find("\r\n\r\n") == std::string::npos)
     {
         bytesRead = recv(fd, c, 1, 0);
         if (bytesRead < 0)
@@ -33,6 +33,25 @@ bool ft_recv(int fd, std::string &buffer, std::string delimiter)
     return (true);
 }
 
+bool ft_recv_body(int fd, std::string &buffer, size_t contentLength)
+{
+    int bytesRead;
+    char c[1];
+    while (buffer.size() < contentLength)
+    {
+        bytesRead = recv(fd, c, 1, 0);
+        if (bytesRead < 0)
+            return (perror("recv"), false);
+        else if (bytesRead == 0)
+        {
+            std::cout << "Client disconnected: " << fd << std::endl;
+            return (false);
+        }
+        else
+            buffer.append(c, bytesRead);
+    }
+    return (true);
+}
 
 std::string trim(const std::string &s)
 {

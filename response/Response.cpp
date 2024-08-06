@@ -243,7 +243,6 @@ void Response::handleResponse(Request &request)
 	std::string method = request.getHeaders().getValue("method");
 	std::string uri = request.getHeaders().getValue("uri");
 	Body body = request.getBody();
-	std::cout << "Body: " << body.getContent() << std::endl;
 
 	if (!myFind(this->targetRoute.methods, method))
 		sendError("403");

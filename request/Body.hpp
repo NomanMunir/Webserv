@@ -34,6 +34,8 @@ class Body
 		std::string& getContent();
 		bool isComplete() const;
 		void setIsChunked(bool isChunked);
+
+		bool readBody(int clientSocket, int contentLength);
 		std::string& getBody();
 
 		// void parseBody(std::string length);
