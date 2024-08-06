@@ -157,7 +157,7 @@ bool Connections::handleChunkedData(Client &client)
 {
     std::string &buffer = client.getReadBuffer();
     std::string &body = client.getRequest().getBody().getContent();
-    std::cout << "chunked data: " << buffer << std::endl;
+    // std::cout << "chunked data: " << buffer << std::endl;
     std::string::size_type pos = 0;
     while (true) {
         std::string::size_type chunkSizeEnd = buffer.find("\r\n", pos);
@@ -188,41 +188,16 @@ bool Connections::handleChunkedData(Client &client)
 void Connections::handleReadEvent(int clientFd)
 {
     Client &client = clients.at(clientFd);
-    char buffer[10240];
-    ssize_t bytesRead;
+    Headers& header = client.getRequest().getHeaders();
 
-        while (true) {
-        bytesRead = recv(clientFd, buffer, sizeof(buffer), 0);
-        if (bytesRead < 0) {
-            if (errno == EAGAIN || errno == EWOULDBLOCK) {
-                // No more data to read, break out of the loop
-                break;
-            } else {
-                perror("recv");
-                removeClient(clientFd);
-                return;
-            }
-        } else if (bytesRead == 0) {
-            // Client disconnected
-            std::cout << "Client disconnected: " << clientFd << std::endl;
-            removeClient(clientFd);
-            return;
-        } else {
-            // Append received data to the client's read buffer
-            client.getReadBuffer().append(buffer, bytesRead);
-        }
-    }
-        std::cout << "Chunked data: " << client.getReadBuffer() << std::endl;
-     if (client.getRequest().isChunked()) {
-        if (!handleChunkedData(client)) {
-            return;
-       }
-    }
-    else
+    if (!ft_recv(clientFd, header.getRawHeaders(), "\r\n\r\n"))
+        return (removeClient(clientFd));
+    header.parseHeader(client.getResponse());
+
+    if (client.getRequest().getHeaders().isComplete())
     {
-        // Process the request if the full request has been received
-        if (client.getRequest().appendData(client.getReadBuffer(), client.getResponse(), this->configFile) 
-        && client.getRequest().isComplete())
+        client.getRequest().handleRequest(this->configFile, client.getResponse());
+        if (client.getRequest().isComplete())
         {
             client.getResponse().handleResponse(client.getRequest());
             client.getWriteBuffer() = client.getResponse().getResponse();
@@ -252,7 +227,7 @@ void Connections::handleWriteEvent(int clientFd) {
         client.setWritePending(false);
         // Remove write event if no more data to send
         removeWriteEvent(clientFd);
-    
+
         if (!client.isKeepAlive()) 
         {
             std::cout<<"Closed bc of IsKeepAlive " << clientFd << std::endl;

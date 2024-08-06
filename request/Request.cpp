@@ -103,7 +103,7 @@ void Request::findServer(Response &structResponse, Parser &parser)
 	
 }
 
-bool Request::isBodyExistRequest(Parser &parser, Response &structResponse)
+bool Request::isBodyExist(Parser &parser, Response &structResponse)
 {
 	
 	std::string length = headers.getValue("Content-Length");
@@ -121,6 +121,7 @@ bool Request::isBodyExistRequest(Parser &parser, Response &structResponse)
 	{
 		if (encoding != "chunked")
 			structResponse.sendError("411");
+		this->body.setIsChunked(true);
 	}
 	return true;
 }
@@ -128,11 +129,7 @@ bool Request::isBodyExistRequest(Parser &parser, Response &structResponse)
 void Request::handleRequest(Parser &parser, Response &structResponse) 
 {
     try {
-        // Step 1: Parse Headers
-        this->headers = Headers(rawData, structResponse);
-        this->headers.parseHeader(structResponse);
-
-        // Step 2: Determine Target Server
+		
         this->findServer(structResponse, parser);
         ServerConfig server = structResponse.getTargetServer();
 
@@ -143,15 +140,15 @@ void Request::handleRequest(Parser &parser, Response &structResponse)
             return;
         }
         structResponse.setTargetRoute(route);
-
+		this->complete = true;
         // Step 4: Parse Body (if present)
-        if (isBodyExistRequest(parser, structResponse)) {
-            this->body = Body(this->rawData);
+        isBodyExist(parser, structResponse);
+        //     this->body = Body(this->rawData);
             // if (!headers.getValue("Content-Length").empty())
             //     body.parseBody(headers.getValue("Content-Length"));
             // else if (headers.getValue("Transfer-Encoding") == "chunked")
             //     body.parseChunked();
-        }
+        // }
 
         // headers.printHeaders();
         // body.printBody();
@@ -162,39 +159,18 @@ void Request::handleRequest(Parser &parser, Response &structResponse)
     }
 }
 
-bool Request::appendData(const std::string &data, Response &response, Parser &configFile) 
-{
-    rawData += data;
-    if (!complete)
-	{
-		// std::cout << "rawData : " << rawData << std::endl;
-        for (int i = 0; i < rawData.size(); i++)
-        {
-            if (!isascii(rawData[i]))
-                response.sendError("400");
-        }
-        handleRequest(configFile, response);
-        if (headers.isComplete()) 
-        {
-            complete = true;  // Or set some condition for complete request
-        	//     parseBody();
-        }
-    }
-    return complete;
-}
-
 Request::Request() : complete(false) {}
 
 bool Request::isComplete() const {
     return complete;
 }
 
-Headers Request::getHeaders()
+Headers& Request::getHeaders()
 {
 	return headers;
 }
 
-Body Request::getBody()
+Body& Request::getBody()
 {
 	return body;
 }
@@ -229,6 +205,5 @@ Request& Request::operator=(const Request &c)
 void Request::reset()
 {
 	rawData.clear();
-	headers.reset();
 	complete = false;
 }

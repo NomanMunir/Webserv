@@ -12,21 +12,16 @@
 
 #include "Body.hpp"
 
-Body::Body(std::string data)
-{
-    if (data.find("\r\n\r\n") != std::string::npos)
-        body = data.substr(data.find("\r\n\r\n") + 4);
-    else
-        body = "";
-}
-
-Body::Body(): body("") { }
+Body::Body(): body(""), isChunked(false) { }
 
 Body::~Body() { }
+
+std::string& Body::getBody() { return this->body; }
 
 Body::Body(const Body &b)
 {
 	body = b.body;
+	isChunked = b.isChunked;
 }
 
 Body &Body::operator=(const Body &b)
@@ -34,12 +29,18 @@ Body &Body::operator=(const Body &b)
 	if (this == &b)
 		return *this;
 	body = b.body;
+	isChunked = b.isChunked;
     return *this;
 }
 
 void Body::printBody()
 {
 	std::cout << "Body: " << body << std::endl;
+}
+
+bool Body::isComplete() const
+{
+	return complete;
 }
 
 // void Body::parseChunked() {

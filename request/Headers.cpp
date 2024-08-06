@@ -104,6 +104,13 @@ void Headers::parseHeader(Response &structResponse)
 	std::string request = rawHeaders.substr(0, rawHeaders.size() - 2); // -2 is removing the last \r\n
 	std::string line;
 	std::istringstream iss(request);
+
+	for (size_t i = 0; i < request.size(); i++)
+	{
+		if (!isascii(this->rawHeaders[i]))
+			structResponse.sendError("400");
+	}
+
 	while (std::getline(iss, firstLine, '\n'))
 	{
 		if (!trim(firstLine).empty())
@@ -153,9 +160,9 @@ Headers::Headers(std::string &rawData, Response &structResponse) : complete(fals
 		this->rawHeaders = rawData.substr(0, rawData.find("\r\n\r\n") + 4);
 }
 
-std::string Headers::getRawHeaders()
+std::string &Headers::getRawHeaders()
 {
-	return this->rawHeaders;
+	return rawHeaders;
 }
 
 bool Headers::isComplete() const
@@ -163,13 +170,6 @@ bool Headers::isComplete() const
 	return complete;
 }
 
-void Headers::reset()
-{
-	headers.clear();
-	firstLine.clear();
-	rawHeaders.clear();
-	complete = false;
-}
 Headers::~Headers() { }
 
 std::string Headers::getValue(std::string key)

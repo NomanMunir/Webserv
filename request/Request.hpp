@@ -31,21 +31,19 @@ class Request
 		Request(const Request &c);
 		Request& operator=(const Request &c);
 
-    	bool appendData(const std::string &data, Response &response, Parser &configFile);
 		bool isComplete() const;
-		std::string getRequest();
-		Headers getHeaders();
-		Body getBody();
+		Headers& getHeaders();
+		Body& getBody();
+
 		void setComplete(bool complete);
 		void reset();
 		bool isChunked();
-	private:
 		void handleRequest(Parser &parser, Response &structResponse);
+
+	private:
 		void findServer(Response &structResponse, Parser &parser);
-		bool isBodyExistRequest(Parser &parser, Response &structResponse);
+		bool isBodyExist(Parser &parser, Response &structResponse);
 
-
-		
 		std::string request;
 		std::string rawData;
 		Headers headers;

@@ -25,7 +25,6 @@
 class Body
 {
 	public:
-		Body(std::string rawData);
 		Body();
 		~Body();
 		Body(const Body &b);
@@ -33,11 +32,19 @@ class Body
 
 		void printBody();
 		std::string& getContent();
+		bool isComplete() const;
+		void setIsChunked(bool isChunked);
+		std::string& getBody();
+
 		// void parseBody(std::string length);
 		// void parseChunked();
 
+
 	private:
 		std::string body;
+		bool complete;
+		bool isChunked;
+
 };
 
 #endif // BODY_HPP

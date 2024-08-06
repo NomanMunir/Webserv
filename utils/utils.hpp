@@ -50,5 +50,6 @@ void initializeVector(std::vector<std::string> &v, std::string s[], size_t size)
 std::string getErrorMsg(std::string errorCode);
 bool responseClient(int fd, std::string response);
 std::string getMimeType(std::string extention);
+bool ft_recv(int fd, std::string &buffer, std::string delimiter);
 
 #endif // UTILS_HPP	

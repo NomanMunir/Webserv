@@ -34,10 +34,9 @@ class Headers
 
 		void printHeaders();
 		std::string getValue(std::string key);
-		std::string getRawHeaders();
+		std::string &getRawHeaders();
 		void parseHeader(Response &structResponse);
 		bool isComplete() const;
-		void reset();
 
 	private:
 		std::map<std::string, std::string> headers;

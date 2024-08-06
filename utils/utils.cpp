@@ -12,6 +12,28 @@
 
 #include "utils.hpp"
 
+bool ft_recv(int fd, std::string &buffer, std::string delimiter)
+{
+    int bytesRead;
+    char c[1];
+    while (buffer.find(delimiter) == std::string::npos)
+    {
+        bytesRead = recv(fd, c, 1, 0);
+        if (bytesRead < 0)
+            return (perror("recv"), false);
+        else if (bytesRead == 0)
+        {
+            std::cout << "Client disconnected: " << fd << std::endl;
+            return (false);
+        }
+        else
+            buffer.append(c, bytesRead);
+    }
+    std::cout << "Received: " << buffer << std::endl;
+    return (true);
+}
+
+
 std::string trim(const std::string &s)
 {
     size_t start = s.find_first_not_of(" \t\r\n");

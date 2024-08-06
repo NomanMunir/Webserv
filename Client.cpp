@@ -35,8 +35,10 @@ void Client::reset() {
 	response = Response();
 }
 
-bool Client::isKeepAlive() {
-	std::string connection = request.getHeaders().getValue("Connection");
+bool Client::isKeepAlive()
+{
+	Headers &hdr = request.getHeaders();
+	std::string connection = hdr.getValue("Connection");
 	if (connection == "keep-alive")
 		return true;
 	else if (connection == "close")
