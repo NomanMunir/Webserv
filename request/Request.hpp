@@ -42,7 +42,9 @@ class Request
 		bool isBodyExist(Parser &parser, Response &structResponse);
 
 	private:
+	
 		void findServer(Response &structResponse, Parser &parser);
+		bool chooseRoute(std::string path, ServerConfig server, RouteConfig &targetRoute);
 
 		std::string request;
 		std::string rawData;

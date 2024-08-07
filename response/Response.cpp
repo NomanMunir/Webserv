@@ -164,16 +164,16 @@ void Response::handleRedirect(std::string redirect)
 	ss >> errorCode;
 	std::string value;
 	std::getline(ss, value, '\0');
+
 	removeCharsFromString(value, "\"'");
-	std::cout << "Error Code: " << errorCode << std::endl;
-	std::cout << "Value: " << value << std::endl;
-	// int errorCode = std::atoi(tokens[0].c_str());
 
 	if (!value.empty())
 	{
 		if (errorCode >= 300 && errorCode < 400)
 		{
-			std::string tokenWithSlash = value[0] == '/' ? value : "/" + value;
+			value =  trim(value);
+			std::string tokenWithSlash = value[0] == '/' ? value :  "/" + value;
+			tokenWithSlash = trim(tokenWithSlash);
 			response = "HTTP/1.1 " + std::to_string(errorCode) + " " + getErrorMsg(std::to_string(errorCode)) + "\r\nLocation: " + tokenWithSlash + "\r\n\r\n";
 		}
 		else
@@ -191,9 +191,7 @@ void Response::handleGET(bool isGet, RouteConfig &targetRoute, std::string &path
 		std::string fullPath = generateFullPath(targetRoute.root, path);
 		if (targetRoute.redirect != "")
 		{
-			std::cout << "Redirect" << std::endl;
 			handleRedirect(targetRoute.redirect);
-			std::cout << "Response: " << response << std::endl;
 			return;
 		}
 

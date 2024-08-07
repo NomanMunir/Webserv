@@ -37,7 +37,7 @@ Body &Body::operator=(const Body &b)
 
 bool Body::readBody(int clientSocket, int contentLength)
 {
-	if (!ft_recv_body(clientFd, this->body, contentLength))
+	if (!ft_recv_body(clientSocket, this->body, contentLength))
 		return false;
 	return true;
 }

@@ -2,6 +2,7 @@
 #include "response/Response.hpp"
 #include "request/Request.hpp"
 
+#define SET_TIMEOUT 300000
 
 void Connections::setServer(int fd)
 {
@@ -16,7 +17,9 @@ void Connections::setServer(int fd)
     }
 }
 
-Connections::Connections(std::vector<int> fds, Parser &configFile) : serverSockets(fds), configFile(configFile)
+Connections::Connections(std::vector<int> fds, Parser &configFile)
+    : serverSockets(fds),
+        configFile(configFile)
 {
     this->kqueueFd = kqueue();
     if (this->kqueueFd == -1)
@@ -29,7 +32,10 @@ Connections::Connections(std::vector<int> fds, Parser &configFile) : serverSocke
         setServer(serverSockets[i]);
 }
 
-Connections::Connections(const Connections &c) : serverSockets(c.serverSockets), kqueueFd(c.kqueueFd), configFile(c.configFile)
+Connections::Connections(const Connections &c)
+    : serverSockets(c.serverSockets),
+        kqueueFd(c.kqueueFd),
+        configFile(c.configFile)
 {
     for (size_t i = 0; i < serverSockets.size(); i++)
         setServer(serverSockets[i]);
@@ -72,7 +78,7 @@ void Connections::setClient(int fd)
 {
     setNonBlocking(fd);
     EV_SET(&changeList[0], fd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
-    EV_SET(&changeList[1], fd, EVFILT_TIMER, EV_ADD | EV_ENABLE, 0, 3000000, NULL);
+    EV_SET(&changeList[1], fd, EVFILT_TIMER, EV_ADD | EV_ENABLE, 0, SET_TIMEOUT, NULL);
 
     if (kevent(kqueueFd, changeList, 2, NULL, 0, NULL) == -1)
     {
@@ -155,34 +161,36 @@ void Connections::loop()
 
 bool Connections::handleChunkedData(Client &client)
 {
-    std::string &buffer = client.getReadBuffer();
-    std::string &body = client.getRequest().getBody().getContent();
-    // std::cout << "chunked data: " << buffer << std::endl;
-    std::string::size_type pos = 0;
-    while (true) {
-        std::string::size_type chunkSizeEnd = buffer.find("\r\n", pos);
-        if (chunkSizeEnd == std::string::npos) {
-            return false;
+    Body &body = client.getRequest().getBody();
+    char buffer;
+    std::string chunkSize;
+    std::string chunk;
+    int size = 0;
+    while (recv(client.getClientFd(), &buffer, 1, 0) > 0)
+    {
+        if (buffer == '\r')
+        {
+            recv(client.getClientFd(), &buffer, 1, 0);
+            if (buffer == '\n')
+            {
+                size = std::stoi(chunkSize, 0, 16);
+                if (size == 0)
+                    break;
+                while (recv(client.getClientFd(), &buffer, 1, 0) > 0)
+                {
+                    chunk.append(1, buffer);
+                    if (size == chunk.size())
+                        break;
+                }
+                body.getContent() += chunk;
+                chunkSize.clear();
+                chunk.clear();
+            }
         }
-
-        std::string chunkSizeHex = buffer.substr(pos, chunkSizeEnd - pos);
-        size_t chunkSize;
-        std::istringstream(chunkSizeHex) >> std::hex >> chunkSize;
-        pos = chunkSizeEnd + 2;
-
-        if (chunkSize == 0) {
-            buffer.erase(0, pos + 2);
-            client.getRequest().setComplete(true);
-            return true;
-        }
-
-        if (buffer.size() < pos + chunkSize + 2) {
-            return false;
-        }
-
-        body.append(buffer, pos, chunkSize);
-        pos += chunkSize + 2;
+        else
+            chunkSize.append(1, buffer);
     }
+    return true;
 }
 
 void Connections::handleReadEvent(int clientFd)
@@ -196,19 +204,21 @@ void Connections::handleReadEvent(int clientFd)
 
     if (client.getRequest().getHeaders().isComplete())
     {
+        Body &body = client.getRequest().getBody();
         if (client.getRequest().isBodyExist(configFile, client.getResponse()))
         {
             if (client.getRequest().isChunked())
             {
                 if (!handleChunkedData(client))
                     return;
+                body.printBody();
             }
             else
             {
                 int contentLength = atoi(client.getRequest().getHeaders().getValue("Content-Length").c_str());
-                if (client.getRequest().getBody().readBody(clientFd, contentLength))
+                if (!body.readBody(clientFd, contentLength))
                     return (removeClient(clientFd));
-                client.getRequest().getBody().printBody();
+                std::cout << "Body: " << body.getContent() << std::endl;
             }
         }
         client.getRequest().handleRequest(this->configFile, client.getResponse());
@@ -250,7 +260,7 @@ void Connections::handleWriteEvent(int clientFd) {
             return;
         }
 
-        EV_SET(&changeList[1], clientFd, EVFILT_TIMER, EV_ADD | EV_ENABLE, 0, 3000000, NULL);
+        EV_SET(&changeList[1], clientFd, EVFILT_TIMER, EV_ADD | EV_ENABLE, 0, SET_TIMEOUT, NULL);
         if (kevent(kqueueFd, changeList, 1, NULL, 0, NULL) == -1)
         {
             std::cerr << "Error resetting keep-alive timer: " << strerror(errno) << std::endl;
@@ -293,7 +303,7 @@ void Connections::setWriteEvent(int clientFd)
 
 void Connections::setTimeout(int fd)
 {
-    EV_SET(&changeList[0], fd, EVFILT_TIMER, EV_ADD | EV_ENABLE, 0, 0, NULL); // 5 seconds timeout
+    EV_SET(&changeList[0], fd, EVFILT_TIMER, EV_ADD | EV_ENABLE, 0, 0, NULL);
     if (kevent(kqueueFd, changeList, 1, NULL, 0, NULL) == -1)
     {
         std::cerr << "Error: " << strerror(errno) << std::endl;

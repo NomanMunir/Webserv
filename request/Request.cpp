@@ -44,9 +44,21 @@ std::string findMatch(std::string &path, std::map<std::string, RouteConfig> rout
 	return "";
 }
 
-bool chooseRoute(std::string path, ServerConfig server, RouteConfig &targetRoute)
+bool Request::chooseRoute(std::string path, ServerConfig server, RouteConfig &targetRoute)
 {
 	std::map<std::string, RouteConfig> routes = server.routeMap;
+	std::string method = this->headers.getValue("method");
+	if (method == "POST")
+	{
+		std::string postRoute = findMatch(path, routes);
+		if (postRoute != "")
+		{
+			targetRoute = routes[postRoute];
+			return true;
+		}
+		return false;
+	}
+	
 	std::vector<std::string> splitPath = split(path, '/');
 	// std::cout << "splitPath size : " << splitPath.size() << std::endl;
 	for (size_t i = 0; i < splitPath.size(); i++)
@@ -133,27 +145,21 @@ void Request::handleRequest(Parser &parser, Response &structResponse)
         this->findServer(structResponse, parser);
         ServerConfig server = structResponse.getTargetServer();
 
-        // Step 3: Determine Target Route
         RouteConfig route;
-        if (!chooseRoute(headers.getValue("uri"), server, route)) {
-            structResponse.sendError("404");
+
+        if (!chooseRoute(headers.getValue("uri"), server, route))
+		{
+			if (headers.getValue("method") == "POST")
+            	structResponse.sendError("403");
+			else
+				structResponse.sendError("404");
             return;
         }
         structResponse.setTargetRoute(route);
 		this->complete = true;
-        // Step 4: Parse Body (if present)
-        isBodyExist(parser, structResponse);
-        //     this->body = Body(this->rawData);
-            // if (!headers.getValue("Content-Length").empty())
-            //     body.parseBody(headers.getValue("Content-Length"));
-            // else if (headers.getValue("Transfer-Encoding") == "chunked")
-            //     body.parseChunked();
-        // }
 
-        // headers.printHeaders();
-        // body.printBody();
-
-    } catch (const std::exception &e) {
+    } catch (const std::exception &e)
+	{
         std::cerr << "Error handling request: " << e.what() << std::endl;
         structResponse.sendError("500"); // Internal Server Error
     }
