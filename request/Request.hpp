@@ -38,7 +38,7 @@ class Request
 		void setComplete(bool complete);
 		void reset();
 		bool isChunked();
-		void handleRequest(Parser &parser, Response &structResponse);
+		bool handleRequest(Parser &parser, Response &structResponse);
 		bool isBodyExist(Parser &parser, Response &structResponse);
 
 	private:

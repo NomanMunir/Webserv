@@ -30,6 +30,7 @@
 #include <arpa/inet.h>
 #include <cerrno>
 #include <unordered_map>
+#include <ctime>
 
 struct ServerConfig;
 
@@ -52,6 +53,6 @@ bool responseClient(int fd, std::string response);
 std::string getMimeType(std::string extention);
 bool ft_recv_header(int fd, std::string &buffer);
 bool ft_recv_body(int fd, std::string &buffer, size_t contentLength);
-
+std::string getCurrentTimestamp();
 
 #endif // UTILS_HPP	

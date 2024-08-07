@@ -221,10 +221,12 @@ void Connections::handleReadEvent(int clientFd)
                 std::cout << "Body: " << body.getContent() << std::endl;
             }
         }
-        client.getRequest().handleRequest(this->configFile, client.getResponse());
+        bool isErrorResponse = client.getRequest().handleRequest(this->configFile, client.getResponse());
+
         if (client.getRequest().isComplete())
         {
-            client.getResponse().handleResponse(client.getRequest());
+            if (isErrorResponse)
+                client.getResponse().handleResponse(client.getRequest());
             client.getWriteBuffer() = client.getResponse().getResponse();
             client.setWritePending(true);
             client.setReadPending(false);

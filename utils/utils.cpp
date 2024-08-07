@@ -12,6 +12,15 @@
 
 #include "utils.hpp"
 
+std::string getCurrentTimestamp() 
+{
+    std::time_t now = std::time(nullptr);
+    std::tm* localTime = std::localtime(&now);
+    std::ostringstream oss;
+    oss << std::put_time(localTime, "%Y%m%d%H%M%S");
+    return oss.str();
+}
+
 bool ft_recv_header(int fd, std::string &buffer)
 {
     int bytesRead;

@@ -217,22 +217,21 @@ void Response::handlePOST(bool isPost, RouteConfig &targetRoute, std::string &pa
 	if (isPost)
 	{
 		std::cout << "Post" << std::endl;
-		// body.printBody();
-		// std::string fullPath = targetRoute.root + path;
-		// int type = checkType(fullPath, targetRoute);
-		// if (type == 2)
-		// {
-		// 	std::ofstream file(fullPath.c_str());
-		// 	file << body.getBody();
-		// 	file.close();
-		// 	response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nContent-Length: 6 \r\n\r\n hello\n";
-		// }
-		// else if (type == 1)
-		// {
-		// 	sendError("403");
-		// }
-		// else if (type == 0)
-		// 	sendError("403");
+		std::vector<std::string> methods = targetRoute.methods;
+		if (std::find(methods.begin(), methods.end(), "POST") == methods.end())
+			return (sendError("405"));
+		if (body.getContent().empty())
+			return (sendError("400"));
+		std::string fullPath = generateFullPath(targetRoute.root, path);
+		std::ofstream file(fullPath + getCurrentTimestamp());
+		if (!file.is_open())
+			return (sendError("500"));
+		file << body.getContent();
+		if (!file.good())
+			return (sendError("500"));
+			
+		file.close();
+		response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nContent-Length: 0\r\n\r\n";
 	}
 }
 
@@ -240,7 +239,7 @@ void Response::handleResponse(Request &request)
 {
 	std::string method = request.getHeaders().getValue("method");
 	std::string uri = request.getHeaders().getValue("uri");
-	Body body = request.getBody();
+	Body &body = request.getBody();
 
 	if (!myFind(this->targetRoute.methods, method))
 		sendError("403");
