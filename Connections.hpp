@@ -6,7 +6,7 @@
 /*   By: abashir <abashir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 15:49:37 by nmunir            #+#    #+#             */
-/*   Updated: 2024/08/08 16:03:44 by abashir          ###   ########.fr       */
+/*   Updated: 2024/08/08 17:14:25 by abashir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,12 @@ private:
     void handleTimeoutEvent(int clientFd);
 
     void sendResponse(Client &client, int clientFd);
+    
     void recvChunk(int fd, std::string &bodyContent);
+    void recvHeader(Client &client);
+    void recvBody(Client &client);
+
+    
 
 
 public:

@@ -6,7 +6,7 @@
 /*   By: abashir <abashir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 14:10:31 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/29 11:53:12 by abashir          ###   ########.fr       */
+/*   Updated: 2024/08/08 17:38:36 by abashir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ class Body
 		bool isComplete() const;
 		void setIsChunked(bool isChunked);
 
-		bool readBody(int clientSocket, int contentLength);
 		std::string& getBody();
 
 		// void parseBody(std::string length);

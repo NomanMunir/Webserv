@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
+/*   By: abashir <abashir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:25:54 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/10 17:56:49 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/08/08 17:52:17 by abashir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ class Request
 		void setComplete(bool complete);
 		void reset();
 		bool isChunked();
-		bool handleRequest(Parser &parser, Response &structResponse);
+		void handleRequest(Parser &parser, Response &structResponse);
 		bool isBodyExist(Parser &parser, Response &structResponse);
 
 	private:

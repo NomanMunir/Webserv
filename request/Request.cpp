@@ -44,13 +44,13 @@ std::string findMatch(std::string &path, std::map<std::string, RouteConfig> rout
 	return "";
 }
 
-bool Request::chooseRoute(std::string path, ServerConfig server, RouteConfig &targetRoute)
+bool Request::chooseRoute(std::string uri, ServerConfig server, RouteConfig &targetRoute)
 {
 	std::map<std::string, RouteConfig> routes = server.routeMap;
 	std::string method = this->headers.getValue("method");
 	if (method == "POST")
 	{
-		std::string postRoute = findMatch(path, routes);
+		std::string postRoute = findMatch(uri, routes);
 		if (postRoute != "")
 		{
 			targetRoute = routes[postRoute];
@@ -59,21 +59,21 @@ bool Request::chooseRoute(std::string path, ServerConfig server, RouteConfig &ta
 		return false;
 	}
 	
-	std::vector<std::string> splitPath = split(path, '/');
+	std::vector<std::string> splitPath = split(uri, '/');
 	// std::cout << "splitPath size : " << splitPath.size() << std::endl;
 	for (size_t i = 0; i < splitPath.size(); i++)
 	{
 		// std::cout << " i : " << i << " splitPath : " << splitPath[i] << std::endl;
-		path = trimChar(path, '/');
+		uri = trimChar(uri, '/');
 		// std::cout << "path : " << path << std::endl;
-		std::string route = findMatch(path, routes);
+		std::string route = findMatch(uri, routes);
 		if (route != "")
 		{
 			// std::cout << "what is route : " << route << std::endl;
 			targetRoute = routes[route];
 			return true;
 		}
-		path = path.substr(0, path.find_last_of('/'));
+		uri = uri.substr(0, uri.find_last_of('/'));
 	}
 	if (routes.find("/") != routes.end())
 		return (targetRoute = routes["/"]), true;
@@ -82,37 +82,15 @@ bool Request::chooseRoute(std::string path, ServerConfig server, RouteConfig &ta
 
 void Request::findServer(Response &structResponse, Parser &parser)
 {
-	std::string host;
-	std::string requestHeader = this->headers.getRawHeaders();
+	std::string host = this->headers.getValue("Host");
+	std::string port = this->headers.getValue("Port");
 
-	// std::cout << "requestHeader : " << requestHeader << std::endl;
-	std::string::size_type hostPos = requestHeader.find("Host: ");
-	if (hostPos != std::string::npos)
-	{
-		std::string::size_type endHostPos = requestHeader.find("\r\n", hostPos);	
-		// std::cout << "hi2 \n";
-		if (endHostPos != std::string::npos)
-			host = requestHeader.substr(hostPos + 6, endHostPos - hostPos - 6);
-			std::vector<std::string> tokens = split(host, ':');
-			if (tokens.size() == 2)
-			{
-				if (!validateNumber("listen", tokens[1]))
-				{
-					structResponse.setTargetServer(parser.getServers()[0]);
-					structResponse.sendError("400");
-				}
-				else
-					structResponse.setTargetServer(chooseServer(parser, tokens[0], tokens[1]));
-			}
-			else
-				structResponse.setTargetServer(chooseServer(parser, tokens[0], "80"));
-	}
-	else
+	if (host.empty())
 	{
 		structResponse.setTargetServer(parser.getServers()[0]);
-		structResponse.sendError("400");
+		structResponse.setErrorCode(400, "Request::findServer : Host is empty");
 	}
-	
+	structResponse.setTargetServer(chooseServer(parser, host, port));
 }
 
 bool Request::isBodyExist(Parser &parser, Response &structResponse)
@@ -138,7 +116,7 @@ bool Request::isBodyExist(Parser &parser, Response &structResponse)
 	return true;
 }
 
-bool Request::handleRequest(Parser &parser, Response &structResponse) 
+void  Request::handleRequest(Parser &parser, Response &structResponse)
 {
 	this->findServer(structResponse, parser);
 	ServerConfig server = structResponse.getTargetServer();
@@ -148,14 +126,13 @@ bool Request::handleRequest(Parser &parser, Response &structResponse)
 	if (!chooseRoute(headers.getValue("uri"), server, route))
 	{
 		if (headers.getValue("method") == "POST")
-			structResponse.sendError("403");
+			structResponse.setErrorCode(403, "Request::handleRequest : POST route not found");
 		else
-			structResponse.sendError("404");
-		return (false);
+			structResponse.setErrorCode(404, "Request::handleRequest : GET Route not found");
+		// Delete for future.
 	}
 	structResponse.setTargetRoute(route);
 	this->complete = true;
-	return (true);
 }
 
 Request::Request() : complete(false) {}

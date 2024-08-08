@@ -6,7 +6,7 @@
 /*   By: abashir <abashir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 14:11:50 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/29 12:30:34 by abashir          ###   ########.fr       */
+/*   Updated: 2024/08/08 17:38:26 by abashir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,13 +33,6 @@ Body &Body::operator=(const Body &b)
 	body = b.body;
 	isChunked = b.isChunked;
     return *this;
-}
-
-bool Body::readBody(int clientSocket, int contentLength)
-{
-	if (!ft_recv_body(clientSocket, this->body, contentLength))
-		return false;
-	return true;
 }
 
 void Body::printBody()

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
+/*   By: abashir <abashir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:46:04 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/22 17:10:19 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/08/08 17:04:00 by abashir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,47 +19,6 @@ std::string getCurrentTimestamp()
     std::ostringstream oss;
     oss << std::put_time(localTime, "%Y%m%d%H%M%S");
     return oss.str();
-}
-
-bool ft_recv_header(int fd, std::string &buffer)
-{
-    int bytesRead;
-    char c[1];
-    while (buffer.find("\r\n\r\n") == std::string::npos)
-    {
-        bytesRead = recv(fd, c, 1, 0);
-        if (bytesRead < 0)
-            return (perror("recv"), false);
-        else if (bytesRead == 0)
-        {
-            std::cout << "Client disconnected: " << fd << std::endl;
-            return (false);
-        }
-        else
-            buffer.append(c, bytesRead);
-    }
-    // std::cout << "Received: " << buffer << std::endl;
-    return (true);
-}
-
-bool ft_recv_body(int fd, std::string &buffer, size_t contentLength)
-{
-    int bytesRead;
-    char c[1];
-    while (buffer.size() < contentLength)
-    {
-        bytesRead = recv(fd, c, 1, 0);
-        if (bytesRead < 0)
-            return (perror("recv"), false);
-        else if (bytesRead == 0)
-        {
-            std::cout << "Client disconnected: " << fd << std::endl;
-            return (false);
-        }
-        else
-            buffer.append(c, bytesRead);
-    }
-    return (true);
 }
 
 std::string trim(const std::string &s)

@@ -195,6 +195,50 @@ void Connections::recvChunk(int fd, std::string &bodyContent)
     }
 }
 
+void Connections::recvHeader(Client &client)
+{
+    Headers &header = client.getRequest().getHeaders();
+    std::string &buffer = header.getRawHeaders();
+    Response &response = client.getResponse();
+    int fd = client.getClientFd();
+    int bytesRead;
+
+    char c[1];
+    while (buffer.find("\r\n\r\n") == std::string::npos)
+    {
+        bytesRead = recv(fd, c, 1, 0);
+        if (bytesRead < 0)
+            response.setErrorCode(500, "Connections::recvHeader: Error reading from client socket");
+        else if (bytesRead == 0)
+            response.setErrorCode(400, "Client disconnected");
+        else
+            buffer.append(c, bytesRead);
+    }
+}
+
+void Connections::recvBody(Client &client)
+{
+    Body &body = client.getRequest().getBody();
+    std::string &buffer = body.getContent();
+    Response &response = client.getResponse();
+    Headers &header = client.getRequest().getHeaders();
+    int fd = client.getClientFd();
+    int bytesRead;
+    int contentLength = atoi(header.getValue("Content-Length").c_str());
+    char c[1];
+
+    while (buffer.size() < contentLength)
+    {
+        bytesRead = recv(fd, c, 1, 0);
+        if (bytesRead < 0)
+            response.setErrorCode(500, "Connections::recvBody: Error reading from client socket");
+        else if (bytesRead == 0)
+            response.setErrorCode(400, "Client disconnected");
+        else
+            buffer.append(c, bytesRead);
+    }
+}
+
 void Connections::sendResponse(Client &client, int clientFd)
 {
     client.getResponse().handleResponse(client.getRequest());
@@ -209,10 +253,10 @@ void Connections::handleReadEvent(int clientFd)
 {
     Client &client = clients.at(clientFd);
     Headers& header = client.getRequest().getHeaders();
+
     try
     {
-        if (!ft_recv_header(clientFd, header.getRawHeaders()))
-            return (removeClient(clientFd));
+        recvHeader(client);
         header.parseHeader(client.getResponse());
 
         Body &body = client.getRequest().getBody();
@@ -221,25 +265,12 @@ void Connections::handleReadEvent(int clientFd)
             if (client.getRequest().isChunked())
                 recvChunk(clientFd, body.getContent());
             else
-            {
-                int contentLength = atoi(client.getRequest().getHeaders().getValue("Content-Length").c_str());
-                if (!body.readBody(clientFd, contentLength))
-                    return (removeClient(clientFd));
-                std::cout << "Body: " << body.getContent() << std::endl;
-            }
+                recvBody(client);
         }
-        bool isErrorResponse = client.getRequest().handleRequest(this->configFile, client.getResponse());
 
+        client.getRequest().handleRequest(this->configFile, client.getResponse());
         if (client.getRequest().isComplete())
-        {
-            if (isErrorResponse)
-                client.getResponse().handleResponse(client.getRequest());
-            client.getWriteBuffer() = client.getResponse().getResponse();
-            client.setWritePending(true);
-            client.setReadPending(false);
-            client.getReadBuffer().clear();
-            this->setWriteEvent(clientFd);
-        }
+            sendResponse(client, clientFd);
     }
     catch(const std::exception& e)
     {

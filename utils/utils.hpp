@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
+/*   By: abashir <abashir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:46:20 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/20 14:17:50 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/08/08 17:04:26 by abashir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,6 @@ void initializeVector(std::vector<std::string> &v, std::string s[], size_t size)
 std::string getErrorMsg(std::string errorCode);
 bool responseClient(int fd, std::string response);
 std::string getMimeType(std::string extention);
-bool ft_recv_header(int fd, std::string &buffer);
-bool ft_recv_body(int fd, std::string &buffer, size_t contentLength);
 std::string getCurrentTimestamp();
 
 #endif // UTILS_HPP	

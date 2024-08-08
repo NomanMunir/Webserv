@@ -61,3 +61,4 @@
 [*] 404 close connection.
 
 [ ] close connection in certin error codes
+[ ] Duplicate headers?
