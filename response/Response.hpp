@@ -38,8 +38,9 @@ class Response
 		RouteConfig getTargetRoute();
 		void sendError(std::string errorCode);
 		void handleResponse(Request &request);
-		bool getIsConClosed();
-		void reset();
+
+		int getErrorCode() const;
+		void setErrorCode(int errorStatus);
 
 	private:
 		std::map<int, std::string> statusCodes;
@@ -47,7 +48,7 @@ class Response
 		int clientSocket;
 		ServerConfig targetServer;
 		RouteConfig targetRoute;
-		bool isConClosed;
+		int errorCode;
 		
 		void defaultErrorPage(std::string errorCode);
 		void handleGET(bool isGet, RouteConfig &targetRoute, std::string &path);

@@ -74,29 +74,86 @@ void Headers::parseRequestURI(Response &structResponse)
 		structResponse.sendError("400");
 }
 
+bool Headers::validateMethod(const std::string &method)
+{
+	std::string validMethods[] = {"GET", "HEAD", "POST", "DELETE"};
+	if (method.empty())
+		return false;
+	for (size_t i = 0; i < validMethods->size(); i++)
+	{
+		if (method == validMethods[i])
+			return true;
+	}
+	return false;
+}
+
+bool Headers::validateQuery(const std::string &uri)
+{
+	std::string query = uri.substr(uri.find("?") + 1);
+	if (query.empty())
+		return false;
+	std::vector<std::string> tokens = split(query, '&');
+	for (size_t i = 0; i < tokens.size(); i++)
+	{
+		std::vector<std::string> pair = split(tokens[i], '=');
+		if (pair.size() != 2 || pair[0].empty() || pair[1].empty())
+			return false;
+		this->query[pair[0]] = pair[1];
+	}
+	return true;
+}
+
+bool Headers::validateUri(const std::string &uri)
+{
+	if (uri.empty() || uri.find("/") == std::string::npos)
+		return false;
+	if (uri.find("?") != std::string::npos)
+	{
+		if (!validateQuery(uri))
+			return false;
+	}
+	return true;
+}
+
+bool Headers::validateVersion(const std::string &version)
+{
+	if (version.empty() || version.find("HTTP/") != 0)
+		return (false);
+	std::vector<std::string> tokens = split(version, '/');
+	if (tokens.size() != 2 || tokens[1].empty())
+		return (false);
+	if (!isdigit(tokens[1][0]) || tokens[1][1] != '.' || !isdigit(tokens[1][2]))
+		return (false);
+	float ver = std::atof(tokens[1].c_str());
+	if (ver >= 1 && ver <= 1.9)
+		return (true);
+	return (false);
+}
+
 void Headers::parseFirstLine(Response &structResponse)
 {
     std::istringstream requestStream(firstLine);
-    std::string method;
-    std::string uri;
-    std::string version;
-    std::string validMethods[] = {"GET", "HEAD", "POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE", "PATCH"};
 
-	if (firstLine.size() > 8192)
+	if (firstLine.size() > FIRST_LINE_LIMIT)
 		structResponse.sendError("501");
     std::vector<std::string> tokens = split(trim(firstLine), ' ');
 	if (tokens.size() != 3)
+	{
+
+		std::cout << "Zing Zing: " << tokens.size() << std::endl;
 		structResponse.sendError("400");
-	method = tokens[0];
-	uri = tokens[1];
-	version = tokens[2];
-	if (uri.size() > 2048)
+	}
+	if (!validateMethod(tokens[0]))
+		structResponse.sendError("405");
+	if (!validateUri(tokens[1]))
+		structResponse.sendError("400");
+	if (tokens[1].size() > URI_LIMIT)
 		structResponse.sendError("414");
-	if (std::find(std::begin(validMethods), std::end(validMethods), method) == std::end(validMethods) || version != "HTTP/1.1")
-		structResponse.sendError("501");
-    headers["method"] = method;
-    headers["version"] = version;
-    headers["uri"] = split(uri, '?')[0];
+	if (!validateVersion(tokens[2]))
+		structResponse.sendError("505");
+    headers["method"] = tokens[0];
+    headers["uri"] = split(tokens[1], '?')[0];
+    headers["version"] = tokens[2];
 }
 
 void Headers::parseHeader(Response &structResponse)
@@ -166,7 +223,12 @@ Headers::Headers(std::string &rawData, Response &structResponse) : complete(fals
 
 std::string &Headers::getRawHeaders()
 {
-	return rawHeaders;
+	return this->rawHeaders;
+}
+
+std::map<std::string, std::string> &Headers::getQuery()
+{
+	return this->query;
 }
 
 bool Headers::isComplete() const

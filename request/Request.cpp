@@ -138,31 +138,24 @@ bool Request::isBodyExist(Parser &parser, Response &structResponse)
 	return true;
 }
 
-void Request::handleRequest(Parser &parser, Response &structResponse) 
+bool Request::handleRequest(Parser &parser, Response &structResponse) 
 {
-    try {
-		
-        this->findServer(structResponse, parser);
-        ServerConfig server = structResponse.getTargetServer();
+	this->findServer(structResponse, parser);
+	ServerConfig server = structResponse.getTargetServer();
 
-        RouteConfig route;
+	RouteConfig route;
 
-        if (!chooseRoute(headers.getValue("uri"), server, route))
-		{
-			if (headers.getValue("method") == "POST")
-            	structResponse.sendError("403");
-			else
-				structResponse.sendError("404");
-            return;
-        }
-        structResponse.setTargetRoute(route);
-		this->complete = true;
-
-    } catch (const std::exception &e)
+	if (!chooseRoute(headers.getValue("uri"), server, route))
 	{
-        std::cerr << "Error handling request: " << e.what() << std::endl;
-        structResponse.sendError("500"); // Internal Server Error
-    }
+		if (headers.getValue("method") == "POST")
+			structResponse.sendError("403");
+		else
+			structResponse.sendError("404");
+		return (false);
+	}
+	structResponse.setTargetRoute(route);
+	this->complete = true;
+	return (true);
 }
 
 Request::Request() : complete(false) {}

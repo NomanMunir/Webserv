@@ -59,3 +59,5 @@
 [*] message "hello world"
 [*] only error code
 [*] 404 close connection.
+
+[ ] close connection in certin error codes

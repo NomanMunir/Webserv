@@ -231,7 +231,8 @@ void Response::handlePOST(bool isPost, RouteConfig &targetRoute, std::string &pa
 			return (sendError("500"));
 			
 		file.close();
-		response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nContent-Length: 0\r\n\r\n";
+		std::string body  = "<center> <h2>File uploaded successfully</h2></center>";
+		response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 	}
 }
 
@@ -243,6 +244,12 @@ void Response::handleResponse(Request &request)
 
 	if (!myFind(this->targetRoute.methods, method))
 		sendError("403");
+
+	if (this->errorCode != 0)
+	{
+		sendError(std::to_string(this->errorCode));
+		return;
+	}
 
 	handleGET(method == "GET", this->targetRoute, uri);
 
@@ -294,14 +301,6 @@ void Response::sendError(std::string errorCode)
 
 	std::map<std::string, std::string> errorPages = targetServer.errorPages;
 	findErrorPage(errorCode, errorPages);
-	if (myFind(closeCodes, errorCode))
-		isConClosed = true;
-}
-
-
-bool Response::getIsConClosed()
-{
-	return isConClosed;
 }
 
 Response::~Response() { }
@@ -337,9 +336,9 @@ void Response::printResponse()
 }
 
 
-Response::Response() : isConClosed(false) { }
+Response::Response() : errorCode(0) { }
 
-Response::Response(const Response &c) : statusCodes(c.statusCodes), response(c.response), targetServer(c.targetServer), targetRoute(c.targetRoute), isConClosed(c.isConClosed) { }
+Response::Response(const Response &c) : statusCodes(c.statusCodes), response(c.response), targetServer(c.targetServer), targetRoute(c.targetRoute), errorCode(c.errorCode) { }
 
 Response& Response::operator=(const Response &c)
 {
@@ -349,11 +348,16 @@ Response& Response::operator=(const Response &c)
 	response = c.response;
 	targetServer = c.targetServer;
 	targetRoute = c.targetRoute;
-	isConClosed = c.isConClosed;
+	errorCode = c.errorCode;
 	return *this;
 }
 
-void Response::reset()
+int Response::getErrorCode() const
 {
-	response = "";
+	return (this->errorCode);
+}
+
+void Response::setErrorCode(int errorStatus)
+{
+	this->errorCode = errorStatus;
 }

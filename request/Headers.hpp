@@ -22,6 +22,9 @@
 #include <map>
 #include <string>
 
+#define URI_LIMIT 2048
+#define FIRST_LINE_LIMIT 8192
+
 class Response;
 class Headers
 {
@@ -35,17 +38,28 @@ class Headers
 		void printHeaders();
 		std::string getValue(std::string key);
 		std::string &getRawHeaders();
+		std::map<std::string, std::string> &getQuery();
+
 		void parseHeader(Response &structResponse);
 		bool isComplete() const;
 
 	private:
 		std::map<std::string, std::string> headers;
+		std::map<std::string, std::string> query;
 		std::string firstLine;
 		std::string rawHeaders;
 		bool complete;
 		
 		void parseFirstLine(Response &structResponse);
 		void parseRequestURI(Response &structResponse);
+
+		bool validateQuery(const std::string &uri);
+		bool validateMethod(const std::string &method);
+		bool validateUri(const std::string &uri);
+		bool validateVersion(const std::string &version);
+
+
+
 };
 
 #endif // HEADERS_HPP
