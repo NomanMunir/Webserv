@@ -61,6 +61,7 @@ private:
     void handleWriteEvent(int clientFd);
     void handleTimeoutEvent(int clientFd);
     bool handleChunkedData(Client &client);
+    void sendResponse(Client &client, int clientFd);
 
 
 public:

@@ -40,7 +40,7 @@ class Headers
 		std::string &getRawHeaders();
 		std::map<std::string, std::string> &getQuery();
 
-		void parseHeader(Response &structResponse);
+		bool parseHeader(Response &structResponse);
 		bool isComplete() const;
 
 	private:
@@ -57,9 +57,6 @@ class Headers
 		bool validateMethod(const std::string &method);
 		bool validateUri(const std::string &uri);
 		bool validateVersion(const std::string &version);
-
-
-
 };
 
 #endif // HEADERS_HPP

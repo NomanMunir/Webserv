@@ -98,7 +98,7 @@ void Connections::removeClient(int fd)
         std::cerr << "Error: " << strerror(errno) << std::endl;
     clients.erase(fd);
     close(fd);
-    std::cout << "Connection closed by client on socket fd " << fd << std::endl;
+    std::cout << "Connection closed by server on socket fd " << fd << std::endl;
 }
 
 bool Connections::addClient(int serverSocket) {
@@ -193,17 +193,27 @@ bool Connections::handleChunkedData(Client &client)
     return true;
 }
 
+void Connections::sendResponse(Client &client, int clientFd)
+{
+    client.getResponse().handleResponse(client.getRequest());
+    client.getWriteBuffer() = client.getResponse().getResponse();
+    client.setWritePending(true);
+    client.setReadPending(false);
+    client.getReadBuffer().clear();
+    this->setWriteEvent(clientFd);
+}
+
 void Connections::handleReadEvent(int clientFd)
 {
     Client &client = clients.at(clientFd);
     Headers& header = client.getRequest().getHeaders();
-
-    if (!ft_recv_header(clientFd, header.getRawHeaders()))
-        return (removeClient(clientFd));
-    header.parseHeader(client.getResponse());
-
-    if (client.getRequest().getHeaders().isComplete())
+    try
     {
+
+        if (!ft_recv_header(clientFd, header.getRawHeaders()))
+            return (removeClient(clientFd));
+        header.parseHeader(client.getResponse());
+
         Body &body = client.getRequest().getBody();
         if (client.getRequest().isBodyExist(configFile, client.getResponse()))
         {
@@ -211,7 +221,6 @@ void Connections::handleReadEvent(int clientFd)
             {
                 if (!handleChunkedData(client))
                     return;
-                body.printBody();
             }
             else
             {
@@ -233,6 +242,13 @@ void Connections::handleReadEvent(int clientFd)
             client.getReadBuffer().clear();
             this->setWriteEvent(clientFd);
         }
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        std::cerr << "Error reading from client socket hi" << std::endl;
+        sendResponse(client, clientFd);
+        removeClient(clientFd);
     }
 }
 

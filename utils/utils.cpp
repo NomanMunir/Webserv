@@ -38,7 +38,7 @@ bool ft_recv_header(int fd, std::string &buffer)
         else
             buffer.append(c, bytesRead);
     }
-    std::cout << "Received: " << buffer << std::endl;
+    // std::cout << "Received: " << buffer << std::endl;
     return (true);
 }
 

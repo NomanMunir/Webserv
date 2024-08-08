@@ -125,14 +125,14 @@ bool Request::isBodyExist(Parser &parser, Response &structResponse)
 	if (!length.empty())
 	{
 		if (!validateNumber("Content-Length", length))
-			structResponse.sendError("411");
+			structResponse.setErrorCode(411,"Request::isBodyExist : Content-Length is not a number");
 		if (std::atof(length.c_str()) > std::atof(parser.getDirectives()["client_body_size"].c_str()))
-			structResponse.sendError("413");
+			structResponse.setErrorCode(413,"Request::isBodyExist : Content-Length is too big");
 	}
 	if (!encoding.empty())
 	{
 		if (encoding != "chunked")
-			structResponse.sendError("411");
+			structResponse.setErrorCode(411, "Request::isBodyExist : Transfer-Encoding is not chunked");
 		this->body.setIsChunked(true);
 	}
 	return true;

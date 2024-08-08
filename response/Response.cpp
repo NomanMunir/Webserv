@@ -357,7 +357,8 @@ int Response::getErrorCode() const
 	return (this->errorCode);
 }
 
-void Response::setErrorCode(int errorStatus)
+void Response::setErrorCode(int errorStatus, std::string errorMsg)
 {
 	this->errorCode = errorStatus;
+	throw std::runtime_error(errorMsg);
 }

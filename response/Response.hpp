@@ -40,7 +40,7 @@ class Response
 		void handleResponse(Request &request);
 
 		int getErrorCode() const;
-		void setErrorCode(int errorStatus);
+		void setErrorCode(int errorStatus, std::string errorMsg);
 
 	private:
 		std::map<int, std::string> statusCodes;
