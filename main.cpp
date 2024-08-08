@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
+/*   By: abashir <abashir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 17:07:42 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/24 15:49:25 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/08/08 15:37:10 by abashir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int main(int ac, const char **av)
         if (ac > 2)
             throw std::runtime_error("Usage: ./webserv <config_file>");
         if (ac == 1)
-            av[1] = "config1.conf";
+            av[1] = "config2.conf";
         Parser parser(av[1]);
         // printServers(parser.getServers());
         // printports

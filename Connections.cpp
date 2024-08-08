@@ -159,30 +159,33 @@ void Connections::loop()
     }
 }
 
-bool Connections::handleChunkedData(Client &client)
+void Connections::recvChunk(int fd, std::string &bodyContent)
 {
-    Body &body = client.getRequest().getBody();
     char buffer;
     std::string chunkSize;
     std::string chunk;
     int size = 0;
-    while (recv(client.getClientFd(), &buffer, 1, 0) > 0)
+
+    while (true)
     {
+        if (recv(fd, &buffer, 1, 0) <= 0)
+            throw std::runtime_error("Connections::recvChunk: Error reading from client socket");
         if (buffer == '\r')
         {
-            recv(client.getClientFd(), &buffer, 1, 0);
+            if (recv(fd, &buffer, 1, 0) <= 0)
+                throw std::runtime_error("Connections::recvChunk: Error reading from client socket");
             if (buffer == '\n')
             {
                 size = std::stoi(chunkSize, 0, 16);
                 if (size == 0)
                     break;
-                while (recv(client.getClientFd(), &buffer, 1, 0) > 0)
+                while (size != chunk.size())
                 {
+                    if (recv(fd, &buffer, 1, 0) <= 0)
+                        throw std::runtime_error("Connections::recvChunk: Error reading from client socket");
                     chunk.append(1, buffer);
-                    if (size == chunk.size())
-                        break;
                 }
-                body.getContent() += chunk;
+                bodyContent += chunk;
                 chunkSize.clear();
                 chunk.clear();
             }
@@ -190,7 +193,6 @@ bool Connections::handleChunkedData(Client &client)
         else
             chunkSize.append(1, buffer);
     }
-    return true;
 }
 
 void Connections::sendResponse(Client &client, int clientFd)
@@ -209,7 +211,6 @@ void Connections::handleReadEvent(int clientFd)
     Headers& header = client.getRequest().getHeaders();
     try
     {
-
         if (!ft_recv_header(clientFd, header.getRawHeaders()))
             return (removeClient(clientFd));
         header.parseHeader(client.getResponse());
@@ -218,10 +219,7 @@ void Connections::handleReadEvent(int clientFd)
         if (client.getRequest().isBodyExist(configFile, client.getResponse()))
         {
             if (client.getRequest().isChunked())
-            {
-                if (!handleChunkedData(client))
-                    return;
-            }
+                recvChunk(clientFd, body.getContent());
             else
             {
                 int contentLength = atoi(client.getRequest().getHeaders().getValue("Content-Length").c_str());
@@ -246,7 +244,6 @@ void Connections::handleReadEvent(int clientFd)
     catch(const std::exception& e)
     {
         std::cerr << e.what() << '\n';
-        std::cerr << "Error reading from client socket hi" << std::endl;
         sendResponse(client, clientFd);
         removeClient(clientFd);
     }

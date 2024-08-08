@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Connections.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
+/*   By: abashir <abashir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 15:49:37 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/21 10:25:37 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/08/08 16:03:44 by abashir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,8 +60,9 @@ private:
     void handleReadEvent(int clientFd);
     void handleWriteEvent(int clientFd);
     void handleTimeoutEvent(int clientFd);
-    bool handleChunkedData(Client &client);
+
     void sendResponse(Client &client, int clientFd);
+    void recvChunk(int fd, std::string &bodyContent);
 
 
 public:

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Headers.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
+/*   By: abashir <abashir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 11:20:28 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/10 17:10:29 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/08/08 15:44:22 by abashir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ class Headers
 		std::string &getRawHeaders();
 		std::map<std::string, std::string> &getQuery();
 
-		bool parseHeader(Response &structResponse);
+		void parseHeader(Response &structResponse);
 		bool isComplete() const;
 
 	private:

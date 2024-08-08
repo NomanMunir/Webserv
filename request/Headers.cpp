@@ -6,7 +6,7 @@
 /*   By: abashir <abashir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 11:20:23 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/29 12:06:55 by abashir          ###   ########.fr       */
+/*   Updated: 2024/08/08 16:13:25 by abashir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,7 +152,7 @@ void Headers::parseFirstLine(Response &structResponse)
     headers["version"] = tokens[2];
 }
 
-bool Headers::parseHeader(Response &structResponse)
+void Headers::parseHeader(Response &structResponse)
 {
 	try
 	{
@@ -163,7 +163,7 @@ bool Headers::parseHeader(Response &structResponse)
 		for (size_t i = 0; i < request.size(); i++)
 		{
 			if (!isascii(this->rawHeaders[i]))
-				return (structResponse.setErrorCode(400, "Headers::parseHeader: Invalid ASCII"), false);
+				structResponse.setErrorCode(400, "Headers::parseHeader: Invalid ASCII");
 		}
 
 		while (std::getline(iss, firstLine, '\n'))
@@ -211,11 +211,8 @@ bool Headers::parseHeader(Response &structResponse)
 	}
 	catch (const std::exception &e)
 	{
-		std::cerr << e.what() << '\n';
-		throw std::exception();
-		return false;
+		throw ;
 	}
-	return true;
 }
 
 Headers::Headers(std::string &rawData, Response &structResponse) : complete(false)
