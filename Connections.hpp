@@ -60,16 +60,7 @@ private:
     void handleReadEvent(int clientFd);
     void handleWriteEvent(int clientFd);
     void handleTimeoutEvent(int clientFd);
-
-    void sendResponse(Client &client, int clientFd);
     
-    void recvChunk(int fd, std::string &bodyContent);
-    void recvHeader(Client &client);
-    void recvBody(Client &client);
-
-    
-
-
 public:
     Connections(std::vector<int> fds, Parser &configFile);
     ~Connections();

@@ -46,13 +46,15 @@ class Headers
 	private:
 		std::map<std::string, std::string> headers;
 		std::map<std::string, std::string> query;
-		std::string firstLine;
 		std::string rawHeaders;
 		bool complete;
 		
-		void parseFirstLine(Response &structResponse);
+		void parseFirstLine(Response &structResponse, std::istringstream &iss);
 		void parseRequestURI(Response &structResponse);
+		void parseHeaderBody(std::istringstream &iss, Response &structResponse);
 
+
+		void validateAscii(Response &structResponse);
 		bool validateQuery(const std::string &uri);
 		bool validateMethod(const std::string &method);
 		bool validateUri(const std::string &uri);

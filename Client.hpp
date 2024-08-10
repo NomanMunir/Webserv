@@ -5,10 +5,11 @@
 #include <string>
 #include "request/Request.hpp"
 #include "response/Response.hpp"
+#include "parsing/Parser.hpp"
 
 class Client {
 private:
-    int clientFd;
+    int fd;
     std::string readBuffer;
     std::string writeBuffer;
     bool writePending;
@@ -18,6 +19,10 @@ private:
     Request request;
     Response response;
 
+    void recvChunk();
+    void recvHeader();
+    void recvBody(); 
+    void sendResponse();
 public:
 	Client();
     Client(int fd);
@@ -25,20 +30,24 @@ public:
 	Client& operator=(const Client &c);
     ~Client();
 
-    int getClientFd() const;
+    int getFd() const;
     std::string& getReadBuffer();
     std::string& getWriteBuffer();
-    void reset();
-
-    bool isWritePending() const;
-    void setWritePending(bool pending);
-    bool isReadPending() const;
-    void setReadPending(bool pending);
-    bool isKeepAlive();
-    void setKeepAlive(bool keepAlive);
-
     Request& getRequest();
     Response& getResponse();
+
+
+    bool isWritePending() const;
+    bool isReadPending() const;
+    bool isKeepAlive();
+
+    void setWritePending(bool pending);
+    void setReadPending(bool pending);
+    void setKeepAlive(bool keepAlive);
+
+    void readFromSocket(Parser &configFile);
+    void reset();
+
 
 };
 

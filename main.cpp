@@ -19,7 +19,7 @@ int main(int ac, const char **av)
         if (ac > 2)
             throw std::runtime_error("Usage: ./webserv <config_file>");
         if (ac == 1)
-            av[1] = "config2.conf";
+            av[1] = "config1.conf";
         Parser parser(av[1]);
         // printServers(parser.getServers());
         // printports
