@@ -11,9 +11,9 @@ SRCS = main.cpp Server.cpp \
 		Client.cpp \
 
 		ifeq ($(shell uname), Linux)
-			SRCS += ConnectionsPoll.cpp
+			SRCS += events/EPoll.cpp
 		else
-			SRCS += Connections.cpp
+			SRCS += events/KQueue.cpp
 		endif
 
 OBJS = $(SRCS:.cpp=.o)

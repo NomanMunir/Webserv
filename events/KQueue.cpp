@@ -1,6 +1,8 @@
-#include "Connections.hpp"
-#include "response/Response.hpp"
-#include "request/Request.hpp"
+#if defined(__APPLE__) || defined(__FreeBSD__)
+
+#include "KQueue.hpp"
+#include "../response/Response.hpp"
+#include "../request/Request.hpp"
 
 #define SET_TIMEOUT 300000
 
@@ -254,3 +256,5 @@ void Connections::setTimeout(int fd)
         throw std::exception();
     }
 }
+
+#endif // __APPLE__ || __FreeBSD__

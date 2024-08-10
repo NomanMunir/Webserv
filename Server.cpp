@@ -1,18 +1,13 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Server.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: abashir <abashir@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/29 14:41:04 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/29 10:58:03 by abashir          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Server.hpp"
-#include "Connections.hpp"
-// #include "ConnectionsPoll.hpp"
+
+#if defined(__APPLE__) || defined(__FreeBSD__)
+#include "events/KQueue.hpp"
+#endif // __APPLE__ || __FreeBSD__
+
+#if defined(__linux__)
+#include "events/EPoll.hpp"
+#endif // __linux__
+
 #define PORT 80
 
 void setNonBlocking(int fd) {

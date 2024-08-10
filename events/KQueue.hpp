@@ -1,17 +1,7 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Connections.hpp                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: abashir <abashir@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/20 15:49:37 by nmunir            #+#    #+#             */
-/*   Updated: 2024/08/08 17:14:25 by abashir          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+#ifndef KQUEUE_HPP
+#define KQUEUE_HPP
 
-#ifndef CONNECTIONS_HPP
-#define CONNECTIONS_HPP
+#if defined(__APPLE__) || defined(__FreeBSD__)
 
 #include <iostream>
 #include <netinet/in.h>
@@ -29,21 +19,20 @@
 #include <fcntl.h>
 #include <unordered_map>
 
-#include "parsing/Parser.hpp"
-#include "Client.hpp"
+#include "../parsing/Parser.hpp"
+#include "../Client.hpp"
 
-#define MAX_EVENTS 1024
+#define MAX_EVENTS 100
 
 class Connections {
 private:
+
     std::vector<int> serverSockets;
     int kqueueFd;
     struct kevent changeList[MAX_EVENTS];
     struct kevent events[MAX_EVENTS];
-    // static const int MAX_EVENTS = 1024;
     std::unordered_map<int, Client> clients;
     Parser configFile;
-
 
     void setNonBlocking(int fd);
     void setClient(int fd);
@@ -70,4 +59,6 @@ public:
     void loop();
 };
 
-#endif // CONNECTIONS_HPP
+#endif // __APPLE__ || __FreeBSD__
+
+#endif // KQUEUE_HPP
