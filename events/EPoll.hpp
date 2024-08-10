@@ -18,6 +18,7 @@
 #include <dirent.h>
 #include <fcntl.h>
 #include <unordered_map>
+#include <sys/timerfd.h>
 
 #include "../parsing/Parser.hpp"
 #include "../Client.hpp"
@@ -27,6 +28,7 @@
 
 class Connections {
 private:
+    std::unordered_map<int, int> timerfd_map;
     std::vector<int> serverSockets;
     int epollFd;
     struct epoll_event eventList[MAX_EVENTS];
@@ -36,8 +38,6 @@ private:
     void setNonBlocking(int fd);
     void setClient(int fd);
     void removeClient(int fd);
-    bool peekRequest(int clientSocket);
-    bool handleClient(int clientSocket, Parser &configFile);
     void setTimeout(int fd);
     void setWriteEvent(int clientFd);
     void removeWriteEvent(int clientFd);
@@ -57,5 +57,6 @@ public:
 
     void loop();
 };
+
 #endif // __linux__
 #endif // EPOLL_HPP

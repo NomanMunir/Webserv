@@ -37,8 +37,6 @@ private:
     void setNonBlocking(int fd);
     void setClient(int fd);
     void removeClient(int fd);
-    bool peekRequest(int clientSocket);
-    bool handleClient(int clientSocket, Parser &configFile);
     void setTimeout(int fd);
     void setWriteEvent(int clientFd);
     void removeWriteEvent(int clientFd);
