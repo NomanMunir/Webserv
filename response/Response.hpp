@@ -21,6 +21,10 @@
 #include "../parsing/Parser.hpp"
 #include "../request/Request.hpp"
 
+#define DIR_ERR 1
+#define FILE_ERR 2
+
+
 class Response
 {
 	public:
@@ -50,9 +54,11 @@ class Response
 		RouteConfig targetRoute;
 		int errorCode;
 		
+		void handleGET(bool isGet, std::string &uri);
+		void handlePOST(bool isPost, std::string &uri, Body &body);
+		void handleDELETE(bool isDelete, std::string &uri);
+
 		void defaultErrorPage(std::string errorCode);
-		void handleGET(bool isGet, RouteConfig &targetRoute, std::string &path);
-		void handlePOST(bool isPost, RouteConfig &targetRoute, std::string &path, Body &body);
 		void findErrorPage(std::string errorCode, std::map<std::string, std::string> errorPages);
 
 		int checkType(std::string &path, RouteConfig &targetRoute);

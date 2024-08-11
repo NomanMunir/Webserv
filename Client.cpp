@@ -139,6 +139,7 @@ void Client::sendResponse()
 {
 	this->response.handleResponse(this->request);
 	this->writeBuffer = this->response.getResponse();
+    // std::cout << "Response: " << this->writeBuffer << std::endl;
 	this->writePending = true;
 	this->readPending = false;
 	this->readBuffer.clear();
@@ -147,17 +148,26 @@ void Client::sendResponse()
 
 void Client::readFromSocket(Parser &configFile)
 {
-	recvHeader();
-	this->request.getHeaders().parseHeader(this->response);
+    try
+    {
+        recvHeader();
+        this->request.getHeaders().parseHeader(this->response);
 
-	if (this->request.isBodyExist(configFile, this->response))
-	{
-		if (this->request.isChunked())
-			recvChunk();
-		else
-			recvBody();
-	}
-	this->request.handleRequest(configFile, this->response);
-	if (this->request.isComplete())
-		sendResponse();
+        if (this->request.isBodyExist(configFile, this->response))
+        {
+            if (this->request.isChunked())
+                recvChunk();
+            else
+                recvBody();
+        }
+        this->request.handleRequest(configFile, this->response);
+        if (this->request.isComplete())
+            sendResponse();
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        sendResponse();
+    }
+    
 }

@@ -29,8 +29,7 @@ class Response;
 class Headers
 {
 	public:
-		Headers(std::string &rawData, Response &structResponse);
-		Headers(){};
+		Headers();
 		~Headers();
 		Headers(const Headers &h);
 		Headers &operator=(const Headers &h);

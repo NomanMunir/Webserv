@@ -77,9 +77,10 @@ void Headers::parseRequestURI(Response &structResponse)
 bool Headers::validateMethod(const std::string &method)
 {
 	std::string validMethods[] = {"GET", "HEAD", "POST", "DELETE"};
+
 	if (method.empty())
 		return false;
-	for (size_t i = 0; i < validMethods->size(); i++)
+	for (size_t i = 0; i < sizeof(validMethods) / sizeof(validMethods[0]); i++)
 	{
 		if (method == validMethods[i])
 			return true;
@@ -156,7 +157,6 @@ void Headers::parseFirstLine(Response &structResponse, std::istringstream &iss)
 			break;
 	}
 	std::istringstream requestStream(firstLine);
-
 	if (firstLine.size() > FIRST_LINE_LIMIT)
 		structResponse.setErrorCode(501, "Headers::parseFirstLine: Request-URI Too Long");
     std::vector<std::string> tokens = split(trim(firstLine), ' ');
@@ -227,21 +227,12 @@ void Headers::parseHeader(Response &structResponse)
 {
 	std::string requestHeader = rawHeaders.substr(0, rawHeaders.size() - 2); // -2 is removing the last \r\n
 	std::istringstream iss(requestHeader);
-	
+
 	validateAscii(structResponse);
 	parseFirstLine(structResponse, iss);
 	parseHeaderBody(iss, structResponse);
 	parseRequestURI(structResponse);
 	complete = true;
-}
-
-Headers::Headers(std::string &rawData, Response &structResponse) : complete(false)
-{
-
-	if (rawData.find("\r\n\r\n") == std::string::npos)
-		structResponse.sendError("400");
-	else
-		this->rawHeaders = rawData.substr(0, rawData.find("\r\n\r\n") + 4);
 }
 
 std::string &Headers::getRawHeaders()
@@ -267,3 +258,5 @@ std::string Headers::getValue(std::string key)
 		return ("");
 	return headers[key];
 }
+
+Headers::Headers(): complete(false) { }

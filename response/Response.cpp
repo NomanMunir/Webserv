@@ -35,11 +35,9 @@ std::string Response::listDirectory(const std::string& dirPath, const std::strin
         htmlContent += "</ul><hr></body></html>";
 
         closedir(dir);
-    } else {
-        // Could not open directory
-        std::cerr << "Error: Could not open directory " << dirPath << std::endl;
-		this->sendError("404");
     }
+	else
+		this->setErrorCode(404, "Response::listDirectory: Could not open directory");
     return htmlContent;
 }
 
@@ -52,23 +50,20 @@ int Response::checkType(std::string &path, RouteConfig &targetRoute)
         {
         case EACCES:
 		{
-            this->sendError("403");
-			break;
+            this->setErrorCode(403, "Response::checkType: Permission denied"); break;
 		}
         case ENOENT:
 		{
-			// std::cout << "Error: " << "Check Type" << std::endl;
-            this->sendError("404");
-			break;
+            this->setErrorCode(404, "Response::checkType: File not found"); break;
 		}
         default:
-			this->sendError("500");
+			this->setErrorCode(500, "Response::checkType: Internal server error");
         }
 	}
 	if (S_ISREG(info.st_mode))
-		return (2);
+		return (FILE_ERR);
 	else if (S_ISDIR(info.st_mode))
-		return (1);
+		return (DIR_ERR);
 	return (0);
 }
 
@@ -106,7 +101,7 @@ bool Response::handleDirectory(std::string &fullPath, std::string &path, RouteCo
 		if (newPath.find(targetRoute.root) != 0)
 		{
 			std::cout << "Error: " << "What are you trying to access oui?" << std::endl;
-			this->sendError("403");
+			this->setErrorCode(403, "Response::handleDirectory: Access denied");
 			return (false);
 		}
 		if (isFile(newPath))
@@ -121,18 +116,8 @@ bool Response::handleDirectory(std::string &fullPath, std::string &path, RouteCo
 		response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 	}
 	else
-	{
-		std::cout << "Error: " << "Handle Directory" << std::endl;
-		this->sendError("403");
-	}
+		this->setErrorCode(403, "Response::handleDirectory: Directory listing not allowed");
 	return (false);
-}
-
-bool checkEndingSlash(std::string &fullPath)
-{
-	if (fullPath[fullPath.size() - 1] != '/')
-		return false;
-	return true;
 }
 
 std::string generateFullPath(std::string rootPath, std::string path)
@@ -180,15 +165,15 @@ void Response::handleRedirect(std::string redirect)
 			response = "HTTP/1.1" + std::to_string(errorCode) + " " + getErrorMsg(std::to_string(errorCode)) + "\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(value.size()) + "\r\n\r\n" + value + "\n";
 	}
 	else
-		sendError(std::to_string(errorCode));
+		setErrorCode(errorCode, "Response::handleRedirect: Invalid redirect");
 }
 
-void Response::handleGET(bool isGet, RouteConfig &targetRoute, std::string &path)
+void Response::handleGET(bool isGet, std::string &uri)
 {
-	std::cout << "Path : " << path << std::endl;
+	std::cout << "Path : " << uri << std::endl;
 	if (isGet)
 	{
-		std::string fullPath = generateFullPath(targetRoute.root, path);
+		std::string fullPath = generateFullPath(targetRoute.root, uri);
 		if (targetRoute.redirect != "")
 		{
 			handleRedirect(targetRoute.redirect);
@@ -201,59 +186,53 @@ void Response::handleGET(bool isGet, RouteConfig &targetRoute, std::string &path
 			generateResponseFromFile(fullPath);
 		else if (type == 1)
 		{
-			if (!checkEndingSlash(fullPath))
-				this->sendError("301");
+			if (fullPath.back() != '/')
+			this->setErrorCode(301, "Response::handleGET: Redirecting to directory without trailing slash");
 			else
 			{
-				if(handleDirectory(fullPath, path, targetRoute))
+				if(handleDirectory(fullPath, uri, targetRoute))
 					generateResponseFromFile(fullPath);
 			}
 		}
 	}
 }
 
-void Response::handlePOST(bool isPost, RouteConfig &targetRoute, std::string &path, Body &body)
+void Response::handlePOST(bool isPost, std::string &uri, Body &body)
 {
 	if (isPost)
 	{
 		std::cout << "Post" << std::endl;
-		std::vector<std::string> methods = targetRoute.methods;
-		if (std::find(methods.begin(), methods.end(), "POST") == methods.end())
-			return (sendError("405"));
 		if (body.getContent().empty())
-			return (sendError("400"));
-		std::string fullPath = generateFullPath(targetRoute.root, path);
+			return (setErrorCode(400, "Response::handlePOST: Empty body"));
+		std::string fullPath = generateFullPath(targetRoute.root, uri);
 		std::ofstream file(fullPath + getCurrentTimestamp());
 		if (!file.is_open())
-			return (sendError("500"));
+			return (setErrorCode(500, "Response::handlePOST: Could not open file"));
 		file << body.getContent();
 		if (!file.good())
-			return (sendError("500"));
-			
+			return (setErrorCode(500, "Response::handlePOST: Could not write to file"));
 		file.close();
+
 		std::string body  = "<center> <h2>File uploaded successfully</h2></center>";
 		response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 	}
 }
 
-void Response::handleResponse(Request &request)
+void Response::handleDELETE(bool isDelete, std::string &uri)
 {
-	std::string method = request.getHeaders().getValue("method");
-	std::string uri = request.getHeaders().getValue("uri");
-	Body &body = request.getBody();
-
-	if (!myFind(this->targetRoute.methods, method))
-		sendError("403");
-
-	if (this->errorCode != 0)
+	if (isDelete)
 	{
-		sendError(std::to_string(this->errorCode));
-		return;
+		std::string fullPath = generateFullPath(targetRoute.root, uri);
+		std::cout << "Full Path: " << fullPath << std::endl;
+
+		int type = checkType(fullPath, targetRoute);
+		if (type == DIR_ERR)
+			setErrorCode(403, "Response::handleDELETE: Cannot delete directory");
+		if (remove(fullPath.c_str()) != 0)
+			return (setErrorCode(500, "Response::handleDELETE: Could not delete file"));
+		std::string body = "<center> <h2>File deleted successfully</h2></center>";
+		response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 	}
-
-	handleGET(method == "GET", this->targetRoute, uri);
-
-	handlePOST(method == "POST", this->targetRoute, uri, body);
 }
 
 void Response::defaultErrorPage(std::string errorCode)
@@ -361,4 +340,23 @@ void Response::setErrorCode(int errorStatus, std::string errorMsg)
 {
 	this->errorCode = errorStatus;
 	throw std::runtime_error(errorMsg);
+}
+
+void Response::handleResponse(Request &request)
+{
+	std::string method = request.getHeaders().getValue("method");
+	std::string uri = request.getHeaders().getValue("uri");
+	Body &body = request.getBody();
+
+	if (!myFind(this->targetRoute.methods, method))
+		setErrorCode(403, "Response::handleResponse: Method Not Allowed");
+
+	if (this->errorCode != 0)
+		return (sendError(std::to_string(this->errorCode)));
+
+	handleGET(method == "GET", uri);
+
+	handlePOST(method == "POST", uri, body);
+
+	handleDELETE(method == "DELETE", uri);
 }

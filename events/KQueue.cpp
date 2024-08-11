@@ -156,6 +156,7 @@ void Connections::loop()
             {
                 std::cout << "Write event on client: " << events[i].ident << std::endl;
                 handleWriteEvent(events[i].ident);
+                // removeClient(events[i].ident);
             }
         }
     }
@@ -174,7 +175,6 @@ void Connections::handleReadEvent(int clientFd)
         std::cerr << e.what() << '\n';
         this->setWriteEvent(clientFd);
         removeClient(clientFd);
-
     }
     
 }
@@ -198,7 +198,7 @@ void Connections::handleWriteEvent(int clientFd) {
         // Remove write event if no more data to send
         removeWriteEvent(clientFd);
 
-        if (!client.isKeepAlive()) 
+        if (!client.isKeepAlive())
         {
             std::cout<<"Closed bc of IsKeepAlive " << clientFd << std::endl;
             removeClient(clientFd);

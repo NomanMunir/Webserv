@@ -125,11 +125,10 @@ void  Request::handleRequest(Parser &parser, Response &structResponse)
 
 	if (!chooseRoute(headers.getValue("uri"), server, route))
 	{
-		if (headers.getValue("method") == "POST")
-			structResponse.setErrorCode(403, "Request::handleRequest : POST route not found");
+		if (headers.getValue("method") == "POST" || headers.getValue("method") == "DELETE")
+			structResponse.setErrorCode(403, "Request::handleRequest : POST or DELETE route not found");
 		else
 			structResponse.setErrorCode(404, "Request::handleRequest : GET Route not found");
-		// Delete for future.
 	}
 	structResponse.setTargetRoute(route);
 	this->complete = true;
