@@ -43,14 +43,14 @@
 [*] substring creating problems.
 [*] check for file types and set appropriate values.
 [*] check Accept header before sending response.
+[*] if there are more server in the config file. we need to set them up for listening.
+[•] Post and delete request;
 
 
 
-[ ] if there are more server in the config file. we need to set them up for listening.
 
-[ ] Post and delete request;
 
-[ ] genrate a proper response with proper response headers for the request
+[] genrate a proper response with proper response headers for the request
 
 [ ] chunked encoding.
 
