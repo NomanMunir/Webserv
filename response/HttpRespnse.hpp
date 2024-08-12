@@ -18,8 +18,12 @@ public:
 	void setHeader(const std::string& key, const std::string& value);
 	void setBody(const std::string& body);
 	std::string generateResponse();
+	void setStatusCodeMsg(const std::string& msg);
+
+
 private:
 	int statusCode;
+	std::string statusCodeMsg;
 	std::string version;
 	std::map<std::string, std::string> headers;
 	std::string body;
