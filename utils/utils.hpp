@@ -37,7 +37,7 @@ bool validateNumber(std::string key, std::string value);
 bool myFind(std::vector<std::string> &v, std::string &s);
 void initializeVector(std::vector<std::string> &v, const std::string s[], size_t size);
 void initializeVector(std::vector<std::string> &v, std::string s[], size_t size);
-std::string getErrorMsg(std::string errorCode);
+std::string getStatusMsg(std::string errorCode);
 bool responseClient(int fd, std::string response);
 std::string getMimeType(std::string extention);
 std::string getCurrentTimestamp();

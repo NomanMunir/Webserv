@@ -138,7 +138,14 @@ void Response::generateResponseFromFile(std::string &path)
 	std::string body = buffer.str();
 	std::string extention = path.substr(path.find_last_of(".") + 1);
 	std::string mimeType = getMimeType(extention);
-	response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: " + mimeType + "\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
+	HttpResponse httpResponse;
+	httpResponse.setStatusCode(200);
+	httpResponse.setVersion("HTTP/1.1");
+	httpResponse.setHeader("Content-Type", mimeType);
+	httpResponse.setHeader("Content-Length", std::to_string(body.size()));
+	httpResponse.setBody(body);
+	response = httpResponse.generateResponse();
+	// response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: " + mimeType + "\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 }
 
 void Response::handleRedirect(std::string redirect)
@@ -159,10 +166,10 @@ void Response::handleRedirect(std::string redirect)
 			value =  trim(value);
 			std::string tokenWithSlash = value[0] == '/' ? value :  "/" + value;
 			tokenWithSlash = trim(tokenWithSlash);
-			response = "HTTP/1.1 " + std::to_string(errorCode) + " " + getErrorMsg(std::to_string(errorCode)) + "\r\nLocation: " + tokenWithSlash + "\r\n\r\n";
+			response = "HTTP/1.1 " + std::to_string(errorCode) + " " + getStatusMsg(std::to_string(errorCode)) + "\r\nLocation: " + tokenWithSlash + "\r\n\r\n";
 		}
 		else
-			response = "HTTP/1.1" + std::to_string(errorCode) + " " + getErrorMsg(std::to_string(errorCode)) + "\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(value.size()) + "\r\n\r\n" + value + "\n";
+			response = "HTTP/1.1" + std::to_string(errorCode) + " " + getStatusMsg(std::to_string(errorCode)) + "\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(value.size()) + "\r\n\r\n" + value + "\n";
 	}
 	else
 		setErrorCode(errorCode, "Response::handleRedirect: Invalid redirect");
@@ -237,13 +244,13 @@ void Response::handleDELETE(bool isDelete, std::string &uri)
 
 void Response::defaultErrorPage(std::string errorCode)
 {
-    std::string body = "<html><head><title>Error " + errorCode + " " + getErrorMsg(errorCode) + "</title></head>"
+    std::string body = "<html><head><title>Error " + errorCode + " " + getStatusMsg(errorCode) + "</title></head>"
                        "<body style='background-color:lime; color:purple; font-family:Comic Sans MS;'>"
-                       "<center><h1 style='font-size:50px; border:5px dotted red;'>Oops! Error " + errorCode + " " + getErrorMsg(errorCode) +"</h1></center>"
+                       "<center><h1 style='font-size:50px; border:5px dotted red;'>Oops! Error " + errorCode + " " + getStatusMsg(errorCode) +"</h1></center>"
                        "<center><p style='font-size:30px; border:3px dashed orange;'>Something went terribly wrong!</p></center>"
                        "<marquee behavior='scroll' direction='left' style='font-size:20px; color:blue;'>This is an ugly error page!</marquee>"
                        "</body></html>";
-    response = "HTTP/1.1 " + errorCode + " " + getErrorMsg(errorCode) + "\r\n"
+    response = "HTTP/1.1 " + errorCode + " " + getStatusMsg(errorCode) + "\r\n"
                "Content-Type: text/html\r\n"
 			   "Connection: keep-alive\r\n"
                "Content-Length: " + std::to_string(body.size()) + "\r\n\r\n"
@@ -260,7 +267,7 @@ void Response::findErrorPage(std::string errorCode, std::map<std::string, std::s
 		std::stringstream buffer;
 		buffer << file.rdbuf();
 		std::string body = buffer.str();
-		response = "HTTP/1.1 " + errorCode + " " + getErrorMsg(errorCode) + "\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
+		response = "HTTP/1.1 " + errorCode + " " + getStatusMsg(errorCode) + "\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 	}
 	else
 		defaultErrorPage(errorCode);

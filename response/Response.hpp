@@ -20,6 +20,7 @@
 
 #include "../parsing/Parser.hpp"
 #include "../request/Request.hpp"
+#include "HttpResponse.hpp"
 
 #define DIR_ERR 1
 #define FILE_ERR 2

@@ -1,4 +1,4 @@
-#include "HttpRespnse.hpp"
+#include "HttpResponse.hpp"
 
 HttpResponse::HttpResponse() { }
 
@@ -34,11 +34,6 @@ void HttpResponse::setHeader(const std::string& key, const std::string& value)
 	this->headers[key] = value;
 }
 
-void HttpResponse::setStatusCodeMsg(const std::string& msg)
-{
-	this->statusCodeMsg = msg;
-}
-
 void HttpResponse::setBody(const std::string& body)
 {
 	this->body = body;
@@ -46,11 +41,7 @@ void HttpResponse::setBody(const std::string& body)
 
 std::string HttpResponse::generateResponse()
 {
-	std::string response = this->version + " " + std::to_string(this->statusCode) + " " + statusCodeMsg + "\r\n";
-	for (auto it = this->headers.begin(); it != this->headers.end(); it++)
-	{
-		response += it->first + ": " + it->second + "\r\n";
-	}
+	std::string response = this->version + " " + std::to_string(this->statusCode) + " " + getStatusMsg(std::to_string(this->statusCode)) + "\r\n";
 	response += "\r\n";
 	response += this->body;
 	return response;

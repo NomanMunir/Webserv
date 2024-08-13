@@ -266,7 +266,7 @@ bool responseClient(int fd, std::string response)
         return (true);
 }
 
-std::string getErrorMsg(std::string errorCode)
+std::string getStatusMsg(std::string errorCode)
 {
 	std::map<std::string, std::string> errorMsgs;
 
