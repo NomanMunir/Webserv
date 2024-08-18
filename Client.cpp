@@ -26,7 +26,8 @@ Request& Client::getRequest() { return request; }
 
 Response& Client::getResponse() { return response; }
 
-void Client::reset() {
+void Client::reset()
+{
 	readBuffer.clear();
 	writeBuffer.clear();
 	writePending = false;
@@ -48,7 +49,8 @@ bool Client::isKeepAlive()
 
 Client::Client(const Client &c) : fd(c.fd), readBuffer(c.readBuffer), writeBuffer(c.writeBuffer), writePending(c.writePending), request(c.request), response(c.response) {}
 
-Client& Client::operator=(const Client &c) {
+Client& Client::operator=(const Client &c)
+{
 	if (this == &c)
 		return *this;
 	fd = c.fd;
@@ -59,7 +61,6 @@ Client& Client::operator=(const Client &c) {
 	response = c.response;
 	return *this;
 }
-
 
 void Client::recvChunk()
 {

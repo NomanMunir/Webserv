@@ -138,11 +138,13 @@ void Response::generateResponseFromFile(std::string &path)
 	std::string body = buffer.str();
 	std::string extention = path.substr(path.find_last_of(".") + 1);
 	std::string mimeType = getMimeType(extention);
+
 	HttpResponse httpResponse;
-	httpResponse.setStatusCode(200);
 	httpResponse.setVersion("HTTP/1.1");
+	httpResponse.setStatusCode(200);
 	httpResponse.setHeader("Content-Type", mimeType);
 	httpResponse.setHeader("Content-Length", std::to_string(body.size()));
+	httpResponse.setHeader("Connection", "keep-alive");
 	httpResponse.setBody(body);
 	response = httpResponse.generateResponse();
 	// response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: " + mimeType + "\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
