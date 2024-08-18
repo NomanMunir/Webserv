@@ -113,7 +113,16 @@ bool Response::handleDirectory(std::string &fullPath, std::string &path, RouteCo
 	if (targetRoute.directoryListing)
 	{
 		std::string body = listDirectory(fullPath, path);
-		response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
+		HttpResponse httpResponse;
+		httpResponse.setVersion("HTTP/1.1");
+		httpResponse.setStatusCode(200);
+		httpResponse.setHeader("Content-Type", "text/html");
+		httpResponse.setHeader("Content-Length", std::to_string(body.size()));
+		httpResponse.setHeader("Connection", "keep-alive");
+		httpResponse.setHeader("Server", "LULUGINX");
+		httpResponse.setBody(body);
+		response = httpResponse.generateResponse();
+		// response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 	}
 	else
 		this->setErrorCode(403, "Response::handleDirectory: Directory listing not allowed");
@@ -145,6 +154,7 @@ void Response::generateResponseFromFile(std::string &path)
 	httpResponse.setHeader("Content-Type", mimeType);
 	httpResponse.setHeader("Content-Length", std::to_string(body.size()));
 	httpResponse.setHeader("Connection", "keep-alive");
+	httpResponse.setHeader("Server", "LULUGINX");
 	httpResponse.setBody(body);
 	response = httpResponse.generateResponse();
 	// response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: " + mimeType + "\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
@@ -158,6 +168,7 @@ void Response::handleRedirect(std::string redirect)
 	ss >> errorCode;
 	std::string value;
 	std::getline(ss, value, '\0');
+	HttpResponse httpResponse;
 
 	removeCharsFromString(value, "\"'");
 
@@ -168,10 +179,23 @@ void Response::handleRedirect(std::string redirect)
 			value =  trim(value);
 			std::string tokenWithSlash = value[0] == '/' ? value :  "/" + value;
 			tokenWithSlash = trim(tokenWithSlash);
-			response = "HTTP/1.1 " + std::to_string(errorCode) + " " + getStatusMsg(std::to_string(errorCode)) + "\r\nLocation: " + tokenWithSlash + "\r\n\r\n";
+			httpResponse.setStatusCode(errorCode);
+			httpResponse.setHeader("Location", tokenWithSlash);
+			httpResponse.setHeader("Server", "LULUGINX");
+
+			response = httpResponse.generateResponse();
+			// response = "HTTP/1.1 " + std::to_string(errorCode) + " " + getStatusMsg(std::to_string(errorCode)) + "\r\nLocation: " + tokenWithSlash + "\r\n\r\n";
 		}
 		else
-			response = "HTTP/1.1" + std::to_string(errorCode) + " " + getStatusMsg(std::to_string(errorCode)) + "\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(value.size()) + "\r\n\r\n" + value + "\n";
+		{
+			httpResponse.setStatusCode(errorCode);
+			httpResponse.setHeader("Content-Type", "text/html");
+			httpResponse.setHeader("Content-Length", std::to_string(value.size()));
+			httpResponse.setHeader("Server", "LULUGINX");
+			httpResponse.setBody(value);
+			response = httpResponse.generateResponse();
+			// response = "HTTP/1.1" + std::to_string(errorCode) + " " + getStatusMsg(std::to_string(errorCode)) + "\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(value.size()) + "\r\n\r\n" + value + "\n";
+		}
 	}
 	else
 		setErrorCode(errorCode, "Response::handleRedirect: Invalid redirect");
@@ -208,8 +232,10 @@ void Response::handleGET(bool isGet, std::string &uri)
 
 void Response::handlePOST(bool isPost, std::string &uri, Body &body)
 {
+
 	if (isPost)
 	{
+		HttpResponse httpResponse;
 		std::cout << "Post" << std::endl;
 		if (body.getContent().empty())
 			return (setErrorCode(400, "Response::handlePOST: Empty body"));
@@ -223,7 +249,16 @@ void Response::handlePOST(bool isPost, std::string &uri, Body &body)
 		file.close();
 
 		std::string body  = "<center> <h2>File uploaded successfully</h2></center>";
-		response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
+		httpResponse.setVersion("HTTP/1.1");
+		httpResponse.setStatusCode(200);
+		httpResponse.setHeader("Content-Type", "text/html");
+		httpResponse.setHeader("Content-Length", std::to_string(body.size()));
+		httpResponse.setHeader("Connection", "keep-alive");
+		httpResponse.setHeader("Server", "LULUGINX");
+		httpResponse.setBody(body);
+		response = httpResponse.generateResponse();
+
+		// response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 	}
 }
 
@@ -231,8 +266,8 @@ void Response::handleDELETE(bool isDelete, std::string &uri)
 {
 	if (isDelete)
 	{
+		HttpResponse httpResponse;
 		std::string fullPath = generateFullPath(targetRoute.root, uri);
-		std::cout << "Full Path: " << fullPath << std::endl;
 
 		int type = checkType(fullPath, targetRoute);
 		if (type == DIR_ERR)
@@ -240,7 +275,16 @@ void Response::handleDELETE(bool isDelete, std::string &uri)
 		if (remove(fullPath.c_str()) != 0)
 			return (setErrorCode(500, "Response::handleDELETE: Could not delete file"));
 		std::string body = "<center> <h2>File deleted successfully</h2></center>";
-		response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
+		httpResponse.setVersion("HTTP/1.1");
+		httpResponse.setStatusCode(200);
+		httpResponse.setHeader("Content-Type", "text/html");
+		httpResponse.setHeader("Content-Length", std::to_string(body.size()));
+		httpResponse.setHeader("Connection", "keep-alive");
+		httpResponse.setHeader("Server", "LULUGINX");
+		httpResponse.setBody(body);
+		response = httpResponse.generateResponse();
+
+		// response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 	}
 }
 
