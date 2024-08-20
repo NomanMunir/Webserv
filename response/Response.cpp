@@ -114,6 +114,16 @@ bool Response::handleDirectory(std::string &fullPath, std::string &path, RouteCo
 	if (targetRoute.directoryListing)
 	{
 		std::string body = listDirectory(fullPath, path);
+		HttpResponse httpResponse;
+		httpResponse.setVersion("HTTP/1.1");
+		httpResponse.setStatusCode(200);
+		httpResponse.setHeader("Content-Type", "text/html");
+		httpResponse.setHeader("Content-Length", std::to_string(body.size()));
+		httpResponse.setHeader("Connection", "keep-alive");
+		httpResponse.setHeader("Server", "LULUGINX");
+		httpResponse.setBody(body);
+		response = httpResponse.generateResponse();
+		// response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 		response = "HTTP/1.1 200 OK\r3\nConnection: keep-alive\r\nSet-Cookie: se=20\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 	}
 	else
@@ -139,11 +149,14 @@ void Response::generateResponseFromFile(std::string &path)
 	std::string body = buffer.str();
 	std::string extention = path.substr(path.find_last_of(".") + 1);
 	std::string mimeType = getMimeType(extention);
+
 	HttpResponse httpResponse;
-	httpResponse.setStatusCode(200);
 	httpResponse.setVersion("HTTP/1.1");
+	httpResponse.setStatusCode(200);
 	httpResponse.setHeader("Content-Type", mimeType);
 	httpResponse.setHeader("Content-Length", std::to_string(body.size()));
+	httpResponse.setHeader("Connection", "keep-alive");
+	httpResponse.setHeader("Server", "LULUGINX");
 	httpResponse.setBody(body);
 	response = httpResponse.generateResponse();
 	// response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: " + mimeType + "\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
@@ -157,6 +170,7 @@ void Response::handleRedirect(std::string redirect)
 	ss >> errorCode;
 	std::string value;
 	std::getline(ss, value, '\0');
+	HttpResponse httpResponse;
 
 	removeCharsFromString(value, "\"'");
 
@@ -167,10 +181,23 @@ void Response::handleRedirect(std::string redirect)
 			value =  trim(value);
 			std::string tokenWithSlash = value[0] == '/' ? value :  "/" + value;
 			tokenWithSlash = trim(tokenWithSlash);
-			response = "HTTP/1.1 " + std::to_string(errorCode) + " " + getStatusMsg(std::to_string(errorCode)) + "\r\nLocation: " + tokenWithSlash + "\r\n\r\n";
+			httpResponse.setStatusCode(errorCode);
+			httpResponse.setHeader("Location", tokenWithSlash);
+			httpResponse.setHeader("Server", "LULUGINX");
+
+			response = httpResponse.generateResponse();
+			// response = "HTTP/1.1 " + std::to_string(errorCode) + " " + getStatusMsg(std::to_string(errorCode)) + "\r\nLocation: " + tokenWithSlash + "\r\n\r\n";
 		}
 		else
-			response = "HTTP/1.1" + std::to_string(errorCode) + " " + getStatusMsg(std::to_string(errorCode)) + "\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(value.size()) + "\r\n\r\n" + value + "\n";
+		{
+			httpResponse.setStatusCode(errorCode);
+			httpResponse.setHeader("Content-Type", "text/html");
+			httpResponse.setHeader("Content-Length", std::to_string(value.size()));
+			httpResponse.setHeader("Server", "LULUGINX");
+			httpResponse.setBody(value);
+			response = httpResponse.generateResponse();
+			// response = "HTTP/1.1" + std::to_string(errorCode) + " " + getStatusMsg(std::to_string(errorCode)) + "\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(value.size()) + "\r\n\r\n" + value + "\n";
+		}
 	}
 	else
 		setErrorCode(errorCode, "Response::handleRedirect: Invalid redirect");
@@ -207,12 +234,18 @@ void Response::handleGET(bool isGet, std::string &uri)
 
 void Response::handlePOST(bool isPost, std::string &uri, Body &body)
 {
+
 	if (isPost)
 	{
-		std::cout << "Post" << std::endl;
+		// std::cout << "body: " << body.getContent() << std::endl;
+		HttpResponse httpResponse;
+
 		if (body.getContent().empty())
 			return (setErrorCode(400, "Response::handlePOST: Empty body"));
+
 		std::string fullPath = generateFullPath(targetRoute.root, uri);
+		fullPath = fullPath.back() != '/' ? fullPath + '/' : fullPath;
+		std::cout << "Full Path: " << fullPath << std::endl;
 		std::ofstream file(fullPath + getCurrentTimestamp());
 		if (!file.is_open())
 			return (setErrorCode(500, "Response::handlePOST: Could not open file"));
@@ -222,7 +255,16 @@ void Response::handlePOST(bool isPost, std::string &uri, Body &body)
 		file.close();
 
 		std::string body  = "<center> <h2>File uploaded successfully</h2></center>";
-		response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
+		httpResponse.setVersion("HTTP/1.1");
+		httpResponse.setStatusCode(200);
+		httpResponse.setHeader("Content-Type", "text/html");
+		httpResponse.setHeader("Content-Length", std::to_string(body.size()));
+		httpResponse.setHeader("Connection", "keep-alive");
+		httpResponse.setHeader("Server", "LULUGINX");
+		httpResponse.setBody(body);
+		response = httpResponse.generateResponse();
+
+		// response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 	}
 }
 
@@ -230,8 +272,8 @@ void Response::handleDELETE(bool isDelete, std::string &uri)
 {
 	if (isDelete)
 	{
+		HttpResponse httpResponse;
 		std::string fullPath = generateFullPath(targetRoute.root, uri);
-		std::cout << "Full Path: " << fullPath << std::endl;
 
 		int type = checkType(fullPath, targetRoute);
 		if (type == DIR_ERR)
@@ -239,7 +281,16 @@ void Response::handleDELETE(bool isDelete, std::string &uri)
 		if (remove(fullPath.c_str()) != 0)
 			return (setErrorCode(500, "Response::handleDELETE: Could not delete file"));
 		std::string body = "<center> <h2>File deleted successfully</h2></center>";
-		response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
+		httpResponse.setVersion("HTTP/1.1");
+		httpResponse.setStatusCode(200);
+		httpResponse.setHeader("Content-Type", "text/html");
+		httpResponse.setHeader("Content-Length", std::to_string(body.size()));
+		httpResponse.setHeader("Connection", "keep-alive");
+		httpResponse.setHeader("Server", "LULUGINX");
+		httpResponse.setBody(body);
+		response = httpResponse.generateResponse();
+
+		// response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 	}
 }
 
@@ -356,8 +407,30 @@ void Response::handleResponse(Request &request, char **env)
 	std::string uri = request.getHeaders().getValue("uri");
 	Body &body = request.getBody();
 
+	// std::cout << "Method: " << method << std::endl;
+
+	for (size_t i = 0; i < this->targetRoute.methods.size(); i++)
+		std::cout << "Method: " << this->targetRoute.methods[i] << std::endl;
+
+	if (std::find(this->targetRoute.methods.begin(), this->targetRoute.methods.end(), method) == this->targetRoute.methods.end())
+	{
+		std::cerr << "Response::handleResponse: Method Not Allowed" << std::endl;
+		this->errorCode = 403;
+	}
+
 	if (!myFind(this->targetRoute.methods, method))
 		setErrorCode(403, "Response::handleResponse: Method Not Allowed");
+	// std::cout << "Method: " << method << std::endl;
+
+	for (size_t i = 0; i < this->targetRoute.methods.size(); i++)
+		std::cout << "Method: " << this->targetRoute.methods[i] << std::endl;
+
+	if (std::find(this->targetRoute.methods.begin(), this->targetRoute.methods.end(), method) == this->targetRoute.methods.end())
+	{
+		std::cerr << "Response::handleResponse: Method Not Allowed" << std::endl;
+		this->errorCode = 403;
+	}
+
 	if (this->errorCode != 0)
 		return (sendError(std::to_string(this->errorCode)));
 	std::string fullPath = generateFullPath(this->targetRoute.root, uri);

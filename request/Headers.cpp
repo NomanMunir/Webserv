@@ -227,7 +227,7 @@ void Headers::parseHeader(Response &structResponse)
 {
 	std::string requestHeader = rawHeaders.substr(0, rawHeaders.size() - 2); // -2 is removing the last \r\n
 	std::istringstream iss(requestHeader);
-
+	std::cout << "requestHeader : " << requestHeader << std::endl;
 	validateAscii(structResponse);
 	parseFirstLine(structResponse, iss);
 	parseHeaderBody(iss, structResponse);

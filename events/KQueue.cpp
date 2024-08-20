@@ -176,10 +176,10 @@ void Connections::handleReadEvent(int clientFd)
         this->setWriteEvent(clientFd);
         removeClient(clientFd);
     }
-    
 }
 
-void Connections::handleWriteEvent(int clientFd) {
+void Connections::handleWriteEvent(int clientFd)
+{
     Client &client = clients.at(clientFd);
     client.env = this->configFile.env;
     if (!client.isWritePending()) return;

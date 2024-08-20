@@ -26,7 +26,8 @@ Request& Client::getRequest() { return request; }
 
 Response& Client::getResponse() { return response; }
 
-void Client::reset() {
+void Client::reset()
+{
 	readBuffer.clear();
 	writeBuffer.clear();
 	writePending = false;
@@ -48,7 +49,8 @@ bool Client::isKeepAlive()
 
 Client::Client(const Client &c) : fd(c.fd), readBuffer(c.readBuffer), writeBuffer(c.writeBuffer), writePending(c.writePending), request(c.request), response(c.response) {}
 
-Client& Client::operator=(const Client &c) {
+Client& Client::operator=(const Client &c)
+{
 	if (this == &c)
 		return *this;
 	fd = c.fd;
@@ -60,7 +62,6 @@ Client& Client::operator=(const Client &c) {
 	return *this;
 }
 
-
 void Client::recvChunk()
 {
     char buffer;
@@ -68,7 +69,6 @@ void Client::recvChunk()
     std::string chunk;
     int size = 0;
 	std::string &bodyContent = this->request.getBody().getContent();
-
     while (true)
     {
         if (recv(this->fd, &buffer, 1, 0) <= 0)
@@ -79,6 +79,7 @@ void Client::recvChunk()
                 throw std::runtime_error("Client::recvChunk: Error reading from client socket");
             if (buffer == '\n')
             {
+                std::cout << "chunkSize: " << chunkSize << std::endl;
                 size = std::stoi(chunkSize, 0, 16);
                 if (size == 0)
                     break;
