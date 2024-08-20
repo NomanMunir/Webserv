@@ -6,7 +6,7 @@
 /*   By: absalem < absalem@student.42abudhabi.ae    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 15:22:38 by nmunir            #+#    #+#             */
-/*   Updated: 2024/08/18 13:43:39 by absalem          ###   ########.fr       */
+/*   Updated: 2024/08/20 13:01:25 by absalem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,6 +158,7 @@ void Response::generateResponseFromFile(std::string &path)
 	httpResponse.setHeader("Connection", "keep-alive");
 	httpResponse.setHeader("Server", "LULUGINX");
 	httpResponse.setBody(body);
+	httpResponse.setHeader("Set-Cookie", "abdullah");
 	response = httpResponse.generateResponse();
 	// response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: " + mimeType + "\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 }
@@ -435,9 +436,9 @@ void Response::handleResponse(Request &request, char **env)
 		return (sendError(std::to_string(this->errorCode)));
 	std::string fullPath = generateFullPath(this->targetRoute.root, uri);
 	std::cout << "full path : "<< fullPath << std::endl;
-	Cgi cgi(request, env);
-    cgi.execute();
-
+	// Cgi cgi(request, env);
+    // cgi.execute();
+	
 	handleGET(method == "GET", uri);
 
 	handlePOST(method == "POST", uri, body);

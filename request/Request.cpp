@@ -124,6 +124,12 @@ void  Request::handleRequest(Parser &parser, Response &structResponse)
 
 	RouteConfig route;
 
+	std::string cookie = this->headers.getValue("Cookie");
+	if(!cookie.empty())
+		std::cout << "cooke: " << cookie << std::endl;
+	else
+		std::cout << "faild cookie" << std::endl;
+
 	if (!chooseRoute(headers.getValue("uri"), server, route))
 	{
 		if (headers.getValue("method") == "POST" || headers.getValue("method") == "DELETE")
