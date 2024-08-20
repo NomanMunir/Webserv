@@ -31,6 +31,7 @@ public:
     ~Client();
 
     int getFd() const;
+    char **env;
     std::string& getReadBuffer();
     std::string& getWriteBuffer();
     Request& getRequest();

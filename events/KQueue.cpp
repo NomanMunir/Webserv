@@ -181,6 +181,7 @@ void Connections::handleReadEvent(int clientFd)
 
 void Connections::handleWriteEvent(int clientFd) {
     Client &client = clients.at(clientFd);
+    client.env = this->configFile.env;
     if (!client.isWritePending()) return;
 
     ssize_t bytesWritten = send(clientFd, client.getWriteBuffer().c_str(), client.getWriteBuffer().size(), 0);

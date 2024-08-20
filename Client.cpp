@@ -137,7 +137,7 @@ void Client::recvBody()
 
 void Client::sendResponse()
 {
-	this->response.handleResponse(this->request);
+	this->response.handleResponse(this->request, this->env);
 	this->writeBuffer = this->response.getResponse();
     // std::cout << "Response: " << this->writeBuffer << std::endl;
 	this->writePending = true;

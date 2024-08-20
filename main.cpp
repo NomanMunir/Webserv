@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abashir <abashir@student.42.fr>            +#+  +:+       +#+        */
+/*   By: absalem < absalem@student.42abudhabi.ae    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 17:07:42 by nmunir            #+#    #+#             */
-/*   Updated: 2024/08/08 15:37:10 by abashir          ###   ########.fr       */
+/*   Updated: 2024/08/15 13:20:50 by absalem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
-int main(int ac, const char **av)
+int main(int ac, const char **av, char **env)
 {
     try
     {
@@ -27,6 +27,7 @@ int main(int ac, const char **av)
         // for (std::vector<std::string>::iterator it = ports.begin(); it != ports.end(); it++)
         //     std::cout << *it << std::endl;
         Validation validation(parser);
+        parser.env = env;
         Server server(parser);
         server.run(parser);
     }
