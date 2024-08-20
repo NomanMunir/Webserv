@@ -35,8 +35,8 @@ std::string findMatch(std::string &path, std::map<std::string, RouteConfig> rout
 	std::map<std::string, RouteConfig>::iterator it = routes.begin();
 	for (; it != routes.end(); it++)
 	{
-		std::string route =  trimChar(it->first, '/');
-		if (path == route)
+		// std::string route =  trimChar(it->first, '/');
+		if (path == it->first)
 			return it->first;
 	}
 	if (it == routes.end())
@@ -50,6 +50,7 @@ bool Request::chooseRoute(std::string uri, ServerConfig server, RouteConfig &tar
 	std::string method = this->headers.getValue("method");
 	if (method == "POST")
 	{
+		std::cout << "POST ROUTE" << std::endl;
 		std::string postRoute = findMatch(uri, routes);
 		if (postRoute != "")
 		{

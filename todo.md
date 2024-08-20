@@ -62,3 +62,7 @@
 
 [ ] close connection in certin error codes
 [ ] Duplicate headers?
+
+[ ] response recieve with chunked encoding will be send back as chunked encoding.
+[ ] go back to chunked encoding when cgi is done (6.1 Transfer-Encoding).
+[ ] Fix validateQuery function.

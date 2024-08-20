@@ -1,2 +1,7 @@
 html/PF
 uploads
+*.o
+*/*.o
+*/*/*.o
+*/*/*/*.o
+webserv

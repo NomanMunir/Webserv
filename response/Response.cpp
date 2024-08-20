@@ -235,11 +235,15 @@ void Response::handlePOST(bool isPost, std::string &uri, Body &body)
 
 	if (isPost)
 	{
+		// std::cout << "body: " << body.getContent() << std::endl;
 		HttpResponse httpResponse;
-		std::cout << "Post" << std::endl;
+
 		if (body.getContent().empty())
 			return (setErrorCode(400, "Response::handlePOST: Empty body"));
+
 		std::string fullPath = generateFullPath(targetRoute.root, uri);
+		fullPath = fullPath.back() != '/' ? fullPath + '/' : fullPath;
+		std::cout << "Full Path: " << fullPath << std::endl;
 		std::ofstream file(fullPath + getCurrentTimestamp());
 		if (!file.is_open())
 			return (setErrorCode(500, "Response::handlePOST: Could not open file"));
@@ -401,8 +405,16 @@ void Response::handleResponse(Request &request)
 	std::string uri = request.getHeaders().getValue("uri");
 	Body &body = request.getBody();
 
-	if (!myFind(this->targetRoute.methods, method))
-		setErrorCode(403, "Response::handleResponse: Method Not Allowed");
+	// std::cout << "Method: " << method << std::endl;
+
+	for (size_t i = 0; i < this->targetRoute.methods.size(); i++)
+		std::cout << "Method: " << this->targetRoute.methods[i] << std::endl;
+
+	if (std::find(this->targetRoute.methods.begin(), this->targetRoute.methods.end(), method) == this->targetRoute.methods.end())
+	{
+		std::cerr << "Response::handleResponse: Method Not Allowed" << std::endl;
+		this->errorCode = 403;
+	}
 
 	if (this->errorCode != 0)
 		return (sendError(std::to_string(this->errorCode)));

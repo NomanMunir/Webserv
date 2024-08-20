@@ -69,7 +69,6 @@ void Client::recvChunk()
     std::string chunk;
     int size = 0;
 	std::string &bodyContent = this->request.getBody().getContent();
-
     while (true)
     {
         if (recv(this->fd, &buffer, 1, 0) <= 0)
@@ -80,6 +79,7 @@ void Client::recvChunk()
                 throw std::runtime_error("Client::recvChunk: Error reading from client socket");
             if (buffer == '\n')
             {
+                std::cout << "chunkSize: " << chunkSize << std::endl;
                 size = std::stoi(chunkSize, 0, 16);
                 if (size == 0)
                     break;
