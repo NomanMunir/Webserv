@@ -65,39 +65,72 @@ Client& Client::operator=(const Client &c)
 void Client::recvChunk()
 {
     char buffer;
-    std::string chunkSize;
-    std::string chunk;
-    int size = 0;
-	std::string &bodyContent = this->request.getBody().getContent();
+    std::string chunkSizeStr;
+    int chunkSize = 0;
+    std::string &bodyContent = this->request.getBody().getContent();
+
     while (true)
     {
-        if (recv(this->fd, &buffer, 1, 0) <= 0)
-            throw std::runtime_error("Client::recvChunk: Error reading from client socket");
-        if (buffer == '\r')
+        // Read chunk size
+        while (true)
         {
             if (recv(this->fd, &buffer, 1, 0) <= 0)
                 throw std::runtime_error("Client::recvChunk: Error reading from client socket");
-            if (buffer == '\n')
+
+            if (buffer == '\r')
             {
-                size = std::stoi(chunkSize, 0, 16);
-                while (size + 2 != chunk.size())
-                {
-                    if (recv(this->fd, &buffer, 1, 0) <= 0)
-                        throw std::runtime_error("Client::recvChunk: Error reading from client socket");
-                    chunk.append(1, buffer);
-                }
-                if (size == 0)
+                // Expecting '\n' after '\r'
+                if (recv(this->fd, &buffer, 1, 0) <= 0)
+                    throw std::runtime_error("Client::recvChunk: Error reading from client socket");
+                if (buffer == '\n')
                     break;
-                bodyContent += chunk;
-                chunkSize.clear();
-                chunk.clear();
+                else
+                    throw std::runtime_error("Client::recvChunk: Malformed chunk size");
             }
+            chunkSizeStr.append(1, buffer);
         }
-        else
-            chunkSize.append(1, buffer);
+
+        // Convert chunk size from hex to integer
+        try
+        {
+            chunkSize = std::stoi(chunkSizeStr, 0, 16);
+        }
+        catch (const std::exception &e)
+        {
+            throw std::runtime_error("Client::recvChunk: Invalid chunk size");
+        }
+
+        // If chunk size is 0, it means the end of the chunks
+        if (chunkSize == 0)
+        {
+            // Read the final CRLF after the last chunk
+            if (recv(this->fd, &buffer, 1, 0) <= 0 || buffer != '\r')
+                throw std::runtime_error("Client::recvChunk: Malformed final chunk");
+            if (recv(this->fd, &buffer, 1, 0) <= 0 || buffer != '\n')
+                throw std::runtime_error("Client::recvChunk: Malformed final chunk");
+            break;
+        }
+
+        // Read the chunk data
+        std::string chunkData(chunkSize, 0);
+        int bytesRead = recv(this->fd, &chunkData[0], chunkSize, 0);
+        if (bytesRead != chunkSize)
+            throw std::runtime_error("Client::recvChunk: Error reading chunk data");
+        bodyContent += chunkData;
+
+        // Read the trailing CRLF after the chunk data
+        if (recv(this->fd, &buffer, 1, 0) <= 0 || buffer != '\r')
+            throw std::runtime_error("Client::recvChunk: Malformed chunk data");
+        if (recv(this->fd, &buffer, 1, 0) <= 0 || buffer != '\n')
+            throw std::runtime_error("Client::recvChunk: Malformed chunk data");
+
+        // Clear the chunk size string for the next chunk
+        chunkSizeStr.clear();
     }
-    std::cout << "Inside recvChunk" << std::endl;
+
+    std::cout << "Received chunked data successfully" << std::endl;
 }
+
 
 void Client::recvHeader()
 {
@@ -164,12 +197,14 @@ void Client::readFromSocket(Parser &configFile)
         std::cout << "Body:: " << this->request.getBody().getContent() << std::endl;
         this->request.handleRequest(configFile, this->response);
         if (this->request.isComplete())
+        {
+            std::cout << "Request is complete" << std::endl;
             sendResponse();
+        }
     }
     catch(const std::exception& e)
     {
         std::cerr << e.what() << '\n';
         sendResponse();
-    }
-    
+    }    
 }

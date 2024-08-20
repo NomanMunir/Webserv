@@ -139,6 +139,12 @@ void Connections::loop()
 
             if (events[i].filter == EVFILT_TIMER)
                 handleTimeoutEvent(events[i].ident);
+            else if (events[i].filter == EVFILT_WRITE)
+            {
+                std::cout << "Write event on client: " << events[i].ident << std::endl;
+                handleWriteEvent(events[i].ident);
+                // removeClient(events[i].ident);
+            }
             else if (events[i].filter == EVFILT_READ)
             {
                 if (std::find(serverSockets.begin(), serverSockets.end(), events[i].ident) != serverSockets.end()) 
@@ -152,12 +158,6 @@ void Connections::loop()
                     handleReadEvent(events[i].ident);
                 }
             }
-            else if (events[i].filter == EVFILT_WRITE)
-            {
-                std::cout << "Write event on client: " << events[i].ident << std::endl;
-                handleWriteEvent(events[i].ident);
-                // removeClient(events[i].ident);
-            }
         }
     }
 }
@@ -169,6 +169,7 @@ void Connections::handleReadEvent(int clientFd)
         Client &client = clients.at(clientFd);
         client.readFromSocket(this->configFile);
         this->setWriteEvent(clientFd);
+        std::cout << "Request received from client: " << clientFd << std::endl;
     }
     catch(const std::exception& e)
     {
