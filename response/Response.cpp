@@ -222,7 +222,7 @@ void Response::handleGET(bool isGet, std::string &uri)
 		else if (type == 1)
 		{
 			if (fullPath.back() != '/')
-			this->setErrorCode(301, "Response::handleGET: Redirecting to directory without trailing slash");
+				this->setErrorCode(301, "Response::handleGET: Redirecting to directory without trailing slash");
 			else
 			{
 				if(handleDirectory(fullPath, uri, targetRoute))
@@ -409,23 +409,7 @@ void Response::handleResponse(Request &request, char **env)
 
 	// std::cout << "Method: " << method << std::endl;
 
-	for (size_t i = 0; i < this->targetRoute.methods.size(); i++)
-		std::cout << "Method: " << this->targetRoute.methods[i] << std::endl;
-
-	if (std::find(this->targetRoute.methods.begin(), this->targetRoute.methods.end(), method) == this->targetRoute.methods.end())
-	{
-		std::cerr << "Response::handleResponse: Method Not Allowed" << std::endl;
-		this->errorCode = 403;
-	}
-
-	if (!myFind(this->targetRoute.methods, method))
-		setErrorCode(403, "Response::handleResponse: Method Not Allowed");
-	// std::cout << "Method: " << method << std::endl;
-
-	for (size_t i = 0; i < this->targetRoute.methods.size(); i++)
-		std::cout << "Method: " << this->targetRoute.methods[i] << std::endl;
-
-	if (std::find(this->targetRoute.methods.begin(), this->targetRoute.methods.end(), method) == this->targetRoute.methods.end())
+	if ((std::find(this->targetRoute.methods.begin(), this->targetRoute.methods.end(), method) == this->targetRoute.methods.end()) && this->errorCode == 0)
 	{
 		std::cerr << "Response::handleResponse: Method Not Allowed" << std::endl;
 		this->errorCode = 403;
@@ -435,8 +419,8 @@ void Response::handleResponse(Request &request, char **env)
 		return (sendError(std::to_string(this->errorCode)));
 	std::string fullPath = generateFullPath(this->targetRoute.root, uri);
 	std::cout << "full path : "<< fullPath << std::endl;
-	Cgi cgi(request, env);
-    cgi.execute();
+	// Cgi cgi(request, env);
+    // cgi.execute();
 
 	handleGET(method == "GET", uri);
 

@@ -281,7 +281,6 @@ void Parser::setDefault()
             servers[i].routeMap[""].redirect = "";
         }
     }
-
 }
 
 void Parser::resetRoute()

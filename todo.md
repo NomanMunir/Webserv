@@ -60,7 +60,7 @@
 [*] only error code
 [*] 404 close connection.
 
-[ ] close connection in certin error codes
+[ ] close connection in certain error codes
 [ ] Duplicate headers?
 
 [ ] response recieve with chunked encoding will be send back as chunked encoding.

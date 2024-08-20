@@ -91,7 +91,7 @@ void Connections::setClient(int fd)
     clients[fd] = Client(fd);
 }
 
-void Connections::removeClient(int fd) 
+void Connections::removeClient(int fd)
 {
     EV_SET(&changeList[0], fd, EVFILT_READ, EV_DELETE, 0, 0, NULL);
     EV_SET(&changeList[1], fd, EVFILT_TIMER, EV_DELETE, 0, 0, NULL);

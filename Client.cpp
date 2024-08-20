@@ -79,16 +79,15 @@ void Client::recvChunk()
                 throw std::runtime_error("Client::recvChunk: Error reading from client socket");
             if (buffer == '\n')
             {
-                std::cout << "chunkSize: " << chunkSize << std::endl;
                 size = std::stoi(chunkSize, 0, 16);
-                if (size == 0)
-                    break;
-                while (size != chunk.size())
+                while (size + 2 != chunk.size())
                 {
                     if (recv(this->fd, &buffer, 1, 0) <= 0)
                         throw std::runtime_error("Client::recvChunk: Error reading from client socket");
                     chunk.append(1, buffer);
                 }
+                if (size == 0)
+                    break;
                 bodyContent += chunk;
                 chunkSize.clear();
                 chunk.clear();
@@ -97,6 +96,7 @@ void Client::recvChunk()
         else
             chunkSize.append(1, buffer);
     }
+    std::cout << "Inside recvChunk" << std::endl;
 }
 
 void Client::recvHeader()
@@ -161,6 +161,7 @@ void Client::readFromSocket(Parser &configFile)
             else
                 recvBody();
         }
+        std::cout << "Body:: " << this->request.getBody().getContent() << std::endl;
         this->request.handleRequest(configFile, this->response);
         if (this->request.isComplete())
             sendResponse();

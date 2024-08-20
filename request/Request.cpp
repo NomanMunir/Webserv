@@ -35,8 +35,8 @@ std::string findMatch(std::string &path, std::map<std::string, RouteConfig> rout
 	std::map<std::string, RouteConfig>::iterator it = routes.begin();
 	for (; it != routes.end(); it++)
 	{
-		// std::string route =  trimChar(it->first, '/');
-		if (path == it->first)
+		std::string route =  trimChar(it->first, '/');
+		if (path == route)
 			return it->first;
 	}
 	if (it == routes.end())
@@ -48,9 +48,10 @@ bool Request::chooseRoute(std::string uri, ServerConfig server, RouteConfig &tar
 {
 	std::map<std::string, RouteConfig> routes = server.routeMap;
 	std::string method = this->headers.getValue("method");
+
+	uri = trimChar(uri, '/');
 	if (method == "POST")
 	{
-		std::cout << "POST ROUTE" << std::endl;
 		std::string postRoute = findMatch(uri, routes);
 		if (postRoute != "")
 		{
@@ -59,25 +60,25 @@ bool Request::chooseRoute(std::string uri, ServerConfig server, RouteConfig &tar
 		}
 		return false;
 	}
-	
+
 	std::vector<std::string> splitPath = split(uri, '/');
 	// std::cout << "splitPath size : " << splitPath.size() << std::endl;
 	for (size_t i = 0; i < splitPath.size(); i++)
 	{
 		// std::cout << " i : " << i << " splitPath : " << splitPath[i] << std::endl;
-		uri = trimChar(uri, '/');
-		// std::cout << "path : " << path << std::endl;
 		std::string route = findMatch(uri, routes);
 		if (route != "")
 		{
-			// std::cout << "what is route : " << route << std::endl;
 			targetRoute = routes[route];
 			return true;
 		}
 		uri = uri.substr(0, uri.find_last_of('/'));
 	}
 	if (routes.find("/") != routes.end())
-		return (targetRoute = routes["/"]), true;
+	{
+		targetRoute = routes["/"];
+		return true;
+	}
 	return false;
 }
 
@@ -124,14 +125,17 @@ void  Request::handleRequest(Parser &parser, Response &structResponse)
 
 	RouteConfig route;
 
-	if (!chooseRoute(headers.getValue("uri"), server, route))
+	std::string uri = this->headers.getValue("uri");
+	if (!chooseRoute(uri, server, route))
 	{
 		if (headers.getValue("method") == "POST" || headers.getValue("method") == "DELETE")
 			structResponse.setErrorCode(403, "Request::handleRequest : POST or DELETE route not found");
 		else
 			structResponse.setErrorCode(404, "Request::handleRequest : GET Route not found");
 	}
+	std::cout << "route : " << route.methods[1] << std::endl;
 	structResponse.setTargetRoute(route);
+
 	this->complete = true;
 }
 
