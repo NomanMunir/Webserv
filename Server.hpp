@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abashir <abashir@student.42.fr>            +#+  +:+       +#+        */
+/*   By: absalem < absalem@student.42abudhabi.ae    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 14:41:08 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/29 10:58:15 by abashir          ###   ########.fr       */
+/*   Updated: 2024/08/15 13:20:07 by absalem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,11 +54,6 @@ private:
     void initServerSockets(Parser &configFile);
 
     void handleConnections(Parser &configFile);
-
-    void handleConnectionsWithSelect(Parser &configFile);
-    // void handleConnectionsWithPoll(Parser &configFile);
-    // void handleConnectionsWithEPoll(Parser &configFile);
-    // void handleConnectionsWithKQueue(Parser &configFile);
 };
 
 #endif // SERVER_HPP

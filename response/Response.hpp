@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
+/*   By: absalem < absalem@student.42abudhabi.ae    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 15:21:58 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/22 16:31:55 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/08/15 13:24:32 by absalem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ class Response
 		ServerConfig getTargetServer();
 		RouteConfig getTargetRoute();
 		void sendError(std::string errorCode);
-		void handleResponse(Request &request);
+		void handleResponse(Request &request, char **env);
 
 		int getErrorCode() const;
 		void setErrorCode(int errorStatus, std::string errorMsg);

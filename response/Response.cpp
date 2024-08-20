@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abashir <abashir@student.42.fr>            +#+  +:+       +#+        */
+/*   By: absalem < absalem@student.42abudhabi.ae    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 15:22:38 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/29 11:33:37 by abashir          ###   ########.fr       */
+/*   Updated: 2024/08/18 13:43:39 by absalem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Response.hpp"
+#include "../cgi/Cgi.hpp"
 
 std::string Response::listDirectory(const std::string& dirPath, const std::string& uriPath)
 {
@@ -123,6 +124,7 @@ bool Response::handleDirectory(std::string &fullPath, std::string &path, RouteCo
 		httpResponse.setBody(body);
 		response = httpResponse.generateResponse();
 		// response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
+		response = "HTTP/1.1 200 OK\r3\nConnection: keep-alive\r\nSet-Cookie: se=20\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 	}
 	else
 		this->setErrorCode(403, "Response::handleDirectory: Directory listing not allowed");
@@ -399,7 +401,7 @@ void Response::setErrorCode(int errorStatus, std::string errorMsg)
 	throw std::runtime_error(errorMsg);
 }
 
-void Response::handleResponse(Request &request)
+void Response::handleResponse(Request &request, char **env)
 {
 	std::string method = request.getHeaders().getValue("method");
 	std::string uri = request.getHeaders().getValue("uri");
@@ -416,8 +418,25 @@ void Response::handleResponse(Request &request)
 		this->errorCode = 403;
 	}
 
+	if (!myFind(this->targetRoute.methods, method))
+		setErrorCode(403, "Response::handleResponse: Method Not Allowed");
+	// std::cout << "Method: " << method << std::endl;
+
+	for (size_t i = 0; i < this->targetRoute.methods.size(); i++)
+		std::cout << "Method: " << this->targetRoute.methods[i] << std::endl;
+
+	if (std::find(this->targetRoute.methods.begin(), this->targetRoute.methods.end(), method) == this->targetRoute.methods.end())
+	{
+		std::cerr << "Response::handleResponse: Method Not Allowed" << std::endl;
+		this->errorCode = 403;
+	}
+
 	if (this->errorCode != 0)
 		return (sendError(std::to_string(this->errorCode)));
+	std::string fullPath = generateFullPath(this->targetRoute.root, uri);
+	std::cout << "full path : "<< fullPath << std::endl;
+	Cgi cgi(request, env);
+    cgi.execute();
 
 	handleGET(method == "GET", uri);
 

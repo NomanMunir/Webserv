@@ -9,6 +9,7 @@ SRCS = main.cpp Server.cpp \
 		response/Response.cpp response/HttpResponse.cpp \
 		utils/utils.cpp \
 		Client.cpp \
+		cgi/Cgi.cpp \
 
 		ifeq ($(shell uname), Linux)
 			SRCS += events/EPoll.cpp

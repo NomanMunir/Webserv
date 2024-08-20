@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Parser.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
+/*   By: absalem < absalem@student.42abudhabi.ae    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/29 08:52:32 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/22 17:40:41 by nmunir           ###   ########.fr       */
+/*   Updated: 2024/08/15 13:20:25 by absalem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ class Parser
 		std::vector<ServerConfig> getServers();
 		std::map<std::string, std::string> getDirectives();
 		std::vector<std::string> getPorts();
+		char **env;
 
 	private:
 		void setServerBlock(std::string &key, std::string &value);
