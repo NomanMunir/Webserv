@@ -95,13 +95,19 @@ void Request::findServer(Response &structResponse, Parser &parser)
 	structResponse.setTargetServer(chooseServer(parser, host, port));
 }
 
-bool Request::isBodyExist(Parser &parser, Response &structResponse)
+bool Request::isBodyExist(Parser &parser, Response &structResponse, int fd)
 {
 	
 	std::string length = headers.getValue("Content-Length");
 	std::string encoding = headers.getValue("Transfer-Encoding");
 	if (length.empty() && encoding.empty())
-		return false;
+	{
+		char buffer[1];
+		if (recv(fd, buffer, 1, MSG_PEEK) == 0)
+			return false;
+		else
+			structResponse.setErrorCode(411, "Request::isBodyExist : Content-Length or Transfer-Encoding is missing");
+	}
 	if (!length.empty())
 	{
 		if (!validateNumber("Content-Length", length))

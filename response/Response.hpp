@@ -46,6 +46,7 @@ class Response
 
 		int getErrorCode() const;
 		void setErrorCode(int errorStatus, std::string errorMsg);
+		bool getIsConnectionClosed() const;
 
 	private:
 		std::map<int, std::string> statusCodes;
@@ -54,6 +55,7 @@ class Response
 		ServerConfig targetServer;
 		RouteConfig targetRoute;
 		int errorCode;
+		bool isConnectionClosed;
 		
 		void handleGET(bool isGet, std::string &uri);
 		void handlePOST(bool isPost, std::string &uri, Body &body);

@@ -328,15 +328,26 @@ void Response::findErrorPage(std::string errorCode, std::map<std::string, std::s
 void Response::sendError(std::string errorCode)
 {
 	std::vector<std::string> closeCodes;
-	closeCodes.push_back("400");
-	closeCodes.push_back("403");
-	closeCodes.push_back("404");
-	closeCodes.push_back("405");
-	closeCodes.push_back("413");
-	closeCodes.push_back("414");
-	closeCodes.push_back("500");
-	closeCodes.push_back("501");
+	closeCodes.push_back("400"); // Bad Request
+	closeCodes.push_back("403"); // Forbidden
+	closeCodes.push_back("404"); // Not Found
+	closeCodes.push_back("405"); // Method Not Allowed
+	closeCodes.push_back("408"); // Request Timeout
+	closeCodes.push_back("411"); // Length Required
+	closeCodes.push_back("413"); // Payload Too Large
+	closeCodes.push_back("414"); // URI Too Long
+	closeCodes.push_back("426"); // Upgrade Required
+	closeCodes.push_back("431"); // Request Header Fields Too Large
+	closeCodes.push_back("500"); // Internal Server Error
+	closeCodes.push_back("501"); // Not Implemented
+	closeCodes.push_back("502"); // Bad Gateway
+	closeCodes.push_back("503"); // Service Unavailable
+	closeCodes.push_back("504"); // Gateway Timeout
+	closeCodes.push_back("505"); // HTTP Version Not Supported
 
+	if (std::find(closeCodes.begin(), closeCodes.end(), errorCode) != closeCodes.end())
+		isConnectionClosed = true;
+	
 	std::map<std::string, std::string> errorPages = targetServer.errorPages;
 	findErrorPage(errorCode, errorPages);
 }
@@ -368,11 +379,15 @@ RouteConfig Response::getTargetRoute()
 	return targetRoute;
 }
 
+bool Response::getIsConnectionClosed() const
+{
+	return isConnectionClosed;
+}
+
 void Response::printResponse()
 {
 	std::cout << "Response: " << response << std::endl;
 }
-
 
 Response::Response() : errorCode(0) { }
 

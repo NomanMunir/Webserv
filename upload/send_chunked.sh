@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # URL to send the request to
-URL="http://localhost:80"
+URL="http://localhost:80/uploads/"
 
 # Function to generate a chunk of specified size with specified content
 generate_chunk() {
@@ -14,11 +14,11 @@ generate_chunk() {
 # Prepare and send the chunked data using curl
 {
     # Generate first chunk of 10 bytes
-    generate_chunk 10 "aaaaaaaaaa"
+    generate_chunk 1 "aaaaaaaaaa"
 
     # Generate second chunk of 20 bytes
     generate_chunk 20 "aaaaaaaaaaaaaaaaaaaa"
 
     # Final chunk (0 bytes to indicate the end)
     printf "0\r\n\r\n"
-} | curl -v -X GET -H "Transfer-Encoding: chunked" --data-binary @- "$URL"
+} | curl -v -X POST -H "Transfer-Encoding: chunked" --data-binary @- "$URL"

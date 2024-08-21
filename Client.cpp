@@ -99,6 +99,7 @@ void Client::recvChunk()
         {
             throw std::runtime_error("Client::recvChunk: Invalid chunk size");
         }
+        std::cout << "Chunk size: " << chunkSize << std::endl;
 
         // If chunk size is 0, it means the end of the chunks
         if (chunkSize == 0)
@@ -117,6 +118,8 @@ void Client::recvChunk()
         if (bytesRead != chunkSize)
             throw std::runtime_error("Client::recvChunk: Error reading chunk data");
         bodyContent += chunkData;
+
+        std::cout << "bodyContent: " << bodyContent << std::endl;
 
         // Read the trailing CRLF after the chunk data
         if (recv(this->fd, &buffer, 1, 0) <= 0 || buffer != '\r')
@@ -187,7 +190,7 @@ void Client::readFromSocket(Parser &configFile)
         recvHeader();
         this->request.getHeaders().parseHeader(this->response);
 
-        if (this->request.isBodyExist(configFile, this->response))
+        if (this->request.isBodyExist(configFile, this->response, this->fd))
         {
             if (this->request.isChunked())
                 recvChunk();
@@ -204,7 +207,7 @@ void Client::readFromSocket(Parser &configFile)
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        std::cerr << e.what() << "sds\n";
         sendResponse();
     }    
 }

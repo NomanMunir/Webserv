@@ -206,7 +206,12 @@ void Connections::handleWriteEvent(int clientFd)
             removeClient(clientFd);
             return;
         }
-
+        if (client.getResponse().getIsConnectionClosed())
+        {
+            std::cout<<"Closed bc of Connection Closed " << clientFd << std::endl;
+            removeClient(clientFd);
+            return;
+        }
         EV_SET(&changeList[1], clientFd, EVFILT_TIMER, EV_ADD | EV_ENABLE, 0, SET_TIMEOUT, NULL);
         if (kevent(kqueueFd, changeList, 1, NULL, 0, NULL) == -1)
         {
