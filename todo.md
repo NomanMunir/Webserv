@@ -66,3 +66,4 @@
 [ ] response recieve with chunked encoding will be send back as chunked encoding.
 [ ] go back to chunked encoding when cgi is done (6.1 Transfer-Encoding).
 [ ] Fix validateQuery function.
+[ ] are we closing the fd after removing event queue?

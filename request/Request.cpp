@@ -103,10 +103,13 @@ bool Request::isBodyExist(Parser &parser, Response &structResponse, int fd)
 	if (length.empty() && encoding.empty())
 	{
 		char buffer[1];
-		if (recv(fd, buffer, 1, MSG_PEEK) == 0)
+		if (recv(fd, buffer, 1, MSG_PEEK) <= 0)
 			return false;
 		else
+		{
+			// while(recv(fd, buffer, 1, 0) > 0){}
 			structResponse.setErrorCode(411, "Request::isBodyExist : Content-Length or Transfer-Encoding is missing");
+		}
 	}
 	if (!length.empty())
 	{

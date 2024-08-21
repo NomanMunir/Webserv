@@ -122,7 +122,11 @@ void Connections::loop()
 {
     while (true) 
     {
-        int nev = kevent(this->kqueueFd, NULL, 0, this->events, MAX_EVENTS, NULL);
+        struct timespec timeout;
+	    timeout.tv_sec = KEVENT_TIMEOUT_SEC;
+	    timeout.tv_nsec = 0;
+
+        int nev = kevent(this->kqueueFd, NULL, 0, this->events, MAX_EVENTS, &timeout);
         if (nev == -1)
         {
             std::cerr << "Error: " << strerror(errno) << std::endl;
@@ -131,21 +135,7 @@ void Connections::loop()
 
         for (int i = 0; i < nev; i++) 
         {
-            if (events[i].flags & EV_ERROR) 
-            {
-                std::cerr << "EV_ERROR: " << strerror(events[i].data) << std::endl;
-                continue;
-            }
-
-            if (events[i].filter == EVFILT_TIMER)
-                handleTimeoutEvent(events[i].ident);
-            else if (events[i].filter == EVFILT_WRITE)
-            {
-                std::cout << "Write event on client: " << events[i].ident << std::endl;
-                handleWriteEvent(events[i].ident);
-                // removeClient(events[i].ident);
-            }
-            else if (events[i].filter == EVFILT_READ)
+            if (events[i].filter == EVFILT_READ)
             {
                 if (std::find(serverSockets.begin(), serverSockets.end(), events[i].ident) != serverSockets.end()) 
                 {
@@ -159,6 +149,50 @@ void Connections::loop()
                 }
             }
         }
+
+        for (int i = 0; i < nev; i++) 
+        {
+            if (events[i].flags & EV_ERROR) 
+            {
+                std::cerr << "EV_ERROR: " << strerror(events[i].data) << std::endl;
+                continue;
+            }
+            if (events[i].filter == EVFILT_TIMER)
+                handleTimeoutEvent(events[i].ident);
+            if (events[i].filter == EVFILT_WRITE)
+            {
+                std::cout << "Write event on client: " << events[i].ident << std::endl;
+                handleWriteEvent(events[i].ident);
+                // removeClient(events[i].ident);
+            }
+        }
+    }
+}
+
+
+void Connections::removeReadEvent(int clientFd)
+{
+    struct kevent evSet;
+    EV_SET(&evSet, clientFd, EVFILT_READ, EV_DELETE, 0, 0, NULL);
+
+    if (kevent(kqueueFd, &evSet, 1, NULL, 0, NULL) == -1)
+    {
+        std::cerr << "Error removing read event: " << strerror(errno) << std::endl;
+        close(clientFd);
+        clients.erase(clientFd);
+    }
+}
+
+void Connections::removeTimeEvent(int clientFd)
+{
+    struct kevent evSet;
+    EV_SET(&evSet, clientFd, EVFILT_TIMER, EV_DELETE, 0, 0, NULL);
+
+    if (kevent(kqueueFd, &evSet, 1, NULL, 0, NULL) == -1)
+    {
+        std::cerr << "Error removing timer event: " << strerror(errno) << std::endl;
+        close(clientFd);
+        clients.erase(clientFd);
     }
 }
 
@@ -168,12 +202,16 @@ void Connections::handleReadEvent(int clientFd)
     {
         Client &client = clients.at(clientFd);
         client.readFromSocket(this->configFile);
+        if (client.getResponse().getIsConnectionClosed())
+            this->removeReadEvent(clientFd);
         this->setWriteEvent(clientFd);
+
         std::cout << "Request received from client: " << clientFd << std::endl;
     }
     catch(const std::exception& e)
     {
         std::cerr << e.what() << '\n';
+        this->removeReadEvent(clientFd);
         this->setWriteEvent(clientFd);
         removeClient(clientFd);
     }
@@ -209,7 +247,7 @@ void Connections::handleWriteEvent(int clientFd)
         if (client.getResponse().getIsConnectionClosed())
         {
             std::cout<<"Closed bc of Connection Closed " << clientFd << std::endl;
-            removeClient(clientFd);
+            removeTimeEvent(clientFd);
             return;
         }
         EV_SET(&changeList[1], clientFd, EVFILT_TIMER, EV_ADD | EV_ENABLE, 0, SET_TIMEOUT, NULL);

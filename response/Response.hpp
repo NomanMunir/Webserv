@@ -63,6 +63,8 @@ class Response
 
 		void defaultErrorPage(std::string errorCode);
 		void findErrorPage(std::string errorCode, std::map<std::string, std::string> errorPages);
+		bool isClosingCode(std::string errorCode);
+
 
 		int checkType(std::string &path, RouteConfig &targetRoute);
 		std::string listDirectory(const std::string& dirPath, const std::string& uriPath);

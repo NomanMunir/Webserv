@@ -3,6 +3,8 @@
 
 #if defined(__APPLE__) || defined(__FreeBSD__)
 
+#define KEVENT_TIMEOUT_SEC 5
+
 #include <iostream>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -40,6 +42,10 @@ private:
     void setTimeout(int fd);
     void setWriteEvent(int clientFd);
     void removeWriteEvent(int clientFd);
+    void removeReadEvent(int clientFd);
+    void removeTimeEvent(int clientFd);
+
+
 
     void setServer(int fd);
     bool addClient(int serverSocket);

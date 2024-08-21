@@ -302,11 +302,24 @@ void Response::defaultErrorPage(std::string errorCode)
                        "<center><p style='font-size:30px; border:3px dashed orange;'>Something went terribly wrong!</p></center>"
                        "<marquee behavior='scroll' direction='left' style='font-size:20px; color:blue;'>This is an ugly error page!</marquee>"
                        "</body></html>";
-    response = "HTTP/1.1 " + errorCode + " " + getStatusMsg(errorCode) + "\r\n"
-               "Content-Type: text/html\r\n"
-			   "Connection: keep-alive\r\n"
-               "Content-Length: " + std::to_string(body.size()) + "\r\n\r\n"
-               + body;
+	HttpResponse httpResponse;
+	httpResponse.setVersion("HTTP/1.1");
+	httpResponse.setStatusCode(std::stoi(errorCode));
+	httpResponse.setHeader("Content-Type", "text/html");
+	httpResponse.setHeader("Content-Length", std::to_string(body.size()));
+	if (isClosingCode(errorCode))
+		httpResponse.setHeader("Connection", "close");
+	else
+		httpResponse.setHeader("Connection", "keep-alive");
+	httpResponse.setHeader("Server", "LULUGINX");
+	httpResponse.setBody(body);
+	response = httpResponse.generateResponse();
+
+    // response = "HTTP/1.1 " + errorCode + " " + getStatusMsg(errorCode) + "\r\n"
+    //            "Content-Type: text/html\r\n"
+	// 		   "Connection: keep-alive\r\n"
+    //            "Content-Length: " + std::to_string(body.size()) + "\r\n\r\n"
+    //            + body;
 }
 
 
@@ -315,17 +328,28 @@ void Response::findErrorPage(std::string errorCode, std::map<std::string, std::s
 	std::map<std::string, std::string>::iterator it = errorPages.find(errorCode);
 	if (it != errorPages.end())
 	{
+		HttpResponse httpResponse;
+
 		std::ifstream file("." + it->second);
 		std::stringstream buffer;
 		buffer << file.rdbuf();
 		std::string body = buffer.str();
-		response = "HTTP/1.1 " + errorCode + " " + getStatusMsg(errorCode) + "\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
+		httpResponse.setVersion("HTTP/1.1");
+		httpResponse.setStatusCode(std::stoi(errorCode));
+		httpResponse.setHeader("Content-Type", "text/html");
+		httpResponse.setHeader("Content-Length", std::to_string(body.size()));
+		httpResponse.setHeader("Connection", "keep-alive");
+		httpResponse.setHeader("Server", "LULUGINX");
+		httpResponse.setBody(body);
+		response = httpResponse.generateResponse();
+
+		// response = "HTTP/1.1 " + errorCode + " " + getStatusMsg(errorCode) + "\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 	}
 	else
 		defaultErrorPage(errorCode);
 }
 
-void Response::sendError(std::string errorCode)
+bool Response::isClosingCode(std::string errorCode)
 {
 	std::vector<std::string> closeCodes;
 	closeCodes.push_back("400"); // Bad Request
@@ -345,7 +369,11 @@ void Response::sendError(std::string errorCode)
 	closeCodes.push_back("504"); // Gateway Timeout
 	closeCodes.push_back("505"); // HTTP Version Not Supported
 
-	if (std::find(closeCodes.begin(), closeCodes.end(), errorCode) != closeCodes.end())
+	return (std::find(closeCodes.begin(), closeCodes.end(), errorCode) != closeCodes.end());
+}
+void Response::sendError(std::string errorCode)
+{
+	if (isClosingCode(errorCode))
 		isConnectionClosed = true;
 	
 	std::map<std::string, std::string> errorPages = targetServer.errorPages;

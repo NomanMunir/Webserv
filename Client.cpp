@@ -188,6 +188,7 @@ void Client::readFromSocket(Parser &configFile)
     try
     {
         recvHeader();
+        std::cout << "headers: : " << this->request.getHeaders().getRawHeaders() << std::endl;
         this->request.getHeaders().parseHeader(this->response);
 
         if (this->request.isBodyExist(configFile, this->response, this->fd))
