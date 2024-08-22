@@ -3,7 +3,9 @@ NAME = webserv
 CXX = c++
 CXXFLAGS = -g3 -fsanitize=address #-std=c++98 -Wall -Wextra -Werror 
 
-SRCS = main.cpp Server.cpp \
+SRCS = main.cpp \
+		Server.cpp \
+		ServerManager.cpp \
 		parsing/Parser.cpp parsing/Validation.cpp \
 		request/Headers.cpp request/Request.cpp request/Body.cpp \
 		response/Response.cpp response/HttpResponse.cpp \

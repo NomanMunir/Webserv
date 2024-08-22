@@ -338,12 +338,13 @@ void Response::findErrorPage(std::string errorCode, std::map<std::string, std::s
 		httpResponse.setStatusCode(std::stoi(errorCode));
 		httpResponse.setHeader("Content-Type", "text/html");
 		httpResponse.setHeader("Content-Length", std::to_string(body.size()));
-		httpResponse.setHeader("Connection", "keep-alive");
+		if (isClosingCode(errorCode))
+		httpResponse.setHeader("Connection", "close");
+		else
+			httpResponse.setHeader("Connection", "keep-alive");
 		httpResponse.setHeader("Server", "LULUGINX");
 		httpResponse.setBody(body);
 		response = httpResponse.generateResponse();
-
-		// response = "HTTP/1.1 " + errorCode + " " + getStatusMsg(errorCode) + "\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 	}
 	else
 		defaultErrorPage(errorCode);

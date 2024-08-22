@@ -142,7 +142,6 @@ void  Request::handleRequest(Parser &parser, Response &structResponse)
 		else
 			structResponse.setErrorCode(404, "Request::handleRequest : GET Route not found");
 	}
-	std::cout << "route : " << route.methods[1] << std::endl;
 	structResponse.setTargetRoute(route);
 
 	this->complete = true;

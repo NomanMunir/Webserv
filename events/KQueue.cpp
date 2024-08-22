@@ -120,7 +120,7 @@ bool Connections::addClient(int serverSocket) {
 
 void Connections::loop() 
 {
-    while (true) 
+    while (true)
     {
         struct timespec timeout;
 	    timeout.tv_sec = KEVENT_TIMEOUT_SEC;

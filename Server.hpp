@@ -42,18 +42,28 @@
 class Server
 {
 public:
-    Server(Parser &configFile);
-    void run(Parser &configFile);
-    std::vector<int> getServersockets() const;
-    std::vector<pollfd> pollfds;
+    Server(ServerConfig &serverConfig);
+    ~Server();
+    Server(const Server &other);
+    Server &operator=(const Server &other);
+
+    void run();
+
+    int getPort() const;
+    int getServerSocket() const;
+    struct sockaddr_in getAddr() const;
+    ServerConfig getServerConfig() const;
+    int serverError;
 
 private:
-    std::vector<int> serverSockets;
-    std::vector<struct sockaddr_in> serverAddrs;
+    int serverSocket;
+    struct sockaddr_in addr;
+    int port;
+    ServerConfig serverConfig;
 
-    void initServerSockets(Parser &configFile);
-
-    void handleConnections(Parser &configFile);
+    void bindAndListen();
+    void socketInUse();
+    void initSocket();
 };
 
 #endif // SERVER_HPP

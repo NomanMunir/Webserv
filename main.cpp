@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
+#include "ServerManager.hpp"
 
 int main(int ac, const char **av, char **env)
 {
@@ -27,8 +27,7 @@ int main(int ac, const char **av, char **env)
         //     std::cout << *it << std::endl;
         Validation validation(parser);
         parser.env = env;
-        Server server(parser);
-        server.run(parser);
+        ServerManager serverManager(parser);
     }
     catch (std::exception &e)
     {
