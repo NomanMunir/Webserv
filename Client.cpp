@@ -183,7 +183,7 @@ void Client::sendResponse()
 
 }
 
-void Client::readFromSocket(Parser &configFile)
+void Client::readFromSocket(ServerConfig &serverConfig)
 {
     try
     {
@@ -191,15 +191,15 @@ void Client::readFromSocket(Parser &configFile)
         std::cout << "headers: : " << this->request.getHeaders().getRawHeaders() << std::endl;
         this->request.getHeaders().parseHeader(this->response);
 
-        if (this->request.isBodyExist(configFile, this->response, this->fd))
-        {
-            if (this->request.isChunked())
-                recvChunk();
-            else
-                recvBody();
-        }
-        std::cout << "Body:: " << this->request.getBody().getContent() << std::endl;
-        this->request.handleRequest(configFile, this->response);
+        // if (this->request.isBodyExist(configFile, this->response, this->fd))
+        // {
+        //     if (this->request.isChunked())
+        //         recvChunk();
+        //     else
+        //         recvBody();
+        // }
+
+        this->request.handleRequest(serverConfig, this->response);
         if (this->request.isComplete())
         {
             std::cout << "Request is complete" << std::endl;

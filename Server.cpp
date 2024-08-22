@@ -11,7 +11,9 @@
 #define PORT 80
 #define MAX_CONNECTIONS 10
 
-Server::Server(ServerConfig &serverConfig) :serverConfig(serverConfig), serverError(0)
+
+Server::Server(ServerConfig &serverConfig, KQueue &queue) 
+    :serverConfig(serverConfig), kqueue(queue), serverError(0)
 {
     std::string serverPort = serverConfig.listen.back().back();
     this->port =  std::atoi(serverPort.c_str());
@@ -23,9 +25,8 @@ Server::~Server()
     close(this->serverSocket);
 }
 
-Server::Server(const Server &other)
+Server::Server(const Server &other) : serverConfig(other.serverConfig), kqueue(other.kqueue)
 {
-    this->serverSocket = other.serverSocket;
     this->addr = other.addr;
     this->port = other.port;
     this->serverError = other.serverError;
@@ -38,6 +39,7 @@ Server &Server::operator=(const Server &other)
     {
         this->serverSocket = other.serverSocket;
         this->addr = other.addr;
+        this->kqueue = other.kqueue;
         this->port = other.port;
         this->serverError = other.serverError;
         this->serverConfig = other.serverConfig;
@@ -92,7 +94,52 @@ void Server::run()
     
 }
 
+void Server::acceptClient()
+{
+    struct sockaddr_in clientAddr;
+    socklen_t clientLen = sizeof(clientAddr);
+    int clientSocket = accept(this->serverSocket, (struct sockaddr *)&clientAddr, &clientLen);
+    if (clientSocket < 0)
+    {
+        std::cerr << "Error accepting client connection" << std::endl;
+        return;
+    }
+    std::cout << "New connection, socket fd is " << clientSocket << ", ip is : " << inet_ntoa(clientAddr.sin_addr) << ", port : " << ntohs(clientAddr.sin_port) << std::endl;
+    clients[clientSocket] = Client(clientSocket);
+    kqueue.addToQueue(clientSocket, READ_EVENT);
+}
+
+
+bool Server::isMyClient(int fd)
+{
+    return clients.find(fd) != clients.end();
+}
+
+void Server::handleWrite(int fd)
+{
+    if (send(fd, clients[fd].getWriteBuffer().c_str(), clients[fd].getWriteBuffer().size(), 0) < 0)
+    {
+        perror("Error sending data to client");
+        return;
+    }
+    clients[fd].getWriteBuffer().clear();
+    kqueue.removeFromQueue(fd, WRITE_EVENT);
+    kqueue.addToQueue(fd, READ_EVENT);
+}
+
+void Server::handleRead(int fd)
+{
+    clients[fd].readFromSocket(this->serverConfig);
+    if (clients[fd].getRequest().isComplete())
+    {
+        kqueue.removeFromQueue(fd, READ_EVENT);
+        kqueue.addToQueue(fd, WRITE_EVENT);
+    }
+}
+
 int Server::getPort() const { return this->port; }
+
+std::unordered_map<int, Client> &Server::getClients() { return this->clients; }
 
 int Server::getServerSocket() const { return this->serverSocket; }
 

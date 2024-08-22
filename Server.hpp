@@ -38,11 +38,13 @@
 #include "parsing/Validation.hpp"
 #include "request/Request.hpp"
 #include "response/Response.hpp"
+#include "Client.hpp"
+#include "events/KQueue.hpp"
 
 class Server
 {
 public:
-    Server(ServerConfig &serverConfig);
+    Server(ServerConfig &serverConfig, KQueue &kqueue);
     ~Server();
     Server(const Server &other);
     Server &operator=(const Server &other);
@@ -53,13 +55,23 @@ public:
     int getServerSocket() const;
     struct sockaddr_in getAddr() const;
     ServerConfig getServerConfig() const;
+    void acceptClient();
+    bool isMyClient(int fd);
+
+    void handleRead(int fd);
+    void handleWrite(int fd);
+
+
     int serverError;
 
+    std::unordered_map<int, Client> &getClients();
 private:
     int serverSocket;
     struct sockaddr_in addr;
     int port;
     ServerConfig serverConfig;
+    std::unordered_map<int, Client> clients;
+    KQueue &kqueue;
 
     void bindAndListen();
     void socketInUse();

@@ -127,15 +127,14 @@ bool Request::isBodyExist(Parser &parser, Response &structResponse, int fd)
 	return true;
 }
 
-void  Request::handleRequest(Parser &parser, Response &structResponse)
+void  Request::handleRequest(ServerConfig &serverConfig, Response &structResponse)
 {
-	this->findServer(structResponse, parser);
-	ServerConfig server = structResponse.getTargetServer();
-
+	// this->findServer(structResponse, parser);
+	
+	structResponse.setTargetServer(serverConfig);
 	RouteConfig route;
-
 	std::string uri = this->headers.getValue("uri");
-	if (!chooseRoute(uri, server, route))
+	if (!chooseRoute(uri, serverConfig, route))
 	{
 		if (headers.getValue("method") == "POST" || headers.getValue("method") == "DELETE")
 			structResponse.setErrorCode(403, "Request::handleRequest : POST or DELETE route not found");

@@ -46,7 +46,7 @@ public:
     void setReadPending(bool pending);
     void setKeepAlive(bool keepAlive);
 
-    void readFromSocket(Parser &configFile);
+    void readFromSocket(ServerConfig &serverConfig);
     void reset();
 
 
