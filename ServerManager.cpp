@@ -25,15 +25,18 @@ ServerManager::ServerManager(Parser &parser)
 	while (true)
 	{
 		int numOfEvents = this->kqueue.getNumOfEvents();
+		// std::cout << "Number of events: " << numOfEvents << std::endl;
 		for (int i = 0; i < numOfEvents; i++)
 		{
 			struct kevent event = this->kqueue.events[i];
 			if (event.filter == EVFILT_READ)
 			{
+				std::cout << "ServerManager: Accepting read event" << std::endl;
 				for (size_t j = 0; j < this->servers.size(); j++)
 				{
 					if (this->servers[j]->getServerSocket() == event.ident)
 					{
+						std::cout << "ServerManager: Server Socket is found" << std::endl;
 						this->servers[j]->acceptClient();
 						break;
 					}
@@ -41,25 +44,30 @@ ServerManager::ServerManager(Parser &parser)
 					{
 						if (servers[j]->isMyClient(event.ident))
 						{
+							std::cout << "ServerManager: Client socket is found for read" << std::endl;
 							servers[j]->handleRead(event.ident);
 							break;
 						}
 					}
 				}
-				
 			}
-			else if (event.filter == EVFILT_WRITE)
+		}
+		for (size_t i = 0; i < numOfEvents; i++)
+		{
+			struct kevent event = this->kqueue.events[i];
+			if (event.filter == EVFILT_WRITE)
 			{
+				std::cout << "ServerManager: Accepting write event" << std::endl;
 				for (size_t j = 0; j < this->servers.size(); j++)
 				{
 					if (servers[j]->isMyClient(event.ident))
 					{
+						std::cout << "ServerManager: Client socket is found for write" << std::endl;
 						servers[j]->handleWrite(event.ident);
 						break;
 					}
 				}
 			}
-
 		}
 	}
 }

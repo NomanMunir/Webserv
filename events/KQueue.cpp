@@ -16,29 +16,46 @@ KQueue::KQueue()
     }
 }
 
+void setNoneBlocking(int fd)
+{
+    int flags = fcntl(fd, F_GETFL, 0);
+    if (flags == -1)
+    {
+        std::cerr << "Error: " << strerror(errno) << std::endl;
+        close(fd);
+        throw std::exception();
+    }
+    if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
+    {
+        std::cerr << "Error: " << strerror(errno) << std::endl;
+        close(fd);
+        throw std::exception();
+    }
+}
+
 void KQueue::addToQueue(int fd, EventType ev)
 {
     struct kevent evSet;
-    switch (ev)
+
+    setNoneBlocking(fd);
+    if (ev == READ_EVENT)
+        EV_SET(&evSet, fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
+    else if (ev == WRITE_EVENT)
+        EV_SET(&evSet, fd, EVFILT_WRITE, EV_ADD, 0, 0, NULL);
+    else if (ev == TIMEOUT_EVENT)
+        EV_SET(&evSet, fd, EVFILT_TIMER, EV_ADD, 0, SET_TIMEOUT, NULL);
+    else
     {
-    case READ_EVENT:
-        EV_SET(&evSet, fd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
-        break;
-    case WRITE_EVENT:
-        EV_SET(&evSet, fd, EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
-        break;
-    case TIMEOUT_EVENT:
-        EV_SET(&evSet, fd, EVFILT_TIMER, EV_ADD | EV_ENABLE, 0, SET_TIMEOUT, NULL);
-        break;
-    default:
-        break;
+        std::cerr << "Error: " << strerror(errno) << std::endl;
+        close(fd);
+        throw std::exception();
     }
 
     if (kevent(this->kqueueFd, &evSet, 1, NULL, 0, NULL) == -1)
     {
         std::cerr << "Error setting event: " << strerror(errno) << std::endl;
         close(fd);
-        throw std::exception();
+        throw std::runtime_error("Error setting event");
     }
 }
 
@@ -57,6 +74,7 @@ void KQueue::removeFromQueue(int fd, EventType ev)
         EV_SET(&evSet, fd, EVFILT_TIMER, EV_DELETE, 0, 0, NULL);
         break;
     default:
+       std::cerr << "Error fd does not exist" << std::endl;
         break;
     }
 
@@ -197,7 +215,7 @@ int	KQueue::getNumOfEvents()
 // {
 //     while (true)
 //     {
-//         struct timespec timeout;
+//      struct timespec timeout;
 // 	    timeout.tv_sec = KEVENT_TIMEOUT_SEC;
 // 	    timeout.tv_nsec = 0;
 

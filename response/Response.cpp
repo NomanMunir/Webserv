@@ -74,7 +74,6 @@ std::string resolvePath(std::string &fullPath, std::string &defaultFile)
     std::vector<std::string> pathTokens = split(defaultFile, '/');
 
     std::vector<std::string> resolvedTokens = rootTokens;
-	std::cout << "pathtokens: " << pathTokens.size() << std::endl;
     for (size_t i = 0; i < pathTokens.size(); ++i)
     {
         if (pathTokens[i] == "..")
@@ -97,7 +96,7 @@ bool Response::handleDirectory(std::string &fullPath, std::string &path, RouteCo
 			newPath = targetRoute.defaultFile[i];
 		else
 			newPath = resolvePath(fullPath, targetRoute.defaultFile[i]);
-		std::cout << "New Path: " << newPath << std::endl;
+		// std::cout << "New Path: " << newPath << std::endl;
 		// std::string newPath = fullPath + targetRoute.defaultFile[i];
 		if (newPath.find(targetRoute.root) != 0)
 		{
@@ -462,7 +461,7 @@ void Response::handleResponse(Request &request, char **env)
 	if (this->errorCode != 0)
 		return (sendError(std::to_string(this->errorCode)));
 	std::string fullPath = generateFullPath(this->targetRoute.root, uri);
-	std::cout << "full path : "<< fullPath << std::endl;
+	// std::cout << "full path : "<< fullPath << std::endl;
 	// Cgi cgi(request, env);
     // cgi.execute();
 

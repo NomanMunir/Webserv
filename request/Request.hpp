@@ -39,7 +39,7 @@ class Request
 		void reset();
 		bool isChunked();
 		void handleRequest(ServerConfig &serverConfig, Response &structResponse);
-		bool isBodyExist(Parser &parser, Response &structResponse, int fd);
+		bool isBodyExist(ServerConfig &serverConfig, Response &structResponse, int fd);
 
 	private:
 	

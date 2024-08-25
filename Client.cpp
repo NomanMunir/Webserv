@@ -188,16 +188,16 @@ void Client::readFromSocket(ServerConfig &serverConfig)
     try
     {
         recvHeader();
-        std::cout << "headers: : " << this->request.getHeaders().getRawHeaders() << std::endl;
+        // std::cout << "headers: : " << this->request.getHeaders().getRawHeaders() << std::endl;
         this->request.getHeaders().parseHeader(this->response);
 
-        // if (this->request.isBodyExist(configFile, this->response, this->fd))
-        // {
-        //     if (this->request.isChunked())
-        //         recvChunk();
-        //     else
-        //         recvBody();
-        // }
+        if (this->request.isBodyExist(serverConfig, this->response, this->fd))
+        {
+            if (this->request.isChunked())
+                recvChunk();
+            else
+                recvBody();
+        }
 
         this->request.handleRequest(serverConfig, this->response);
         if (this->request.isComplete())

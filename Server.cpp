@@ -117,23 +117,38 @@ bool Server::isMyClient(int fd)
 
 void Server::handleWrite(int fd)
 {
+    std::cout << "Handling write for client " << fd << std::endl;
     if (send(fd, clients[fd].getWriteBuffer().c_str(), clients[fd].getWriteBuffer().size(), 0) < 0)
     {
         perror("Error sending data to client");
         return;
     }
+    if(clients[fd].getResponse().getIsConnectionClosed())
+    {
+        kqueue.removeFromQueue(fd, READ_EVENT);
+        close(fd);
+        clients.erase(fd);
+        return;
+    }
     clients[fd].getWriteBuffer().clear();
     kqueue.removeFromQueue(fd, WRITE_EVENT);
-    kqueue.addToQueue(fd, READ_EVENT);
+    clients[fd].reset();
 }
 
 void Server::handleRead(int fd)
 {
-    clients[fd].readFromSocket(this->serverConfig);
-    if (clients[fd].getRequest().isComplete())
+    try
     {
+        clients[fd].readFromSocket(this->serverConfig);
+        if (clients[fd].isWritePending())
+            kqueue.addToQueue(fd, WRITE_EVENT);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
         kqueue.removeFromQueue(fd, READ_EVENT);
-        kqueue.addToQueue(fd, WRITE_EVENT);
+        close(fd);
+        clients.erase(fd);
     }
 }
 
