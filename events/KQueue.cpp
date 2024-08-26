@@ -4,8 +4,6 @@
 #include "../response/Response.hpp"
 #include "../request/Request.hpp"
 
-#define SET_TIMEOUT 300000
-
 KQueue::KQueue()
 {
     this->kqueueFd = kqueue();
@@ -15,6 +13,19 @@ KQueue::KQueue()
         throw std::exception();
     }
 }
+
+KQueue &KQueue::operator=(const KQueue &k)
+{
+    if (this != &k)
+        this->kqueueFd = k.kqueueFd;
+    return *this;
+}
+
+KQueue::~KQueue() { close(this->kqueueFd); }
+
+KQueue::KQueue(const KQueue &k) { this->kqueueFd = k.kqueueFd; }
+
+
 
 void setNoneBlocking(int fd)
 {
@@ -45,18 +56,10 @@ void KQueue::addToQueue(int fd, EventType ev)
     else if (ev == TIMEOUT_EVENT)
         EV_SET(&evSet, fd, EVFILT_TIMER, EV_ADD, 0, SET_TIMEOUT, NULL);
     else
-    {
-        std::cerr << "Error: " << strerror(errno) << std::endl;
-        close(fd);
-        throw std::exception();
-    }
+        throw std::runtime_error("Error setting event");
 
     if (kevent(this->kqueueFd, &evSet, 1, NULL, 0, NULL) == -1)
-    {
-        std::cerr << "Error setting event: " << strerror(errno) << std::endl;
-        close(fd);
         throw std::runtime_error("Error setting event");
-    }
 }
 
 void KQueue::removeFromQueue(int fd, EventType ev)
@@ -79,11 +82,7 @@ void KQueue::removeFromQueue(int fd, EventType ev)
     }
 
     if (kevent(this->kqueueFd, &evSet, 1, NULL, 0, NULL) == -1)
-    {
-        std::cerr << "Error removing event: " << strerror(errno) << std::endl;
-        close(fd);
-        throw std::exception();
-    }
+        throw std::runtime_error("Error removing event");
 }
 
 int	KQueue::getNumOfEvents()
@@ -95,8 +94,6 @@ int	KQueue::getNumOfEvents()
 	int nev = kevent(this->kqueueFd, NULL, 0, this->events, MAX_EVENTS, &timeout);
 	return (nev);
 }
-
-
 
 
 

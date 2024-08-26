@@ -22,8 +22,8 @@
 #include "../request/Request.hpp"
 #include "HttpResponse.hpp"
 
-#define DIR_ERR 1
-#define FILE_ERR 2
+#define IS_DIR 1
+#define IS_FILE 2
 
 
 class Response
@@ -66,7 +66,7 @@ class Response
 		bool isClosingCode(std::string errorCode);
 
 
-		int checkType(std::string &path, RouteConfig &targetRoute);
+		int checkType(std::string path);
 		std::string listDirectory(const std::string& dirPath, const std::string& uriPath);
 		bool handleDirectory(std::string &fullPath, std::string &path, RouteConfig &targetRoute);
 		void generateResponseFromFile(std::string &path);

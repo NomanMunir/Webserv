@@ -40,11 +40,9 @@ bool Client::isKeepAlive()
 {
 	Headers &hdr = request.getHeaders();
 	std::string connection = hdr.getValue("Connection");
-	if (connection == "keep-alive")
-		return true;
-	else if (connection == "close")
+    if (connection == "close")
 		return false;
-	return false;
+	return true;
 }
 
 Client::Client(const Client &c) : fd(c.fd), readBuffer(c.readBuffer), writeBuffer(c.writeBuffer), writePending(c.writePending), request(c.request), response(c.response) {}
@@ -208,7 +206,7 @@ void Client::readFromSocket(ServerConfig &serverConfig)
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << "sds\n";
+        std::cerr << e.what() << std::endl;
         sendResponse();
-    }    
+    }
 }

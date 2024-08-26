@@ -30,6 +30,8 @@ std::string Response::listDirectory(const std::string& dirPath, const std::strin
 
             if (filename == "." || filename == "..")
                 continue;
+			if (checkType(dirPath + filename) == IS_DIR)
+				filename += "/";
             htmlContent += "<li><a href=\"" + newUriPath  + filename + "\">" + filename + "</a></li>";
         }
 
@@ -42,7 +44,7 @@ std::string Response::listDirectory(const std::string& dirPath, const std::strin
     return htmlContent;
 }
 
-int Response::checkType(std::string &path, RouteConfig &targetRoute)
+int Response::checkType(std::string path)
 {
 	struct stat info;
 	if (stat(path.c_str(), &info) != 0)
@@ -62,9 +64,9 @@ int Response::checkType(std::string &path, RouteConfig &targetRoute)
         }
 	}
 	if (S_ISREG(info.st_mode))
-		return (FILE_ERR);
+		return (IS_FILE);
 	else if (S_ISDIR(info.st_mode))
-		return (DIR_ERR);
+		return (IS_DIR);
 	return (0);
 }
 
@@ -215,10 +217,10 @@ void Response::handleGET(bool isGet, std::string &uri)
 		}
 
 		std::cout << "FullPath : " << fullPath << std::endl;
-		int type = checkType(fullPath, targetRoute);
-		if (type == 2)
+		int type = checkType(fullPath);
+		if (type == IS_FILE)
 			generateResponseFromFile(fullPath);
-		else if (type == 1)
+		else if (type == IS_DIR)
 		{
 			if (fullPath.back() != '/')
 				this->setErrorCode(301, "Response::handleGET: Redirecting to directory without trailing slash");
@@ -274,8 +276,8 @@ void Response::handleDELETE(bool isDelete, std::string &uri)
 		HttpResponse httpResponse;
 		std::string fullPath = generateFullPath(targetRoute.root, uri);
 
-		int type = checkType(fullPath, targetRoute);
-		if (type == DIR_ERR)
+		int type = checkType(fullPath);
+		if (type == IS_DIR)
 			setErrorCode(403, "Response::handleDELETE: Cannot delete directory");
 		if (remove(fullPath.c_str()) != 0)
 			return (setErrorCode(500, "Response::handleDELETE: Could not delete file"));

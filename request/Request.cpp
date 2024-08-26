@@ -113,10 +113,11 @@ bool Request::isBodyExist(ServerConfig &serverConfig, Response &structResponse, 
 	}
 	if (!length.empty())
 	{
+		std::string maxBodySize = serverConfig.clientBodySizeLimit == "" ? "1000000" : serverConfig.clientBodySizeLimit;
 		if (!validateNumber("Content-Length", length))
 			structResponse.setErrorCode(411,"Request::isBodyExist : Content-Length is not a number");
-		// if (std::atof(length.c_str()) > std::atof(parser.getDirectives()["client_body_size"].c_str()))
-		// 	structResponse.setErrorCode(413,"Request::isBodyExist : Content-Length is too big");
+		if (std::atof(length.c_str()) > std::atof(maxBodySize.c_str()))
+			structResponse.setErrorCode(413,"Request::isBodyExist : Content-Length is too big");
 	}
 	if (!encoding.empty())
 	{

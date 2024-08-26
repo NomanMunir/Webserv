@@ -4,6 +4,7 @@
 #if defined(__APPLE__) || defined(__FreeBSD__)
 
 #define KEVENT_TIMEOUT_SEC 5
+#define SET_TIMEOUT 300000 // 300 ms
 
 #include <iostream>
 #include <netinet/in.h>
@@ -37,39 +38,18 @@ class KQueue
 {
     private:
         int kqueueFd;
-
-        // void setNonBlocking(int fd);
-        // void setClient(int fd);
-        // void removeClient(int fd);
-        // void setTimeout(int fd);
-        // void setWriteEvent(int clientFd);
-        // void removeWriteEvent(int clientFd);
-        // void removeReadEvent(int clientFd);
-        // void removeTimeEvent(int clientFd);
-
-
-
-        // void setServer(int fd);
-        // bool addClient(int serverSocket);
-
-        // void handleReadEvent(int clientFd);
-        // void handleWriteEvent(int clientFd);
-        // void handleTimeoutEvent(int clientFd);
         
     public:
         KQueue();
+        ~KQueue();
+        KQueue(const KQueue &c);
+        KQueue &operator=(const KQueue &c);
+
         struct kevent events[MAX_EVENTS];
 
         void addToQueue(int fd, EventType type);
         void removeFromQueue(int fd, EventType type);
         int	getNumOfEvents();
-
-
-
-
-        // ~KQueue();
-        // KQueue(const KQueue &c);
-        // KQueue &operator=(const KQueue &c);
 
 };
 

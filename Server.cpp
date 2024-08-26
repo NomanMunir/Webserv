@@ -8,7 +8,6 @@
 #include "events/EPoll.hpp"
 #endif // __linux__
 
-#define PORT 80
 #define MAX_CONNECTIONS 10
 
 
@@ -76,7 +75,7 @@ void Server::initSocket()
         throw std::runtime_error("Error opening socket");
 }
 
-void Server::run()
+void Server::init()
 {
     try
     {
@@ -94,7 +93,7 @@ void Server::run()
     
 }
 
-void Server::acceptClient()
+bool Server::acceptClient()
 {
     struct sockaddr_in clientAddr;
     socklen_t clientLen = sizeof(clientAddr);
@@ -102,11 +101,13 @@ void Server::acceptClient()
     if (clientSocket < 0)
     {
         std::cerr << "Error accepting client connection" << std::endl;
-        return;
+        return false;
     }
     std::cout << "New connection, socket fd is " << clientSocket << ", ip is : " << inet_ntoa(clientAddr.sin_addr) << ", port : " << ntohs(clientAddr.sin_port) << std::endl;
     clients[clientSocket] = Client(clientSocket);
     kqueue.addToQueue(clientSocket, READ_EVENT);
+    kqueue.addToQueue(clientSocket, TIMEOUT_EVENT);
+    return true;
 }
 
 
@@ -118,21 +119,39 @@ bool Server::isMyClient(int fd)
 void Server::handleWrite(int fd)
 {
     std::cout << "Handling write for client " << fd << std::endl;
-    if (send(fd, clients[fd].getWriteBuffer().c_str(), clients[fd].getWriteBuffer().size(), 0) < 0)
+    try
     {
-        perror("Error sending data to client");
-        return;
+        if (!clients[fd].isWritePending()) return;
+
+        ssize_t bytesSent = send(fd, clients[fd].getWriteBuffer().c_str(), clients[fd].getWriteBuffer().size(), 0);
+        if (bytesSent < 0)
+        {
+            perror("Error sending data to client");
+            kqueue.removeFromQueue(fd, WRITE_EVENT);
+            return;
+        }
+        
+        kqueue.removeFromQueue(fd, WRITE_EVENT);
+        clients[fd].getWriteBuffer().clear();
+        clients[fd].reset();
+        clients[fd].setWritePending(false);
+        if (!clients[fd].isKeepAlive() || clients[fd].getResponse().getIsConnectionClosed())
+        {
+            std::cout << "Connection closed by server bec KeepAlive or IsConnectionClosed on socket fd " << fd << std::endl;
+            kqueue.removeFromQueue(fd, TIMEOUT_EVENT);
+            close(fd);
+            clients.erase(fd);
+            return;
+        }
+        kqueue.addToQueue(fd, TIMEOUT_EVENT);
     }
-    if(clients[fd].getResponse().getIsConnectionClosed())
+    catch(const std::exception& e)
     {
-        kqueue.removeFromQueue(fd, READ_EVENT);
+        std::cerr << e.what() << '\n';
+        kqueue.removeFromQueue(fd, TIMEOUT_EVENT);
         close(fd);
         clients.erase(fd);
-        return;
     }
-    clients[fd].getWriteBuffer().clear();
-    kqueue.removeFromQueue(fd, WRITE_EVENT);
-    clients[fd].reset();
 }
 
 void Server::handleRead(int fd)
@@ -140,6 +159,9 @@ void Server::handleRead(int fd)
     try
     {
         clients[fd].readFromSocket(this->serverConfig);
+        if (clients[fd].getResponse().getIsConnectionClosed() || !clients[fd].isKeepAlive())
+            kqueue.removeFromQueue(fd, READ_EVENT);
+
         if (clients[fd].isWritePending())
             kqueue.addToQueue(fd, WRITE_EVENT);
     }
@@ -147,10 +169,21 @@ void Server::handleRead(int fd)
     {
         std::cerr << e.what() << '\n';
         kqueue.removeFromQueue(fd, READ_EVENT);
+        kqueue.removeFromQueue(fd, TIMEOUT_EVENT);
         close(fd);
         clients.erase(fd);
     }
 }
+
+void Server::handleTimeout(int fd)
+{
+    std::cout << "Handling timeout for client " << fd << std::endl;
+    kqueue.removeFromQueue(fd, READ_EVENT);
+    kqueue.removeFromQueue(fd, TIMEOUT_EVENT);
+    close(fd);
+    clients.erase(fd);
+}
+
 
 int Server::getPort() const { return this->port; }
 

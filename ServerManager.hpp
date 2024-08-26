@@ -13,13 +13,14 @@ class ServerManager
 		~ServerManager();
 		// ServerManager(const ServerManager &other);
 		// ServerManager &operator=(const ServerManager &other);
-	
+		void run();
+
 	private:
 		std::vector<Server *> servers;
 		std::vector<int> serverSockets;
 		KQueue kqueue;
 
-
+		void initServers(Parser &parser);
 		
 };
 

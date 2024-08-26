@@ -49,17 +49,18 @@ public:
     Server(const Server &other);
     Server &operator=(const Server &other);
 
-    void run();
+    void init();
 
     int getPort() const;
     int getServerSocket() const;
     struct sockaddr_in getAddr() const;
     ServerConfig getServerConfig() const;
-    void acceptClient();
+    bool acceptClient();
     bool isMyClient(int fd);
 
     void handleRead(int fd);
     void handleWrite(int fd);
+    void handleTimeout(int fd);
 
 
     int serverError;

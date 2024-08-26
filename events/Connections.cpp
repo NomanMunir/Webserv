@@ -131,6 +131,8 @@ void Connections::loop()
             // throw std::exception();
         }
 
+
+
         for (int i = 0; i < nev; i++) 
         {
             if (events[i].filter == EVFILT_READ)
@@ -230,7 +232,7 @@ void Connections::handleWriteEvent(int clientFd)
 
     // Remove sent data from the buffer
     client.getWriteBuffer().erase(0, bytesWritten);
-    if (client.getWriteBuffer().empty()) 
+    if (client.getWriteBuffer().empty())
     {
         client.setWritePending(false);
         // Remove write event if no more data to send
