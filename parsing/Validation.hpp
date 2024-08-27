@@ -33,6 +33,7 @@ class Validation
 		void validateDirectives(std::map<std::string, std::string> directives);
 		void validateRouteMap(std::map<std::string, RouteConfig> &routeMap);
 		void validateReturn(std::string &redirect);
+		void validateCgiExtensions(std::vector<std::string> cgiExtensions);
 
 };
 

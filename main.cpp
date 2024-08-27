@@ -22,7 +22,7 @@ int main(int ac, const char **av, char **env)
             av[1] = "config1.conf";
         Parser parser(av[1]);
         Validation validation(parser);
-        parser.env = env;
+        parser.setEnv(env);
         ServerManager serverManager(parser);
         serverManager.run();
     }

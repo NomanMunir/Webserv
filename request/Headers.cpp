@@ -172,6 +172,10 @@ void Headers::parseFirstLine(Response &structResponse, std::istringstream &iss)
 		structResponse.setErrorCode(505, "Headers::parseFirstLine: HTTP Version Not Supported");
     headers["method"] = tokens[0];
     headers["uri"] = split(tokens[1], '?')[0];
+	if (tokens[1].find("?") != std::string::npos)
+		headers["query_string"] = split(tokens[1], '?')[1];
+	else
+		headers["query_string"] = "";
     headers["version"] = tokens[2];
 }
 

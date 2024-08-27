@@ -36,6 +36,8 @@ class Request
 		bool isComplete() const;
 		Headers& getHeaders();
 		Body& getBody();
+		bool getIsCGI() const;
+		std::map<std::string, std::string>& getEnvMap();
 
 		void setComplete(bool complete);
 		void reset();
@@ -47,12 +49,16 @@ class Request
 	
 		void findServer(Response &structResponse, Parser &parser);
 		bool chooseRoute(std::string path, ServerConfig server, RouteConfig &targetRoute);
+		bool checkIsCGI(std::string uri, std::string method, ServerConfig &targetServer);
+		void createEnvMap(ServerConfig &serverConfig);
 
 		std::string request;
 		std::string rawData;
 		Headers headers;
 		Body body;
 		bool complete;
+		bool isCGI;
+		std::map<std::string, std::string> envMap;
 };
 
 #endif // REQUEST_HPP

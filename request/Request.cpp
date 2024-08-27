@@ -128,6 +128,34 @@ bool Request::isBodyExist(ServerConfig &serverConfig, Response &structResponse, 
 	return true;
 }
 
+bool Request::checkIsCGI(std::string uri, std::string method, ServerConfig &targetServer)
+{
+	std::string extention = uri.substr(uri.find_last_of("."));
+	std::vector<std::string> cgiExtensions = targetServer.cgiExtensions;
+
+	return (std::find(cgiExtensions.begin(), cgiExtensions.end(), extention) != cgiExtensions.end() && (method == "GET" || method == "POST"));
+}
+
+void Request::createEnvMap(ServerConfig &serverConfig)
+{
+	std::string line;
+	bool flag = false;
+	if (serverConfig.env.empty())
+		return;
+	std::stringstream ss(serverConfig.env);
+	while (getline(ss, line, '\n'))
+	{
+		std::stringstream env(line);
+		std::string key, value;
+		getline(env, key, '=');
+		getline(env, value);
+		std::map<std::string, std::string>::iterator it;
+		for (it = this->envMap.begin(); it != this->envMap.end(); ++it)
+			key = toUpperCase(key);
+		this->envMap[key] = value;
+	}
+}
+
 void  Request::handleRequest(ServerConfig &serverConfig, Response &structResponse)
 {
 	// this->findServer(structResponse, parser);
@@ -143,7 +171,11 @@ void  Request::handleRequest(ServerConfig &serverConfig, Response &structRespons
 			structResponse.setErrorCode(404, "Request::handleRequest : GET Route not found");
 	}
 	structResponse.setTargetRoute(route);
-
+	if (checkIsCGI(uri, headers.getValue("method"), serverConfig))
+	{
+		this->isCGI = true;
+		createEnvMap(serverConfig);
+	}
 	this->complete = true;
 }
 
@@ -162,6 +194,17 @@ Body& Request::getBody()
 {
 	return body;
 }
+
+bool Request::getIsCGI() const
+{
+	return isCGI;
+}
+
+std::map<std::string, std::string>& Request::getEnvMap()
+{
+	return envMap;
+}
+
 Request::~Request() { }
 
 void Request::setComplete(bool complete)

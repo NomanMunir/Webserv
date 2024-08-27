@@ -35,7 +35,6 @@ struct RouteConfig
 	std::string root;
 	bool directoryListing;
 	std::vector<std::string> defaultFile;
-	std::string cgiPath;
 	std::string uploadDir;
 };
 
@@ -44,8 +43,10 @@ struct ServerConfig
 	std::vector<std::vector<std::string> > listen;
 	std::vector<std::string> serverName;
 	std::map<std::string, std::string> errorPages;
+	std::vector<std::string> cgiExtensions;
 	std::string clientBodySizeLimit;
 	std::map<std::string, RouteConfig> routeMap;
+	std::string env;
 };
 
 class Parser
@@ -56,7 +57,7 @@ class Parser
 		std::vector<ServerConfig> getServers();
 		std::map<std::string, std::string> getDirectives();
 		std::vector<std::string> getPorts();
-		char **env;
+		void setEnv(char **env);
 
 	private:
 		void setServerBlock(std::string &key, std::string &value);

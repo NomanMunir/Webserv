@@ -10,14 +10,12 @@
 #include "../response/Response.hpp"
 
 
-Cgi::Cgi(Request &request, char** env)
-    : _request(request), env(env)
-    {
-    // Initialize environment variables
-    // _envp = createEnv();
-}
+Cgi::Cgi(Request &request, std::string fullPath, Response &response) 
+    : _request(request),
+    _fullPath(fullPath),
+    _response(response) { }
 
-Cgi::~Cgi() 
+Cgi::~Cgi()
 {
     // Free allocated environment variables
     // freeEnv(_envp);
@@ -34,33 +32,34 @@ Cgi::~Cgi()
 
 }
 
-void Cgi::execute() 
+bool Cgi::checkFilePermission(const char* path) 
 {
-    // i need to get the root of the script path
-    std::string scriptPath = "/Users/absalem/Desktop/num/cgi-bin/test.py"; // todo  Validate the scriptPath 
-
-    // Check file permissions
-    if (!checkFilePermission("/Users/absalem/Desktop/num/cgi-bin/test.py"))
+    struct stat fileStat;
+    if (stat(path, &fileStat) < 0) 
     {
-        std::cerr << "You don't have permission to execute the file" << std::endl;
-        return;
+        std::cerr << "Error retrieving file stats: " << strerror(errno) << std::endl;
+        return false;
     }
+    return (fileStat.st_mode & S_IXUSR) || // Owner has execute permission
+           (fileStat.st_mode & S_IXGRP) || // Group has execute permission
+           (fileStat.st_mode & S_IXOTH);   // Others have execute permission
+}
+
+void Cgi::execute()
+{
+    // Check file permissions
+    if (!checkFilePermission(this->_fullPath.c_str()))
+        this->_response.setErrorCode(500, "Internal Server Error: CGI script is not executable");
 
     // int fd_in[2], fd_out[2];  // read fd[0]  write fd[1]
     if (pipe(fd_in) < 0 || pipe(fd_out) < 0)
-    {
-        std::cerr << "Error creating pipe" << std::endl;
-        return;
-    }
-    _envp = createEnv();
-    if(!_envp)
-        std::cerr << "Error env empty" << std::endl;
+        this->_response.setErrorCode(500, "Internal Server Error: Failed to create pipe");
+    createEnv();
     pid = fork();
-    if (pid < 0) 
-    {
-        std::cerr << "Error with fork" << std::endl;
-        return;
-    }
+
+    // need to clean env and close fds if any error happens.
+    if (pid < 0)
+        this->_response.setErrorCode(500, "Internal Server Error: Failed to fork process");
     // check for the content length to know the data and handel error
     if (pid == 0)
     {
@@ -71,11 +70,9 @@ void Cgi::execute()
         close(fd_out[0]); 
         if( method == "POST")
         {
-        dup2(fd_in[0], STDIN_FILENO);
-        close(fd_in[0]);
+            dup2(fd_in[0], STDIN_FILENO);
+            close(fd_in[0]);
         }
-
-        
         dup2(fd_out[1], STDOUT_FILENO);
         close(fd_out[1]);
 
@@ -90,17 +87,14 @@ void Cgi::execute()
         else
             std::cerr << "data not resived" << std::endl;
         
-        char* argv[] = { const_cast<char*>(scriptPath.c_str()), nullptr };
+        char* argv[] = { const_cast<char*>(this->_fullPath.c_str()), nullptr };
 
-        if (execve(scriptPath.c_str(), argv, _envp) < 0)
-        // {
-        //     // freeEnv(env);
-        //     exit(1);
-        // }
-        freeEnv(_envp);
-        freeEnv(argv);
-        std::cerr << "Failed to execute " << scriptPath << std::endl;
-        exit(EXIT_FAILURE);
+        if (execve(this->_fullPath.c_str(), argv, _envp) < 0)
+        {
+            std::cerr << "Failed to execute " << this->_fullPath << std::endl;
+            freeEnv(_envp);
+            exit(1);
+        }
     } 
     else
     {
@@ -140,19 +134,6 @@ void Cgi::execute()
     }
 }
 
-bool Cgi::checkFilePermission(const char* path) 
-{
-    struct stat fileStat;
-    if (stat(path, &fileStat) < 0) 
-    {
-        std::cerr << "Error retrieving file stats: " << strerror(errno) << std::endl;
-        return false;
-    }
-    return (fileStat.st_mode & S_IXUSR) || // Owner has execute permission
-           (fileStat.st_mode & S_IXGRP) || // Group has execute permission
-           (fileStat.st_mode & S_IXOTH);   // Others have execute permission
-}
-
 void Cgi::freeEnv(char** envp) 
 {
     for (size_t i = 0; envp[i] != nullptr; ++i) 
@@ -160,17 +141,29 @@ void Cgi::freeEnv(char** envp)
     delete[] envp;
 }
 
-char** Cgi::createEnv() 
+void Cgi::vecToChar(std::vector<std::string> &envMaker)
+{
+    _envp = new char*[envMaker.size() + 1];
+    if (!_envp)
+        this->_response.setErrorCode(500, "Internal Server Error: Failed to allocate memory for environment variables");
+    for (size_t i = 0; i < envMaker.size(); ++i) 
+    {
+        _envp[i] = new char[envMaker[i].length() + 1];
+        if (!_envp[i])
+            this->_response.setErrorCode(500, "Internal Server Error: Failed to allocate memory for environment variables");
+        strcpy(_envp[i], envMaker[i].c_str());
+    }
+    _envp[envMaker.size()] = NULL;
+}
+
+void Cgi::createEnv()
 {
     std::vector<std::string> envMaker;
     std::vector<std::string>::iterator it;
 
     std::string method =  _request.getHeaders().getValue("method");
     std::string contentLength = _request.getHeaders().getValue("Content-Length");
-    std::string queryString = _request.getHeaders().getValue("query");
-    // When the server executes a CGI script, 
-    // it should set the PATH_INFO environment variable to the full path of the requested file.
-    std::string pathInfo = _request.getHeaders().getValue("uri"); // i need to add the root
+    std::string queryString = _request.getHeaders().getValue("query_string");
 
     // SERVER_PORT
     // SCRIPT_NAME
@@ -178,51 +171,32 @@ char** Cgi::createEnv()
     // REMOTE_HOST
     // PATH_INFO
 
-    // Include More Environment Variables: Add more environment variables like SERVER_PROTOCOL,
-    //  REMOTE_ADDR, REMOTE_PORT, and SERVER_PORT as they provide 
-
+    envMaker.push_back("REQUEST_URI=" + _request.getHeaders().getValue("uri"));
+    envMaker.push_back("PATH_INFO=" + _fullPath);
     envMaker.push_back("REQUEST_METHOD=" + _request.getHeaders().getValue("method"));
-    // If the CGI script does not specify a Content-Length in its response, 
-    // the server should treat EOF as the end of the returned data.
-    if(!contentLength.empty() && method == "POST") // check if the body is empty
-        envMaker.push_back("CONTENT_LENGTH=" + _request.getHeaders().getValue("Content-Length"));
-    // envMaker.push_back("HTTP_COOKIE=" +  _request.getHeaders().getValue("Cookie"));
     if(!queryString.empty())
-        envMaker.push_back("QUERY_STRING=" + _request.getHeaders().getValue("query"));
-    envMaker.push_back("SCRIPT_NAME=" +  _request.getHeaders().getValue("uri"));
+        envMaker.push_back("QUERY_STRING=" + queryString);
+    if(!contentLength.empty() && method == "POST") // check if the body is empty
+    {
+        if (_request.getHeaders().getValue("Content-Length").empty())
+            envMaker.push_back("CONTENT_LENGTH=" + std::to_string(_request.getBody().getContent().length()));
+        else
+            envMaker.push_back("CONTENT_LENGTH=" + _request.getHeaders().getValue("Content-Length"));
+    }
+    envMaker.push_back("HTTP_COOKIE=" +  _request.getHeaders().getValue("Cookie"));
+    envMaker.push_back("SCRIPT_NAME=" +  _fullPath.substr(_fullPath.find_last_of("/") + 1));
     envMaker.push_back("CONTENT_TYPE=" +  _request.getHeaders().getValue("Content-Type"));
     envMaker.push_back("HTTP_USER_AGENT=" + _request.getHeaders().getValue("User-Agent"));
     envMaker.push_back("GATEWAY_INTERFACE=CGI/1.1");
-    envMaker.push_back("PATH_INFO=" + pathInfo);
     envMaker.push_back("SERVER_NAME=Nginx 3.0");
     envMaker.push_back("SERVER_PROTOCOL=" + _request.getHeaders().getValue("version"));
-    // envMaker.push_back("SERVER_PORT=" + _request.getHeaders().getValue("port"));
-    // envMaker.push_back("PATH_INFO=" + _request.getHeaders().getValue("path")); /// need to check later;
-    envMaker.push_back("SCRIPT_FILENAME=/Users/absalem/Desktop/num" );
-    // envMaker.push_back("HTTP_HOST=" + host);
+    envMaker.push_back("SERVER_PORT=" + _request.getHeaders().getValue("port"));
+    envMaker.push_back("HTTP_HOST=" + _request.getHeaders().getValue("host"));
 
     // Print the environment variables for debugging
-    // for (const std::string& env : envMaker) {
-    //     std::cout << env << std::endl;
-    // // }
-
-    // Convert std::vector<std::string> to char** 
-    char** envp = new char*[envMaker.size() + 1];
-    size_t i = 0;
-
-    for (it = envMaker.begin(); it != envMaker.end(); ++it)
-    {
-        std::string envEntry = *it;
-        // Allocate memory for the C-string and copy the content
-        envp[i] = NULL;
-        envp[i] = new char[envEntry.size() + 1];
-        // bzero(envp[i], it->size() + 1);
-        std::strcpy(envp[i], envEntry.c_str());  
-        ++i;
-    }
-
-    envp[i] = NULL; // Null-terminate the array
-    return envp; 
+    // for (it = envMaker.begin(); it != envMaker.end(); ++it)
+    //     std::cout << *it << std::endl;
+    vecToChar(envMaker);
 }
 
 
@@ -230,7 +204,7 @@ char** Cgi::createEnv()
 //     std::string method = "GET";
 //     std::string query = "name=John&age=30";
 //     std::string contentLength = "0";
-//     std::string scriptPath = "e.cgi";
+//     std::string this->_fullPath = "e.cgi";
 //     std::map<std::string, std::string > allConf;
 //     allConf["REQUEST_METHOD"] = "GET";
 //     allConf["QUERY_STRING"] = "name=John&age=30";

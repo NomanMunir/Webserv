@@ -446,7 +446,29 @@ void Response::setErrorCode(int errorStatus, std::string errorMsg)
 	throw std::runtime_error(errorMsg);
 }
 
-void Response::handleResponse(Request &request, char **env)
+
+// void addToEnv(Request &request, std::string method)
+// {
+// 	std::string uri = request.getHeaders().getValue("uri");
+// 	std::string fullPath = generateFullPath(targetRoute.root, uri);
+// 	std::map<std::string, std::string>& envMap = request.getEnvMap();
+// 	std::string queryString = request.getHeaders().getValue("query_string");
+// 	std::string contentType = request.getHeaders().getValue("Content-Type");
+// 	std::string scriptName = fullPath.substr(fullPath.find_last_of("/") + 1);
+// 	envMap["REQUEST_METHOD"] = method;
+// 	envMap["REQUEST_URI"] = uri;
+// 	envMap["SCRIPT_NAME"] = scriptName;
+// 	envMap["PATH_INFO"] = fullPath;
+// 	envMap["QUERY_STRING"] = queryString;
+// 	envMap["CONTENT_TYPE"] = contentType;
+
+// }
+
+void Response::handleCGIGET(bool isGet, Request &request)
+{
+}
+
+void Response::handleResponse(Request &request)
 {
 	std::string method = request.getHeaders().getValue("method");
 	std::string uri = request.getHeaders().getValue("uri");
@@ -459,17 +481,26 @@ void Response::handleResponse(Request &request, char **env)
 		std::cerr << "Response::handleResponse: Method Not Allowed" << std::endl;
 		this->errorCode = 403;
 	}
-
+// check if the cgi file have permission
 	if (this->errorCode != 0)
 		return (sendError(std::to_string(this->errorCode)));
 	std::string fullPath = generateFullPath(this->targetRoute.root, uri);
 	// std::cout << "full path : "<< fullPath << std::endl;
 	// Cgi cgi(request, env);
     // cgi.execute();
+	if (request.getIsCGI())
+	{
+		Cgi cgi(request, fullPath, *this);
+		// cgi.execute();
+		std::cout << "output: " << cgi.output << std::endl;
+		// handleCGIGET(method == "GET", request);
+		// // handleCGIPOST(method == "POST", body);
 
-	handleGET(method == "GET", uri);
-
-	handlePOST(method == "POST", uri, body);
-
-	handleDELETE(method == "DELETE", uri);
+	}
+	else
+	{
+		handleGET(method == "GET", uri);
+		handlePOST(method == "POST", uri, body);
+		handleDELETE(method == "DELETE", uri);
+	}
 }

@@ -67,3 +67,5 @@
 [ ] go back to chunked encoding when cgi is done (6.1 Transfer-Encoding).
 [ ] Fix validateQuery function.
 [ ] are we closing the fd after removing event queue?
+[ ] need to check redirect if they are working or not.
+[ ] work on head and put requests.

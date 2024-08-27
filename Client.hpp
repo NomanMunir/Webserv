@@ -15,6 +15,7 @@ private:
     bool writePending;
     bool readPending;
     bool keepAlive;
+    char **env;
 
     Request request;
     Response response;
@@ -23,15 +24,14 @@ private:
     void recvHeader();
     void recvBody(); 
     void sendResponse();
+
 public:
 	Client();
     Client(int fd);
 	Client(const Client &c);
 	Client& operator=(const Client &c);
     ~Client();
-
     int getFd() const;
-    char **env;
     std::string& getReadBuffer();
     std::string& getWriteBuffer();
     Request& getRequest();

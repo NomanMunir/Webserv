@@ -28,8 +28,6 @@ void Parser::setRouteBlock(std::string &key, std::string &value)
             routeConfig.directoryListing = value == "on" ? true : false;
         else if (key == "default_file")
             routeConfig.defaultFile = split(value, ' ');
-        else if (key == "cgi_path" || key == "cgi")
-            routeConfig.cgiPath = value;
         else if (key == "upload_dir")
             routeConfig.uploadDir = value;
     }
@@ -44,7 +42,7 @@ void Parser::checkLocationBlock()
     tokens.erase(tokens.begin(), tokens.begin() + 2);
     const std::string keyArray[] = {
         "methods", "return", "root", "directory_listing",
-        "default_file", "cgi_path", "cgi", "upload_dir"
+        "default_file", "upload_dir"
     };
     std::vector<std::string> keys;
     initializeVector(keys, keyArray, sizeof(keyArray) / sizeof(keyArray[0]));
@@ -112,6 +110,10 @@ void Parser::setServerBlock(std::string &key, std::string &value)
         for (size_t i = 0; i < errorPages.size() - 1; i++)
             serverConfig.errorPages[errorPages[i]] = errorPages.back();
     }
+    else if (key == "cgi_extensions")
+        serverConfig.cgiExtensions = split(value, ' ');
+    else
+        throw std::runtime_error("Error: invalid configuration file " + key);
 }
 
 void Parser::checkServerBlock()
@@ -122,7 +124,7 @@ void Parser::checkServerBlock()
     std::string value = tokens[1];
     tokens.erase(tokens.begin(), tokens.begin() + 2);
     const std::string keyArray[] = {"server_names", "listen",
-                          "error_pages", "client_body_size", "location"};
+                          "error_pages", "client_body_size", "location", "cgi_extensions"};
     std::vector<std::string> keys;
     initializeVector(keys, keyArray, sizeof(keyArray) / sizeof(keyArray[0]));
     if (!myFind(keys, key))
@@ -243,8 +245,6 @@ void Parser::setDefaultRoute()
         routeConfig.redirect = "";
     if (routeConfig.root.empty())
         routeConfig.root = "/Users/nmunir/Desktop/Webserv";
-    if (routeConfig.cgiPath.empty())
-        routeConfig.cgiPath = "/Users/nmunir/Desktop/Webserv";
     if (routeConfig.uploadDir.empty())
         routeConfig.uploadDir = "/Users/nmunir/Desktop/Webserv";
 }
@@ -255,6 +255,8 @@ void Parser::setDefault()
     {
         if (servers[i].serverName.empty())
             servers[i].serverName.push_back("localhost");
+        if (servers[i].cgiExtensions.empty())
+            servers[i].cgiExtensions.push_back("");
         if (servers[i].listen.empty())
         {
             servers[i].listen.push_back(std::vector<std::string>());
@@ -276,8 +278,7 @@ void Parser::setDefault()
             servers[i].routeMap[""].root = "/Users/nmunir/Desktop/Webserv";
             servers[i].routeMap[""].directoryListing = false;
             servers[i].routeMap[""].defaultFile.push_back("index.html");
-            servers[i].routeMap[""].cgiPath = "/Users/nmunir/Desktop/Webserv";
-            servers[i].routeMap[""].uploadDir = "/Users/nmunir/Desktop/Webserv";
+            servers[i].routeMap[""].uploadDir = "/Users/nmunir/Desktop/Webserv/uploads";
             servers[i].routeMap[""].redirect = "";
         }
     }
@@ -290,7 +291,6 @@ void Parser::resetRoute()
     routeConfig.root = "";
     routeConfig.directoryListing = false;
     routeConfig.defaultFile.clear();
-    routeConfig.cgiPath = "";
     routeConfig.uploadDir = "";
     serverConfig.routeMap[""] = routeConfig;
 }
@@ -302,6 +302,7 @@ void Parser::reset()
     serverConfig.errorPages.clear();
     serverConfig.clientBodySizeLimit = "";
     serverConfig.routeMap.clear();
+    serverConfig.cgiExtensions.clear();
     resetRoute();
 }
 
@@ -345,4 +346,16 @@ std::vector<std::string> Parser::getPorts()
             ports.push_back(servers[i].listen[j][1]);
     }
     return ports;
+}
+
+void Parser::setEnv(char **env)
+{
+    std::string envString;
+    for (int i = 0; env[i]; i++)
+    {
+        envString += env[i];
+        envString += '\n';
+    }
+    for (size_t i = 0; i < this->servers.size(); i++)
+        this->servers[i].env = envString;
 }

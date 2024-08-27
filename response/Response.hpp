@@ -42,11 +42,12 @@ class Response
 		ServerConfig getTargetServer();
 		RouteConfig getTargetRoute();
 		void sendError(std::string errorCode);
-		void handleResponse(Request &request, char **env);
+		void handleResponse(Request &request);
 
 		int getErrorCode() const;
 		void setErrorCode(int errorStatus, std::string errorMsg);
 		bool getIsConnectionClosed() const;
+		void handleCGIGET(bool isGet, Request &request);
 
 	private:
 		std::map<int, std::string> statusCodes;

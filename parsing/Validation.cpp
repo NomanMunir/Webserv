@@ -14,7 +14,7 @@
 
 void Validation::validateMethods(std::vector<std::string> methods)
 {
-    std::string validMethodsArr[] = {"GET", "HEAD", "POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE", "PATCH"};
+    std::string validMethodsArr[] = {"GET", "HEAD", "POST", "PUT", "DELETE"};
 	std::vector<std::string> validMethods;
 	initializeVector(validMethods, validMethodsArr, sizeof(validMethodsArr) / sizeof(validMethodsArr[0]));
     for (size_t i = 0; i < methods.size(); i++)
@@ -26,12 +26,7 @@ void Validation::validateMethods(std::vector<std::string> methods)
 
 void Validation::validateReturn(std::string &redirect)
 {
-	// std::cout << "redirect[return]: " << redirect << std::endl;
 	std::vector <std::string> tokens = split(redirect, ' ');
-
-	// std::cout << "tokens: " << tokens.size() << std::endl;
-	// std::cout << "tokens[0]: " << tokens[0] << std::endl;
-	// std::cout << "tokens[1]: " << tokens[1] << std::endl;
 	if (tokens.size() == 0 || !validateNumber("error_pages", tokens[0]))
 		throw std::runtime_error("Error: invalid configuration file " + redirect);
 }
@@ -52,7 +47,6 @@ void Validation::validateRouteMap(std::map<std::string, RouteConfig> &routeMap)
 		}
 		isDirectory(it->second.root);
 		isDirectory(it->second.root + "/" + it->first);
-		isDirectory(it->second.cgiPath);
 		isDirectory(it->second.uploadDir);
 		// for (size_t i = 0; i < it->second.defaultFile.size(); i++)
 			// isFile(it->second.root + "/" + it->second.defaultFile[i]);
@@ -121,6 +115,18 @@ void Validation::validateDirectives(std::map<std::string, std::string> directive
 		throw std::runtime_error("keep_alive_timeout directive is invalid");
 }
 
+void Validation::validateCgiExtensions(std::vector<std::string> cgiExtensions)
+{
+    std::string validCgiExtensions[] = {".php", ".py", ".sh"};
+	if (cgiExtensions.size() == 1 && cgiExtensions[0] == "")
+		return;
+	for (size_t i = 0; i < cgiExtensions.size(); i++)
+	{
+		if (cgiExtensions[i].empty() || std::find(validCgiExtensions, validCgiExtensions + 3, cgiExtensions[i]) == validCgiExtensions + 3)
+			throw std::runtime_error("Error: invalid configuration file " + cgiExtensions[i]);
+	}
+}
+
 Validation::Validation(Parser parser)
 {
 	validateDirectives(parser.getDirectives());
@@ -137,6 +143,7 @@ Validation::Validation(Parser parser)
 		}
 		if (!validateNumber("Content-Length", servers[i].clientBodySizeLimit))
 			throw std::runtime_error("Error: invalid client body size limit");
+		validateCgiExtensions(servers[i].cgiExtensions);
 		validateRouteMap(servers[i].routeMap);
 	}
 	// printServers(servers);

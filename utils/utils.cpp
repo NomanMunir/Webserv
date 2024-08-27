@@ -21,6 +21,13 @@ std::string getCurrentTimestamp()
     return oss.str();
 }
 
+std::string toUpperCase(const std::string &str) 
+{
+    std::string upperStr = str;
+    std::transform(upperStr.begin(), upperStr.end(), upperStr.begin(), ::toupper);
+    return upperStr;
+}
+
 std::string trim(const std::string &s)
 {
     size_t start = s.find_first_not_of(" \t\r\n");
@@ -229,7 +236,12 @@ void printServers(std::vector<ServerConfig> servers)
             std::cout << std::endl;
         }
         for (size_t j = 0; j < servers[i].serverName.size(); j++)
+        {
             std::cout << "Server Name: " << servers[i].serverName[j] << std::endl;
+        }
+        std::cout << "CGI Extensions: " << std::endl;
+        for (size_t k = 0; k < servers[i].cgiExtensions.size(); k++)
+            std::cout << servers[i].cgiExtensions[k] << " ";
         std::cout << "Client Body Size Limit: " << servers[i].clientBodySizeLimit << std::endl;
         std::cout << "Error Pages: " << std::endl;
         for (std::map<std::string, std::string>::iterator it = servers[i].errorPages.begin(); it != servers[i].errorPages.end(); ++it)
@@ -247,7 +259,6 @@ void printServers(std::vector<ServerConfig> servers)
             std::cout << "Directory Listing: " << it->second.directoryListing << std::endl;
             for (size_t j = 0; j < it->second.defaultFile.size(); j++)
                 std::cout << "Default File: " << it->second.defaultFile[j] << std::endl;
-            std::cout << "CGI Path: " << it->second.cgiPath << std::endl;
             std::cout << "Upload Dir: " << it->second.uploadDir << std::endl;
             std::cout << std::endl;
         }

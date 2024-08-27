@@ -41,5 +41,6 @@ std::string getStatusMsg(std::string errorCode);
 bool responseClient(int fd, std::string response);
 std::string getMimeType(std::string extention);
 std::string getCurrentTimestamp();
+std::string toUpperCase(const std::string &str);
 
 #endif // UTILS_HPP	
