@@ -175,7 +175,7 @@ void Server::handleRead(int fd)
     }
 }
 
-void Server::handleTimeout(int fd)
+void Server::handleDisconnection(int fd)
 {
     std::cout << "Handling timeout for client " << fd << std::endl;
     kqueue.removeFromQueue(fd, READ_EVENT);
@@ -194,51 +194,3 @@ int Server::getServerSocket() const { return this->serverSocket; }
 struct sockaddr_in Server::getAddr() const { return this->addr; }
 
 ServerConfig Server::getServerConfig() const { return this->serverConfig; }
-
-// void Server::initServerSockets(Parser &configFile) 
-// {
-//     for (std::vector<std::string>::iterator it = ports.begin(); it != ports.end(); ++it) {
-//         int port = std::atoi((*it).c_str());
-//         int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-//         if (serverSocket < 0) {
-//             perror("Error opening socket");
-//             throw std::runtime_error("Error opening socket");
-//         }
-//         setNonBlocking(serverSocket);
-//         int e = 1;
-//         if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, (char *)&e, sizeof(e)) < 0) {
-//             perror("Error setsockopt option");
-//             close(serverSocket);
-//             throw std::runtime_error("Error setsockopt option");
-//         }
-
-//         struct sockaddr_in serverAddr;
-//         std::memset((char *)&serverAddr, 0, sizeof(serverAddr));
-//         serverAddr.sin_family = AF_INET;
-//         serverAddr.sin_addr.s_addr = INADDR_ANY;
-//         serverAddr.sin_port = htons(port);
-
-//         if (bind(serverSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0) {
-//             perror("Error binding socket");
-//             close(serverSocket);
-//             throw std::runtime_error("Error binding socket");
-//         }
-
-//         if (listen(serverSocket, 3) < 0) {
-//             perror("Error listening on socket");
-//             close(serverSocket);
-//             throw std::runtime_error("Error listening on socket");
-//         }
-
-//         serverSockets.push_back(serverSocket);
-//         serverAddrs.push_back(serverAddr);
-//         std::cout << "Server is running on port " << port << std::endl;
-//     }
-// }
-
-// void Server::handleConnections(Parser &configFile)
-// {
-//     Connections connections(this->serverSockets, configFile);
-//     connections.loop();
-// }
-

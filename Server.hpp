@@ -60,7 +60,7 @@ public:
 
     void handleRead(int fd);
     void handleWrite(int fd);
-    void handleTimeout(int fd);
+    void handleDisconnection(int fd);
 
 
     int serverError;

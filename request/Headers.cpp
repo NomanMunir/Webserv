@@ -176,7 +176,7 @@ void Headers::parseFirstLine(Response &structResponse, std::istringstream &iss)
 		headers["query_string"] = split(tokens[1], '?')[1];
 	else
 		headers["query_string"] = "";
-    headers["version"] = tokens[2];
+    headers["Version"] = tokens[2];
 }
 
 void Headers::parseHeaderBody(std::istringstream &iss, Response &structResponse)

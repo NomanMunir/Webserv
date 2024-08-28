@@ -130,30 +130,23 @@ bool Request::isBodyExist(ServerConfig &serverConfig, Response &structResponse, 
 
 bool Request::checkIsCGI(std::string uri, std::string method, ServerConfig &targetServer)
 {
+
+	if (uri.find_last_of(".") == std::string::npos)
+		return false;
 	std::string extention = uri.substr(uri.find_last_of("."));
 	std::vector<std::string> cgiExtensions = targetServer.cgiExtensions;
 
 	return (std::find(cgiExtensions.begin(), cgiExtensions.end(), extention) != cgiExtensions.end() && (method == "GET" || method == "POST"));
 }
 
-void Request::createEnvMap(ServerConfig &serverConfig)
+void Request::createSystemENV(ServerConfig &serverConfig)
 {
 	std::string line;
-	bool flag = false;
 	if (serverConfig.env.empty())
 		return;
 	std::stringstream ss(serverConfig.env);
 	while (getline(ss, line, '\n'))
-	{
-		std::stringstream env(line);
-		std::string key, value;
-		getline(env, key, '=');
-		getline(env, value);
-		std::map<std::string, std::string>::iterator it;
-		for (it = this->envMap.begin(); it != this->envMap.end(); ++it)
-			key = toUpperCase(key);
-		this->envMap[key] = value;
-	}
+		this->systemEnv.push_back(line);
 }
 
 void  Request::handleRequest(ServerConfig &serverConfig, Response &structResponse)
@@ -174,7 +167,7 @@ void  Request::handleRequest(ServerConfig &serverConfig, Response &structRespons
 	if (checkIsCGI(uri, headers.getValue("method"), serverConfig))
 	{
 		this->isCGI = true;
-		createEnvMap(serverConfig);
+		createSystemENV(serverConfig);
 	}
 	this->complete = true;
 }
@@ -200,9 +193,9 @@ bool Request::getIsCGI() const
 	return isCGI;
 }
 
-std::map<std::string, std::string>& Request::getEnvMap()
+std::vector<std::string>& Request::getSystemENV()
 {
-	return envMap;
+	return this->systemEnv;
 }
 
 Request::~Request() { }

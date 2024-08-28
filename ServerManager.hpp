@@ -20,6 +20,10 @@ class ServerManager
 		std::vector<int> serverSockets;
 		KQueue kqueue;
 
+		void processReadEvent(EventInfo eventInfo);
+		void processWriteEvent(EventInfo eventInfo);
+		void processTimeoutEvent(EventInfo eventInfo);
+
 		void initServers(Parser &parser);
 		
 };

@@ -18,17 +18,17 @@ Cgi::Cgi(Request &request, std::string fullPath, Response &response)
 Cgi::~Cgi()
 {
     // Free allocated environment variables
-    // freeEnv(_envp);
-    // if (fd_out[0] != -1)
-	// {
-	// 	close(fd_out[0]);
-	// 	fd_out[0] = -1;
-	// }
-	// if (fd_in[0] != -1)
-	// {
-	// 	close(fd_in[0]);
-	// 	fd_in[0] = -1;
-	// }
+    freeEnv(_envp);
+    if (fd_out[0] != -1)
+	{
+		close(fd_out[0]);
+		fd_out[0] = -1;
+	}
+	if (fd_in[0] != -1)
+	{
+		close(fd_in[0]);
+		fd_in[0] = -1;
+	}
 
 }
 
@@ -45,85 +45,151 @@ bool Cgi::checkFilePermission(const char* path)
            (fileStat.st_mode & S_IXOTH);   // Others have execute permission
 }
 
+// void Cgi::execute()
+// {
+//     // Check file permissions
+//     if (!checkFilePermission(this->_fullPath.c_str()))
+//         this->_response.setErrorCode(500, "Internal Server Error: CGI script is not executable");
+
+//     // int fd_in[2], fd_out[2];  // read fd[0]  write fd[1]
+//     if (pipe(fd_in) < 0 || pipe(fd_out) < 0)
+//         this->_response.setErrorCode(500, "Internal Server Error: Failed to create pipe");
+//     createEnv();
+//     pid = fork();
+
+//     // need to clean env and close fds if any error happens.
+//     if (pid < 0)
+//         this->_response.setErrorCode(500, "Internal Server Error: Failed to fork process");
+//     // check for the content length to know the data and handel error
+//     if (pid == 0)
+//     {
+//         std::string method;
+//         method =  _request.getHeaders().getValue("method");
+//         // Child process
+//         close(fd_in[1]);
+//         close(fd_out[0]); 
+//         // if( method == "POST")
+//         // {
+//             dup2(fd_in[0], STDIN_FILENO);
+//             close(fd_in[0]);
+//         // }
+//         dup2(fd_out[1], STDOUT_FILENO);
+//         close(fd_out[1]);
+
+//         // char buf[1024];
+//         // ssize_t count = read(STDIN_FILENO ,buf, sizeof(buf) - 1); // change to read the size of Content-Length
+//         // // std::cout << "count: " << count << std::endl;
+//         // if(count > 0)
+//         // {
+//         //     buf[count] = '\0';
+//         //     std::cerr << "data resived" << std::endl; 
+//         // }
+//         // else
+//         //     std::cerr << "data not resived" << std::endl;
+        
+//         char* argv[] = { const_cast<char*>(this->_fullPath.c_str()), NULL };
+
+//         if (execve(this->_fullPath.c_str(), argv, _envp) < 0)
+//         {
+//             std::cerr << "Failed to execute " << this->_fullPath << std::endl;
+//             freeEnv(_envp);
+//             exit(1);
+//         }
+//     } 
+//     else
+//     {
+//         // Parent process
+//         close(fd_in[0]);
+//         close(fd_out[1]);
+        
+        
+//         // if(_request.getHeaders().getValue("method") == "POST" )
+//         // {
+//         //     std::string num= "numan ali numan ali";
+//         //     std::string readBody =  _request.getHeaders().getValue("body");
+//         //     size_t nr = write(fd_in[1],&num, num.size());
+//         //     if (nr < 0)
+//         //     {
+//         //         std::cerr << "Error: " << std::endl;
+//         //     }
+//         // }
+//         // if(errno == -1)  todo
+
+//         close(fd_in[1]);
+
+//         // std::string output;
+//         char buffer[1024];
+//         ssize_t count;
+
+//         while ((count = read(fd_out[0], buffer, sizeof(buffer))) > 0) 
+//         {
+//             // std::cout << count << std::endl;
+//             output.append(buffer, count);
+//         }
+//         close(fd_out[0]);
+
+//         int status;
+//         waitpid(pid, &status, 0);
+//     }
+// }
+
 void Cgi::execute()
 {
     // Check file permissions
     if (!checkFilePermission(this->_fullPath.c_str()))
         this->_response.setErrorCode(500, "Internal Server Error: CGI script is not executable");
 
-    // int fd_in[2], fd_out[2];  // read fd[0]  write fd[1]
+    int fd_in[2], fd_out[2];  // read fd[0]  write fd[1]
     if (pipe(fd_in) < 0 || pipe(fd_out) < 0)
         this->_response.setErrorCode(500, "Internal Server Error: Failed to create pipe");
-    createEnv();
-    pid = fork();
 
-    // need to clean env and close fds if any error happens.
-    if (pid < 0)
+    createEnv();
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        // Fork failed
+        close(fd_in[0]); close(fd_in[1]);
+        close(fd_out[0]); close(fd_out[1]);
         this->_response.setErrorCode(500, "Internal Server Error: Failed to fork process");
-    // check for the content length to know the data and handel error
-    if (pid == 0)
-    {
-        std::string method;
-        method =  _request.getHeaders().getValue("method");
+    }
+
+    if (pid == 0) {
         // Child process
         close(fd_in[1]);
-        close(fd_out[0]); 
-        if( method == "POST")
-        {
+        close(fd_out[0]);
+
+        if (_request.getHeaders().getValue("method") == "POST") {
             dup2(fd_in[0], STDIN_FILENO);
-            close(fd_in[0]);
         }
+        close(fd_in[0]);
         dup2(fd_out[1], STDOUT_FILENO);
         close(fd_out[1]);
 
-        char buf[1024];
-        ssize_t count = read(STDIN_FILENO ,buf, sizeof(buf) - 1); // change to read the size of Content-Length
-        // std::cout << "count: " << count << std::endl;
-        if(count > 0)
-        {
-            buf[count] = '\0';
-            std::cerr << "data resived" << std::endl; 
-        }
-        else
-            std::cerr << "data not resived" << std::endl;
-        
-        char* argv[] = { const_cast<char*>(this->_fullPath.c_str()), nullptr };
+        char* argv[] = { const_cast<char*>(this->_fullPath.c_str()), NULL };
 
-        if (execve(this->_fullPath.c_str(), argv, _envp) < 0)
-        {
+        if (execve(this->_fullPath.c_str(), argv, _envp) < 0) {
             std::cerr << "Failed to execute " << this->_fullPath << std::endl;
             freeEnv(_envp);
             exit(1);
         }
-    } 
-    else
-    {
+    } else {
         // Parent process
         close(fd_in[0]);
         close(fd_out[1]);
-        
-        
-        if(_request.getHeaders().getValue("method") == "POST" )
-        {
-            std::string num= "numan ali numan ali";
-            std::string readBody =  _request.getHeaders().getValue("body");
-            size_t nr = write(fd_in[1],&num, num.size());
-            if (nr < 0)
-            {
-                std::cerr << "Error: " << std::endl;
+
+        if (_request.getHeaders().getValue("method") == "POST") {
+            std::string body = _request.getBody().getContent();
+            if (write(fd_in[1], body.c_str(), body.size()) < 0) {
+                std::cerr << "Error writing to CGI script" << std::endl;
             }
         }
-        // if(errno == -1)  todo
-
         close(fd_in[1]);
 
-        // std::string output;
+        std::string output;
         char buffer[1024];
         ssize_t count;
 
-        while ((count = read(fd_out[0], buffer, sizeof(buffer))) > 0) 
-        {
-            // std::cout << count << std::endl;
+        while ((count = read(fd_out[0], buffer, sizeof(buffer))) > 0) {
             output.append(buffer, count);
         }
         close(fd_out[0]);
@@ -131,8 +197,14 @@ void Cgi::execute()
         int status;
         waitpid(pid, &status, 0);
 
+        // if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
+        //     _response.setBody(output);  // Assuming _response.setBody handles setting the response body
+        // } else {
+        //     _response.setErrorCode(500, "Internal Server Error: CGI script execution failed");
+        // }
     }
 }
+
 
 void Cgi::freeEnv(char** envp) 
 {
@@ -158,8 +230,8 @@ void Cgi::vecToChar(std::vector<std::string> &envMaker)
 
 void Cgi::createEnv()
 {
-    std::vector<std::string> envMaker;
     std::vector<std::string>::iterator it;
+    std::vector<std::string>& envMaker = _request.getSystemENV();
 
     std::string method =  _request.getHeaders().getValue("method");
     std::string contentLength = _request.getHeaders().getValue("Content-Length");
@@ -189,9 +261,9 @@ void Cgi::createEnv()
     envMaker.push_back("HTTP_USER_AGENT=" + _request.getHeaders().getValue("User-Agent"));
     envMaker.push_back("GATEWAY_INTERFACE=CGI/1.1");
     envMaker.push_back("SERVER_NAME=Nginx 3.0");
-    envMaker.push_back("SERVER_PROTOCOL=" + _request.getHeaders().getValue("version"));
-    envMaker.push_back("SERVER_PORT=" + _request.getHeaders().getValue("port"));
-    envMaker.push_back("HTTP_HOST=" + _request.getHeaders().getValue("host"));
+    envMaker.push_back("SERVER_PROTOCOL=" + _request.getHeaders().getValue("ersion"));
+    envMaker.push_back("SERVER_PORT=" + _request.getHeaders().getValue("Port"));
+    envMaker.push_back("HTTP_HOST=" + _request.getHeaders().getValue("Host"));
 
     // Print the environment variables for debugging
     // for (it = envMaker.begin(); it != envMaker.end(); ++it)

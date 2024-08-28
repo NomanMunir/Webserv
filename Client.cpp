@@ -14,9 +14,10 @@ std::string& Client::getWriteBuffer() { return writeBuffer; }
 
 bool Client::isWritePending() const { return writePending; }
 
-void Client::setWritePending(bool pending) { writePending = pending; }
-
 bool Client::isReadPending() const { return readPending; }
+
+
+void Client::setWritePending(bool pending) { writePending = pending; }
 
 void Client::setReadPending(bool pending) { readPending = pending; }
 
@@ -25,6 +26,7 @@ void Client::setKeepAlive(bool keepAlive) { this->keepAlive = keepAlive; }
 Request& Client::getRequest() { return request; }
 
 Response& Client::getResponse() { return response; }
+
 
 void Client::reset()
 {
@@ -145,7 +147,7 @@ void Client::recvHeader()
         if (bytesRead < 0)
             response.setErrorCode(500, "Client::recvHeader: Error reading from client socket");
         else if (bytesRead == 0)
-            response.setErrorCode(400, "Client disconnected");
+            response.setErrorCode(499, "Client disconnected");
         else
             buffer.append(c, bytesRead);
     }
@@ -164,7 +166,7 @@ void Client::recvBody()
         if (bytesRead < 0)
             response.setErrorCode(500, "Client::recvBody: Error reading from client socket");
         else if (bytesRead == 0)
-            response.setErrorCode(400, "Client disconnected");
+            response.setErrorCode(499, "Client disconnected");
         else
             buffer.append(c, bytesRead);
     }

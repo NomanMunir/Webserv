@@ -28,14 +28,59 @@ ServerManager::ServerManager(Parser &parser)
 	initServers(parser);
 }
 
+void ServerManager::processReadEvent(EventInfo eventInfo)
+{
+	for (size_t j = 0; j < this->servers.size(); j++)
+	{
+		if (this->servers[j]->getServerSocket() == eventInfo.fd)
+		{
+			if (!this->servers[j]->acceptClient())
+				continue;
+			break;
+		}
+		else
+		{
+			if (this->servers[j]->isMyClient(eventInfo.fd))
+			{
+				this->servers[j]->handleRead(eventInfo.fd);
+				break;
+			}
+		}
+	}
+}
+
+void ServerManager::processWriteEvent(EventInfo eventInfo)
+{
+	for (size_t j = 0; j < this->servers.size(); j++)
+	{
+		if (servers[j]->isMyClient(eventInfo.fd))
+		{
+			servers[j]->handleWrite(eventInfo.fd);
+			break;
+		}
+	}
+}
+
+void ServerManager::processTimeoutEvent(EventInfo eventInfo)
+{
+	for (size_t j = 0; j < this->servers.size(); j++)
+	{
+		if (servers[j]->isMyClient(eventInfo.fd))
+		{
+			servers[j]->handleDisconnection(eventInfo.fd);
+			break;
+		}
+	}
+}
+
 void ServerManager::run()
 {
 	while (true)
 	{
 		int numOfEvents = this->kqueue.getNumOfEvents();
-		if (numOfEvents == -1)
+		if (numOfEvents < 0)
 		{
-			std::cerr << "Error: " << strerror(errno) << std::endl;
+			std::cerr << "run1::Error: " << strerror(errno) << std::endl;
 			continue;
 		}
 		if (numOfEvents == 0)
@@ -43,63 +88,27 @@ void ServerManager::run()
 
 		for (int i = 0; i < numOfEvents; i++)
 		{
-			struct kevent event = this->kqueue.events[i];
-			if (event.filter == EVFILT_READ)
+			EventInfo eventInfo = this->kqueue.getEventInfo(i);
+			if (eventInfo.isError)
 			{
-				for (size_t j = 0; j < this->servers.size(); j++)
-				{
-					if (this->servers[j]->getServerSocket() == event.ident)
-					{
-						if (!this->servers[j]->acceptClient())
-							continue;
-						break;
-					}
-					else
-					{
-						if (servers[j]->isMyClient(event.ident))
-						{
-							servers[j]->handleRead(event.ident);
-							break;
-						}
-					}
-				}
+				std::cerr << "run::Error: " << strerror(errno) << std::endl;
+				continue;
 			}
+			if (eventInfo.isRead || eventInfo.isEOF)
+				processReadEvent(eventInfo);
 		}
 
 		for (size_t i = 0; i < numOfEvents; i++)
 		{
-			struct kevent event = this->kqueue.events[i];
-			if (event.flags & EV_ERROR)
-            {
-                std::cerr << "EV_ERROR: " << strerror(event.data) << std::endl;
-                continue;
-            }
-			if (event.filter == EVFILT_WRITE)
-			{
-				for (size_t j = 0; j < this->servers.size(); j++)
-				{
-					if (servers[j]->isMyClient(event.ident))
-					{
-						servers[j]->handleWrite(event.ident);
-						break;
-					}
-				}
-			}
+			EventInfo eventInfo = this->kqueue.getEventInfo(i);
+			if (eventInfo.isWrite)
+				processWriteEvent(eventInfo);
 		}
 		for (size_t i = 0; i < numOfEvents; i++)
 		{
-			struct kevent event = this->kqueue.events[i];
-			if (event.filter == EVFILT_TIMER)
-			{
-				for (size_t j = 0; j < this->servers.size(); j++)
-				{
-					if (servers[j]->isMyClient(event.ident))
-					{
-						servers[j]->handleTimeout(event.ident);
-						break;
-					}
-				}
-			}
+			EventInfo eventInfo = this->kqueue.getEventInfo(i);
+			if (eventInfo.isTimeout)
+				processTimeoutEvent(eventInfo);
 		}
 	}
 }

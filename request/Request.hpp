@@ -37,7 +37,7 @@ class Request
 		Headers& getHeaders();
 		Body& getBody();
 		bool getIsCGI() const;
-		std::map<std::string, std::string>& getEnvMap();
+		std::vector<std::string>& getSystemENV();
 
 		void setComplete(bool complete);
 		void reset();
@@ -50,7 +50,7 @@ class Request
 		void findServer(Response &structResponse, Parser &parser);
 		bool chooseRoute(std::string path, ServerConfig server, RouteConfig &targetRoute);
 		bool checkIsCGI(std::string uri, std::string method, ServerConfig &targetServer);
-		void createEnvMap(ServerConfig &serverConfig);
+		void createSystemENV(ServerConfig &serverConfig);
 
 		std::string request;
 		std::string rawData;
@@ -58,7 +58,7 @@ class Request
 		Body body;
 		bool complete;
 		bool isCGI;
-		std::map<std::string, std::string> envMap;
+		std::vector<std::string> systemEnv;
 };
 
 #endif // REQUEST_HPP

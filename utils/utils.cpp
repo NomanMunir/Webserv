@@ -24,7 +24,13 @@ std::string getCurrentTimestamp()
 std::string toUpperCase(const std::string &str) 
 {
     std::string upperStr = str;
-    std::transform(upperStr.begin(), upperStr.end(), upperStr.begin(), ::toupper);
+    if (upperStr.empty())
+        return upperStr;
+    for (size_t i = 0; i < upperStr.length(); i++)
+    {
+        if (upperStr[i] >= 'a' && upperStr[i] <= 'z')
+            upperStr[i] = std::toupper(upperStr[i]);
+    }
     return upperStr;
 }
 

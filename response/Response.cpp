@@ -124,8 +124,6 @@ bool Response::handleDirectory(std::string &fullPath, std::string &path, RouteCo
 		httpResponse.setHeader("Server", "LULUGINX");
 		httpResponse.setBody(body);
 		response = httpResponse.generateResponse();
-		// response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
-		response = "HTTP/1.1 200 OK\r3\nConnection: keep-alive\r\nSet-Cookie: se=20\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 	}
 	else
 		this->setErrorCode(403, "Response::handleDirectory: Directory listing not allowed");
@@ -182,15 +180,17 @@ void Response::handleRedirect(std::string redirect)
 			value =  trim(value);
 			std::string tokenWithSlash = value[0] == '/' ? value :  "/" + value;
 			tokenWithSlash = trim(tokenWithSlash);
+			httpResponse.setVersion("HTTP/1.1");
 			httpResponse.setStatusCode(errorCode);
+			httpResponse.setHeader("Content-Length", "0");
+			httpResponse.setHeader("Connection", "close");
 			httpResponse.setHeader("Location", tokenWithSlash);
 			httpResponse.setHeader("Server", "LULUGINX");
-
 			response = httpResponse.generateResponse();
-			// response = "HTTP/1.1 " + std::to_string(errorCode) + " " + getStatusMsg(std::to_string(errorCode)) + "\r\nLocation: " + tokenWithSlash + "\r\n\r\n";
 		}
 		else
 		{
+			httpResponse.setVersion("HTTP/1.1");
 			httpResponse.setStatusCode(errorCode);
 			httpResponse.setHeader("Content-Type", "text/html");
 			httpResponse.setHeader("Content-Length", std::to_string(value.size()));
@@ -364,6 +364,7 @@ bool Response::isClosingCode(std::string errorCode)
 	closeCodes.push_back("414"); // URI Too Long
 	closeCodes.push_back("426"); // Upgrade Required
 	closeCodes.push_back("431"); // Request Header Fields Too Large
+	closeCodes.push_back("499"); // Client Closed Request
 	closeCodes.push_back("500"); // Internal Server Error
 	closeCodes.push_back("501"); // Not Implemented
 	closeCodes.push_back("502"); // Bad Gateway
@@ -486,16 +487,22 @@ void Response::handleResponse(Request &request)
 		return (sendError(std::to_string(this->errorCode)));
 	std::string fullPath = generateFullPath(this->targetRoute.root, uri);
 	// std::cout << "full path : "<< fullPath << std::endl;
-	// Cgi cgi(request, env);
-    // cgi.execute();
 	if (request.getIsCGI())
 	{
 		Cgi cgi(request, fullPath, *this);
-		// cgi.execute();
-		std::cout << "output: " << cgi.output << std::endl;
+		cgi.execute();
+		std::string body = cgi.output;
+		HttpResponse httpResponse;
+		httpResponse.setVersion("HTTP/1.1");
+		httpResponse.setStatusCode(200);
+		httpResponse.setHeader("Content-Type", "text/html");
+		httpResponse.setHeader("Content-Length", std::to_string(body.size()));
+		httpResponse.setHeader("Connection", "keep-alive");
+		httpResponse.setHeader("Server", "LULUGINX");
+		httpResponse.setBody(body);
+		response = httpResponse.generateResponse();
 		// handleCGIGET(method == "GET", request);
 		// // handleCGIPOST(method == "POST", body);
-
 	}
 	else
 	{
