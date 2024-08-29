@@ -18,6 +18,8 @@ void Parser::setRouteBlock(std::string &key, std::string &value)
         throw std::runtime_error("Error: invalid configuration file " + value);
     if (key == "methods")
         routeConfig.methods = split(value, ' ');
+    else if (key == "cgi_extensions")
+        routeConfig.cgiExtensions = split(value, ' ');
     else
     {
         if (key == "return")
@@ -42,7 +44,7 @@ void Parser::checkLocationBlock()
     tokens.erase(tokens.begin(), tokens.begin() + 2);
     const std::string keyArray[] = {
         "methods", "return", "root", "directory_listing",
-        "default_file", "upload_dir"
+        "default_file", "upload_dir", "cgi_extensions"
     };
     std::vector<std::string> keys;
     initializeVector(keys, keyArray, sizeof(keyArray) / sizeof(keyArray[0]));
@@ -101,7 +103,6 @@ void Parser::setServerBlock(std::string &key, std::string &value)
     }
     else if (key == "listen")
         setListen(value);
-
     else if (key == "client_body_size")
         serverConfig.clientBodySizeLimit = value;
     else if (key == "error_pages")
@@ -112,6 +113,8 @@ void Parser::setServerBlock(std::string &key, std::string &value)
     }
     else if (key == "cgi_extensions")
         serverConfig.cgiExtensions = split(value, ' ');
+    else if (key == "root")
+        routeConfig.root = value;
     else
         throw std::runtime_error("Error: invalid configuration file " + key);
 }
@@ -124,7 +127,7 @@ void Parser::checkServerBlock()
     std::string value = tokens[1];
     tokens.erase(tokens.begin(), tokens.begin() + 2);
     const std::string keyArray[] = {"server_names", "listen",
-                          "error_pages", "client_body_size", "location", "cgi_extensions"};
+                          "error_pages", "client_body_size", "location", "cgi_extensions", "root"};
     std::vector<std::string> keys;
     initializeVector(keys, keyArray, sizeof(keyArray) / sizeof(keyArray[0]));
     if (!myFind(keys, key))
@@ -247,6 +250,8 @@ void Parser::setDefaultRoute()
         routeConfig.root = "/Users/nmunir/Desktop/Webserv";
     if (routeConfig.uploadDir.empty())
         routeConfig.uploadDir = "/Users/nmunir/Desktop/Webserv";
+    if (routeConfig.cgiExtensions.empty())
+        routeConfig.cgiExtensions.push_back("");
 }
 
 void Parser::setDefault()
@@ -255,6 +260,8 @@ void Parser::setDefault()
     {
         if (servers[i].serverName.empty())
             servers[i].serverName.push_back("localhost");
+        if (servers[i].root.empty())
+            servers[i].root = "/Users/nmunir/Desktop/Webserv";
         if (servers[i].cgiExtensions.empty())
             servers[i].cgiExtensions.push_back("");
         if (servers[i].listen.empty())
@@ -293,11 +300,13 @@ void Parser::resetRoute()
     routeConfig.defaultFile.clear();
     routeConfig.uploadDir = "";
     serverConfig.routeMap[""] = routeConfig;
+    routeConfig.cgiExtensions.clear();
 }
 
 void Parser::reset()
 {
     serverConfig.listen.clear();
+    serverConfig.root.clear();
     serverConfig.serverName.clear();
     serverConfig.errorPages.clear();
     serverConfig.clientBodySizeLimit = "";

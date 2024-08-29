@@ -50,16 +50,16 @@ bool Request::chooseRoute(std::string uri, ServerConfig server, RouteConfig &tar
 	std::string method = this->headers.getValue("method");
 
 	uri = trimChar(uri, '/');
-	if (method == "POST")
-	{
-		std::string postRoute = findMatch(uri, routes);
-		if (postRoute != "")
-		{
-			targetRoute = routes[postRoute];
-			return true;
-		}
-		return false;
-	}
+	// if (method == "POST")
+	// {
+	// 	std::string postRoute = findMatch(uri, routes);
+	// 	if (postRoute != "")
+	// 	{
+	// 		targetRoute = routes[postRoute];
+	// 		return true;
+	// 	}
+	// 	return false;
+	// }
 
 	std::vector<std::string> splitPath = split(uri, '/');
 	// std::cout << "splitPath size : " << splitPath.size() << std::endl;
@@ -128,15 +128,15 @@ bool Request::isBodyExist(ServerConfig &serverConfig, Response &structResponse, 
 	return true;
 }
 
-bool Request::checkIsCGI(std::string uri, std::string method, ServerConfig &targetServer)
+bool Request::checkIsCGI(std::string uri, std::string method, RouteConfig &targetRoute)
 {
 
 	if (uri.find_last_of(".") == std::string::npos)
 		return false;
 	std::string extention = uri.substr(uri.find_last_of("."));
-	std::vector<std::string> cgiExtensions = targetServer.cgiExtensions;
+	std::vector<std::string> cgiExtensions = targetRoute.cgiExtensions;
 
-	return (std::find(cgiExtensions.begin(), cgiExtensions.end(), extention) != cgiExtensions.end() && (method == "GET" || method == "POST"));
+	return (std::find(cgiExtensions.begin(), cgiExtensions.end(), extention) != cgiExtensions.end() && std::find(targetRoute.methods.begin(), targetRoute.methods.end(), method) != targetRoute.methods.end());
 }
 
 void Request::createSystemENV(ServerConfig &serverConfig)
@@ -152,23 +152,27 @@ void Request::createSystemENV(ServerConfig &serverConfig)
 void  Request::handleRequest(ServerConfig &serverConfig, Response &structResponse)
 {
 	// this->findServer(structResponse, parser);
-	
+	std::string method = this->headers.getValue("method");
 	structResponse.setTargetServer(serverConfig);
-	RouteConfig route;
 	std::string uri = this->headers.getValue("uri");
+	RouteConfig route;
 	if (!chooseRoute(uri, serverConfig, route))
 	{
-		if (headers.getValue("method") == "POST" || headers.getValue("method") == "DELETE")
+		if (method == "POST" || method == "DELETE")
 			structResponse.setErrorCode(403, "Request::handleRequest : POST or DELETE route not found");
 		else
 			structResponse.setErrorCode(404, "Request::handleRequest : GET Route not found");
 	}
-	structResponse.setTargetRoute(route);
-	if (checkIsCGI(uri, headers.getValue("method"), serverConfig))
+	std::cout << "route.methods : " << route.methods[0] << std::endl;
+	if (checkIsCGI(uri, method, route))
 	{
+		std::cout << "CGI" << std::endl;
+		if (method != "GET" && method != "POST")
+			structResponse.setErrorCode(405, "Request::handleRequest : CGI method not allowed");
 		this->isCGI = true;
 		createSystemENV(serverConfig);
 	}
+	structResponse.setTargetRoute(route);
 	this->complete = true;
 }
 

@@ -245,7 +245,7 @@ void Response::handlePOST(bool isPost, std::string &uri, Body &body)
 			return (setErrorCode(400, "Response::handlePOST: Empty body"));
 
 		std::string fullPath = generateFullPath(targetRoute.root, uri);
-		fullPath = fullPath.back() != '/' ? fullPath + '/' : fullPath;
+		// fullPath = fullPath.back() != '/' ? fullPath + '/' : fullPath;
 		std::cout << "Full Path: " << fullPath << std::endl;
 		std::ofstream file(fullPath + getCurrentTimestamp());
 		if (!file.is_open())
@@ -487,27 +487,27 @@ void Response::handleResponse(Request &request)
 		return (sendError(std::to_string(this->errorCode)));
 	std::string fullPath = generateFullPath(this->targetRoute.root, uri);
 	// std::cout << "full path : "<< fullPath << std::endl;
-	if (request.getIsCGI())
-	{
-		Cgi cgi(request, fullPath, *this);
-		cgi.execute();
-		std::string body = cgi.output;
-		HttpResponse httpResponse;
-		httpResponse.setVersion("HTTP/1.1");
-		httpResponse.setStatusCode(200);
-		httpResponse.setHeader("Content-Type", "text/html");
-		httpResponse.setHeader("Content-Length", std::to_string(body.size()));
-		httpResponse.setHeader("Connection", "keep-alive");
-		httpResponse.setHeader("Server", "LULUGINX");
-		httpResponse.setBody(body);
-		response = httpResponse.generateResponse();
+	// if (request.getIsCGI())
+	// {
+	// 	Cgi cgi(request, fullPath, *this);
+	// 	cgi.execute();
+	// 	std::string body = cgi.output;
+	// 	HttpResponse httpResponse;
+	// 	httpResponse.setVersion("HTTP/1.1");
+	// 	httpResponse.setStatusCode(200);
+	// 	httpResponse.setHeader("Content-Type", "text/html");
+	// 	httpResponse.setHeader("Content-Length", std::to_string(body.size()));
+	// 	httpResponse.setHeader("Connection", "keep-alive");
+	// 	httpResponse.setHeader("Server", "LULUGINX");
+	// 	httpResponse.setBody(body);
+	// 	response = httpResponse.generateResponse();
 		// handleCGIGET(method == "GET", request);
 		// // handleCGIPOST(method == "POST", body);
-	}
-	else
-	{
+	// }
+	// else
+	// {
 		handleGET(method == "GET", uri);
 		handlePOST(method == "POST", uri, body);
 		handleDELETE(method == "DELETE", uri);
-	}
+	// }
 }

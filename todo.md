@@ -69,3 +69,6 @@
 [ ] are we closing the fd after removing event queue?
 [ ] need to check redirect if they are working or not.
 [ ] work on head and put requests.
+[ ] Make the route able to accept uploaded files and configure where they should
+be saved.
+[ ] set route root from server root if not specified

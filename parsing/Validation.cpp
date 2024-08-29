@@ -39,6 +39,7 @@ void Validation::validateRouteMap(std::map<std::string, RouteConfig> &routeMap)
 	for (std::map<std::string, RouteConfig>::iterator it = routeMap.begin(); it != routeMap.end(); it++)
 	{
         validateMethods(it->second.methods);
+		validateCgiExtensions(it->second.cgiExtensions);
 		if (it->second.redirect != "")
 		{
 		// std::cout << "redirect: " << it->second.redirect << std::endl;
@@ -133,6 +134,7 @@ Validation::Validation(Parser parser)
 	std::vector<ServerConfig> servers = parser.getServers();
 	for (size_t i = 0; i < servers.size(); i++)
 	{
+		isDirectory(servers[i].root);
 		validateListen(servers[i].listen);
 		for (size_t j = 0; j < servers[i].serverName.size(); j++)
 			validateServerNames(servers[i].serverName[j]);

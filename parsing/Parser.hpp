@@ -36,10 +36,12 @@ struct RouteConfig
 	bool directoryListing;
 	std::vector<std::string> defaultFile;
 	std::string uploadDir;
+	std::vector<std::string> cgiExtensions;
 };
 
 struct ServerConfig
 {
+	std::string root;
 	std::vector<std::vector<std::string> > listen;
 	std::vector<std::string> serverName;
 	std::map<std::string, std::string> errorPages;

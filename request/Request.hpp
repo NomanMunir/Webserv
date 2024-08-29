@@ -49,7 +49,7 @@ class Request
 	
 		void findServer(Response &structResponse, Parser &parser);
 		bool chooseRoute(std::string path, ServerConfig server, RouteConfig &targetRoute);
-		bool checkIsCGI(std::string uri, std::string method, ServerConfig &targetServer);
+		bool checkIsCGI(std::string uri, std::string method, RouteConfig &targetRoute);
 		void createSystemENV(ServerConfig &serverConfig);
 
 		std::string request;
