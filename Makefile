@@ -14,7 +14,7 @@ SRCS = main.cpp \
 		cgi/Cgi.cpp \
 
 		ifeq ($(shell uname), Linux)
-			SRCS += events/EPoll.cpp
+			SRCS += events/Epoll.cpp
 		else
 			SRCS += events/KQueue.cpp
 		endif
