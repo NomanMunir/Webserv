@@ -37,7 +37,7 @@ private:
 
     bool checkFilePermission(const char* path);
     void freeEnv(char** envp);
-    void createEnv();
+    void setCGIEnv();
     void vecToChar(std::vector<std::string> &envMaker);
 
 

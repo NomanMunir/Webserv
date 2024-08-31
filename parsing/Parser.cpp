@@ -111,10 +111,14 @@ void Parser::setServerBlock(std::string &key, std::string &value)
         for (size_t i = 0; i < errorPages.size() - 1; i++)
             serverConfig.errorPages[errorPages[i]] = errorPages.back();
     }
+    else if (key == "root")
+        serverConfig.root = value;
+    else if (key == "default_file")
+        serverConfig.defaultFile = split(value, ' ');
     else if (key == "cgi_extensions")
         serverConfig.cgiExtensions = split(value, ' ');
-    else if (key == "root")
-        routeConfig.root = value;
+    else if (key == "cgi_directory")
+        serverConfig.cgi_directory = value;
     else
         throw std::runtime_error("Error: invalid configuration file " + key);
 }
@@ -126,8 +130,10 @@ void Parser::checkServerBlock()
     std::string key = tokens[0];
     std::string value = tokens[1];
     tokens.erase(tokens.begin(), tokens.begin() + 2);
-    const std::string keyArray[] = {"server_names", "listen",
-                          "error_pages", "client_body_size", "location", "cgi_extensions", "root"};
+    const std::string keyArray[] = {"server_names", "listen", \
+                          "error_pages", "client_body_size", \
+                          "location", "cgi_extensions", "root", \
+                           "default_file", "cgi_directory"};
     std::vector<std::string> keys;
     initializeVector(keys, keyArray, sizeof(keyArray) / sizeof(keyArray[0]));
     if (!myFind(keys, key))
@@ -262,8 +268,12 @@ void Parser::setDefault()
             servers[i].serverName.push_back("localhost");
         if (servers[i].root.empty())
             servers[i].root = "/Users/nmunir/Desktop/Webserv";
+        if (servers[i].defaultFile.empty())
+            servers[i].defaultFile.push_back("index.html");
         if (servers[i].cgiExtensions.empty())
             servers[i].cgiExtensions.push_back("");
+        if (servers[i].cgi_directory.empty())
+            servers[i].cgi_directory = "/cgi-bin";
         if (servers[i].listen.empty())
         {
             servers[i].listen.push_back(std::vector<std::string>());
@@ -312,10 +322,12 @@ void Parser::reset()
     serverConfig.clientBodySizeLimit = "";
     serverConfig.routeMap.clear();
     serverConfig.cgiExtensions.clear();
+    serverConfig.cgi_directory = "";
+    serverConfig.defaultFile.clear();
     resetRoute();
 }
 
-Parser::~Parser() {}
+Parser::~Parser() { }
 Parser::Parser(const std::string configFile)
 {
     std::ifstream file(configFile.c_str());

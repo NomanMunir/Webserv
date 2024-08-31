@@ -42,10 +42,12 @@ struct RouteConfig
 struct ServerConfig
 {
 	std::string root;
+	std::vector<std::string> defaultFile;
+	std::string cgi_directory;
+	std::vector<std::string> cgiExtensions;
 	std::vector<std::vector<std::string> > listen;
 	std::vector<std::string> serverName;
 	std::map<std::string, std::string> errorPages;
-	std::vector<std::string> cgiExtensions;
 	std::string clientBodySizeLimit;
 	std::map<std::string, RouteConfig> routeMap;
 	std::string env;

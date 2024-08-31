@@ -54,7 +54,7 @@ bool Cgi::checkFilePermission(const char* path)
 //     // int fd_in[2], fd_out[2];  // read fd[0]  write fd[1]
 //     if (pipe(fd_in) < 0 || pipe(fd_out) < 0)
 //         this->_response.setErrorCode(500, "Internal Server Error: Failed to create pipe");
-//     createEnv();
+//     setCGIEnv();
 //     pid = fork();
 
 //     // need to clean env and close fds if any error happens.
@@ -140,13 +140,15 @@ void Cgi::execute()
         this->_response.setErrorCode(500, "Internal Server Error: CGI script is not executable");
 
     int fd_in[2], fd_out[2];  // read fd[0]  write fd[1]
-    if (pipe(fd_in) < 0 || pipe(fd_out) < 0)
+    if (pipe(fd_in) < 0)
         this->_response.setErrorCode(500, "Internal Server Error: Failed to create pipe");
-
-    createEnv();
+    if (pipe(fd_out) < 0)
+        this->_response.setErrorCode(500, "Internal Server Error: Failed to create pipe");
+    setCGIEnv();
     pid_t pid = fork();
 
-    if (pid < 0) {
+    if (pid < 0)
+     {
         // Fork failed
         close(fd_in[0]); close(fd_in[1]);
         close(fd_out[0]); close(fd_out[1]);
@@ -155,15 +157,14 @@ void Cgi::execute()
 
     if (pid == 0) {
         // Child process
-        close(fd_in[1]);
-        close(fd_out[0]);
+        close(fd_in[1]); // Close the write end of fd_in
+        close(fd_out[0]); // Close the read end of fd_out
 
-        if (_request.getHeaders().getValue("method") == "POST") {
-            dup2(fd_in[0], STDIN_FILENO);
-        }
+        dup2(fd_in[0], STDIN_FILENO);
         close(fd_in[0]);
         dup2(fd_out[1], STDOUT_FILENO);
         close(fd_out[1]);
+
 
         char* argv[] = { const_cast<char*>(this->_fullPath.c_str()), NULL };
 
@@ -185,7 +186,6 @@ void Cgi::execute()
         }
         close(fd_in[1]);
 
-        std::string output;
         char buffer[1024];
         ssize_t count;
 
@@ -228,7 +228,7 @@ void Cgi::vecToChar(std::vector<std::string> &envMaker)
     _envp[envMaker.size()] = NULL;
 }
 
-void Cgi::createEnv()
+void Cgi::setCGIEnv()
 {
     std::vector<std::string>::iterator it;
     std::vector<std::string>& envMaker = _request.getSystemENV();

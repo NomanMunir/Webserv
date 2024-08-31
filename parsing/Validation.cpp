@@ -44,7 +44,6 @@ void Validation::validateRouteMap(std::map<std::string, RouteConfig> &routeMap)
 		{
 		// std::cout << "redirect: " << it->second.redirect << std::endl;
 			validateReturn(it->second.redirect);
-			
 		}
 		isDirectory(it->second.root);
 		isDirectory(it->second.root + "/" + it->first);
@@ -135,6 +134,8 @@ Validation::Validation(Parser parser)
 	for (size_t i = 0; i < servers.size(); i++)
 	{
 		isDirectory(servers[i].root);
+		std::string cgiDir = servers[i].root + "/" + servers[i].cgi_directory;
+		isDirectory(cgiDir);
 		validateListen(servers[i].listen);
 		for (size_t j = 0; j < servers[i].serverName.size(); j++)
 			validateServerNames(servers[i].serverName[j]);
