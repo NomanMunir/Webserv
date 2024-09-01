@@ -80,6 +80,7 @@ void KQueue::removeFromQueue(int fd, EventType ev)
     {
         if (fdState[fd].isRead)
         {
+            std::cout << "Removing read event for fd: " << fd << std::endl;
             EV_SET(&evSet, fd, EVFILT_READ, EV_DELETE, 0, 0, NULL);
             if (kevent(this->kqueueFd, &evSet, 1, NULL, 0, NULL) == -1)
                 std::cerr << "Error removing event: " << strerror(errno) << std::endl;
@@ -90,7 +91,7 @@ void KQueue::removeFromQueue(int fd, EventType ev)
     {
         if (fdState[fd].isWrite)
         {
-            std::cout << "Removing read event for fd: " << fd << std::endl;
+            std::cout << "Removing write event for fd: " << fd << std::endl;
             EV_SET(&evSet, fd, EVFILT_WRITE, EV_DELETE, 0, 0, NULL);
             if (kevent(this->kqueueFd, &evSet, 1, NULL, 0, NULL) == -1)
                 std::cerr << "Error removing event: " << strerror(errno) << std::endl;
@@ -101,6 +102,7 @@ void KQueue::removeFromQueue(int fd, EventType ev)
     {
         if (fdState[fd].isTimeout)
         {
+            std::cout << "Removing timeout event for fd: " << fd << std::endl;
             EV_SET(&evSet, fd, EVFILT_TIMER, EV_DELETE, 0, 0, NULL);
             if (kevent(this->kqueueFd, &evSet, 1, NULL, 0, NULL) == -1)
                 std::cerr << "Error removing event: " << strerror(errno) << std::endl;

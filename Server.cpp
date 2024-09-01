@@ -70,7 +70,6 @@ void Server::bindAndListen()
 void Server::initSocket()
 {
     this->serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-    std::cout<< "serverSocket: " << this->serverSocket << std::endl;
     if (this->serverSocket < 0)
         throw std::runtime_error("Error opening socket");
 }
@@ -116,6 +115,15 @@ bool Server::isMyClient(int fd)
     return clients.find(fd) != clients.end();
 }
 
+// void Server::removeClient(int fd)
+// {
+//     kqueue.removeFromQueue(fd, READ_EVENT);
+//     kqueue.removeFromQueue(fd, WRITE_EVENT);
+//     kqueue.removeFromQueue(fd, TIMEOUT_EVENT);
+//     close(fd);
+//     clients.erase(fd);
+// }
+
 void Server::handleWrite(int fd)
 {
     std::cout << "Handling write for client " << fd << std::endl;
@@ -139,6 +147,7 @@ void Server::handleWrite(int fd)
         {
             std::cout << "Connection closed by server bec KeepAlive or IsConnectionClosed on socket fd " << fd << std::endl;
             kqueue.removeFromQueue(fd, TIMEOUT_EVENT);
+            kqueue.removeFromQueue(fd, READ_EVENT);
             close(fd);
             clients.erase(fd);
             return;

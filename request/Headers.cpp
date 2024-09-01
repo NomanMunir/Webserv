@@ -76,7 +76,7 @@ void Headers::parseRequestURI(Response &structResponse)
 
 bool Headers::validateMethod(const std::string &method)
 {
-	std::string validMethods[] = {"GET", "HEAD", "POST", "DELETE"};
+	std::string validMethods[] = {"GET", "HEAD", "POST", "DELETE", "PUT"};
 
 	if (method.empty())
 		return false;
@@ -148,6 +148,25 @@ bool Headers::validateVersion(const std::string &version)
 	return (false);
 }
 
+std::string decodeURI(const std::string &uri)
+{
+    std::string decoded;
+    char ch;
+    for (std::string::size_type i = 0; i < uri.length(); ++i)
+    {
+        if (uri[i] == '%' && i + 2 < uri.length())
+        {
+            char hex[3] = { uri[i + 1], uri[i + 2], '\0' };
+            ch = static_cast<char>(std::strtol(hex, NULL, 16));
+            decoded += ch;
+            i += 2;
+        }
+        else
+            decoded += uri[i];
+    }
+    return decoded;
+}
+
 void Headers::parseFirstLine(Response &structResponse, std::istringstream &iss)
 {
 	std::string firstLine;
@@ -171,7 +190,8 @@ void Headers::parseFirstLine(Response &structResponse, std::istringstream &iss)
 	if (!validateVersion(tokens[2]))
 		structResponse.setErrorCode(505, "Headers::parseFirstLine: HTTP Version Not Supported");
     headers["method"] = tokens[0];
-    headers["uri"] = split(tokens[1], '?')[0];
+	std::string splitedURI = split(tokens[1], '?')[0];
+    headers["uri"] = decodeURI(splitedURI);
 	if (tokens[1].find("?") != std::string::npos)
 		headers["query_string"] = split(tokens[1], '?')[1];
 	else

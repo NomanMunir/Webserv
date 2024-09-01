@@ -140,7 +140,7 @@ std::string generateFullPath(std::string rootPath, std::string path)
 	return fullPath;
 }
 
-void Response::generateResponseFromFile(std::string &path)
+void Response::generateResponseFromFile(std::string &path, bool isHEAD)
 {
 	std::ifstream file(path.c_str());
 	std::stringstream buffer;
@@ -156,9 +156,9 @@ void Response::generateResponseFromFile(std::string &path)
 	httpResponse.setHeader("Content-Length", std::to_string(body.size()));
 	httpResponse.setHeader("Connection", "keep-alive");
 	httpResponse.setHeader("Server", "LULUGINX");
-	httpResponse.setBody(body);
+	if (!isHEAD)
+		httpResponse.setBody(body);
 	response = httpResponse.generateResponse();
-	// response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: " + mimeType + "\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 }
 
 void Response::handleRedirect(std::string redirect)
@@ -204,7 +204,7 @@ void Response::handleRedirect(std::string redirect)
 		setErrorCode(errorCode, "Response::handleRedirect: Invalid redirect");
 }
 
-void Response::handleGET(bool isGet, std::string &uri)
+void Response::handleGET(bool isGet, std::string &uri, bool isHEAD)
 {
 	std::cout << "Path : " << uri << std::endl;
 	if (isGet)
@@ -219,7 +219,7 @@ void Response::handleGET(bool isGet, std::string &uri)
 		std::cout << "FullPath : " << fullPath << std::endl;
 		int type = checkType(fullPath);
 		if (type == IS_FILE)
-			generateResponseFromFile(fullPath);
+			generateResponseFromFile(fullPath, isHEAD);
 		else if (type == IS_DIR)
 		{
 			if (fullPath.back() != '/')
@@ -227,7 +227,7 @@ void Response::handleGET(bool isGet, std::string &uri)
 			else
 			{
 				if(handleDirectory(fullPath, uri, targetRoute))
-					generateResponseFromFile(fullPath);
+					generateResponseFromFile(fullPath, isHEAD);
 			}
 		}
 	}
@@ -292,6 +292,73 @@ void Response::handleDELETE(bool isDelete, std::string &uri)
 		response = httpResponse.generateResponse();
 
 		// response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
+	}
+}
+
+void Response::handlePUT(bool isPut, std::string &uri, Body &body)
+{
+	if (isPut)
+	{
+		HttpResponse httpResponse;
+		std::string fullPath = generateFullPath(targetRoute.root, uri);
+
+		if (body.getContent().empty())
+			return (setErrorCode(400, "Response::handlePUT: Empty body"));
+		std::ofstream file(fullPath);
+		if (!file.is_open())
+			return (setErrorCode(500, "Response::handlePUT: Could not open file"));
+		file << body.getContent();
+		if (!file.good())
+			return (setErrorCode(500, "Response::handlePUT: Could not write to file"));
+		file.close();
+
+		std::string body = "<center> <h2>File updated successfully</h2></center>";
+		httpResponse.setVersion("HTTP/1.1");
+		httpResponse.setStatusCode(200);
+		httpResponse.setHeader("Content-Type", "text/html");
+		httpResponse.setHeader("Content-Length", std::to_string(body.size()));
+		httpResponse.setHeader("Connection", "keep-alive");
+		httpResponse.setHeader("Server", "LULUGINX");
+		httpResponse.setBody(body);
+		response = httpResponse.generateResponse();
+	}
+}
+
+void Response::handleCGI(Request &request)
+{
+	std::string uri = request.getHeaders().getValue("uri");
+	std::string fullPath = generateFullPath(this->targetServer.root, uri);
+	Cgi cgi(request, fullPath, *this);
+	cgi.execute();
+	std::string body = cgi.output;
+	std::cout << "Body: " << body << std::endl;
+	HttpResponse httpResponse;
+	httpResponse.setVersion("HTTP/1.1");
+	httpResponse.setStatusCode(200);
+	httpResponse.setHeader("Content-Type", "text/html");
+	httpResponse.setHeader("Content-Length", std::to_string(body.size()));
+	httpResponse.setHeader("Connection", "keep-alive");
+	httpResponse.setHeader("Server", "LULUGINX");
+	httpResponse.setBody(body);
+	response = httpResponse.generateResponse();
+}
+
+void Response::handleResponse(Request &request)
+{
+	std::string method = request.getHeaders().getValue("method");
+	std::string uri = request.getHeaders().getValue("uri");
+	Body &body = request.getBody();
+
+	if (this->errorCode != 0)
+		return (sendError(std::to_string(this->errorCode)));
+	if (request.getIsCGI())
+		handleCGI(request);
+	else
+	{
+		handleGET(method == "GET" || method == "HEAD", uri, method == "HEAD");
+		handlePOST(method == "POST", uri, body);
+		handleDELETE(method == "DELETE", uri);
+		handlePUT(method == "PUT", uri, body);
 	}
 }
 
@@ -445,68 +512,4 @@ void Response::setErrorCode(int errorStatus, std::string errorMsg)
 {
 	this->errorCode = errorStatus;
 	throw std::runtime_error(errorMsg);
-}
-
-
-// void addToEnv(Request &request, std::string method)
-// {
-// 	std::string uri = request.getHeaders().getValue("uri");
-// 	std::string fullPath = generateFullPath(targetRoute.root, uri);
-// 	std::map<std::string, std::string>& envMap = request.getEnvMap();
-// 	std::string queryString = request.getHeaders().getValue("query_string");
-// 	std::string contentType = request.getHeaders().getValue("Content-Type");
-// 	std::string scriptName = fullPath.substr(fullPath.find_last_of("/") + 1);
-// 	envMap["REQUEST_METHOD"] = method;
-// 	envMap["REQUEST_URI"] = uri;
-// 	envMap["SCRIPT_NAME"] = scriptName;
-// 	envMap["PATH_INFO"] = fullPath;
-// 	envMap["QUERY_STRING"] = queryString;
-// 	envMap["CONTENT_TYPE"] = contentType;
-
-// }
-
-void Response::handleCGIGET(bool isGet, Request &request)
-{
-}
-
-void Response::handleResponse(Request &request)
-{
-	std::string method = request.getHeaders().getValue("method");
-	std::string uri = request.getHeaders().getValue("uri");
-	Body &body = request.getBody();
-
-	// std::cout << "Method: " << method << std::endl;
-
-	if ((std::find(this->targetRoute.methods.begin(), this->targetRoute.methods.end(), method) == this->targetRoute.methods.end()) && this->errorCode == 0)
-	{
-		std::cerr << "Response::handleResponse: Method Not Allowed" << std::endl;
-		this->errorCode = 403;
-	}
-// check if the cgi file have permission
-	if (this->errorCode != 0)
-		return (sendError(std::to_string(this->errorCode)));
-	std::string fullPath = generateFullPath(this->targetRoute.root, uri);
-	// std::cout << "full path : "<< fullPath << std::endl;
-	if (true)
-	{
-		Cgi cgi(request, fullPath, *this);
-		cgi.execute();
-		std::string body = cgi.output;
-		std::cout << "Body: " << body << std::endl;
-		HttpResponse httpResponse;
-		httpResponse.setVersion("HTTP/1.1");
-		httpResponse.setStatusCode(200);
-		httpResponse.setHeader("Content-Type", "text/html");
-		httpResponse.setHeader("Content-Length", std::to_string(body.size()));
-		httpResponse.setHeader("Connection", "keep-alive");
-		httpResponse.setHeader("Server", "LULUGINX");
-		httpResponse.setBody(body);
-		response = httpResponse.generateResponse();
-	}
-	// else
-	// {
-	// 	handleGET(method == "GET", uri);
-	// 	handlePOST(method == "POST", uri, body);
-	// 	handleDELETE(method == "DELETE", uri);
-	// }
 }

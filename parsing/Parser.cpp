@@ -253,11 +253,24 @@ void Parser::setDefaultRoute()
     if (routeConfig.redirect.empty())
         routeConfig.redirect = "";
     if (routeConfig.root.empty())
-        routeConfig.root = "/Users/nmunir/Desktop/Webserv";
+    {
+        if (serverConfig.root.empty())
+            routeConfig.root = "/Users/nmunir/Desktop/Webserv";
+        else
+            routeConfig.root = serverConfig.root;
+    }
     if (routeConfig.uploadDir.empty())
         routeConfig.uploadDir = "/Users/nmunir/Desktop/Webserv";
+    if (routeConfig.defaultFile.empty())
+    {
+        if (serverConfig.defaultFile.empty())
+            routeConfig.defaultFile.push_back("index.html");
+        else
+            routeConfig.defaultFile = serverConfig.defaultFile;
+    }
     if (routeConfig.cgiExtensions.empty())
         routeConfig.cgiExtensions.push_back("");
+    
 }
 
 void Parser::setDefault()
@@ -292,9 +305,15 @@ void Parser::setDefault()
         {
             servers[i].routeMap["/"] = routeConfig;
             servers[i].routeMap[""].methods.push_back("GET");
-            servers[i].routeMap[""].root = "/Users/nmunir/Desktop/Webserv";
+            if (servers[i].root.empty())
+                servers[i].routeMap[""].root = "/Users/nmunir/Desktop/Webserv";
+            else
+                servers[i].routeMap[""].root = servers[i].root;
             servers[i].routeMap[""].directoryListing = false;
-            servers[i].routeMap[""].defaultFile.push_back("index.html");
+            if (servers[i].defaultFile.empty())
+                servers[i].routeMap[""].defaultFile.push_back("index.html");
+            else
+                servers[i].routeMap[""].defaultFile = servers[i].defaultFile;
             servers[i].routeMap[""].uploadDir = "/Users/nmunir/Desktop/Webserv/uploads";
             servers[i].routeMap[""].redirect = "";
         }
@@ -328,6 +347,7 @@ void Parser::reset()
 }
 
 Parser::~Parser() { }
+
 Parser::Parser(const std::string configFile)
 {
     std::ifstream file(configFile.c_str());

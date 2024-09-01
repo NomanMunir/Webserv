@@ -39,6 +39,7 @@ void HttpResponse::setBody(const std::string& body)
 	this->body = body;
 }
 
+
 std::string HttpResponse::generateResponse()
 {
 	std::string response = this->version + " " + std::to_string(this->statusCode) + " " + getStatusMsg(std::to_string(this->statusCode)) + "\r\n";

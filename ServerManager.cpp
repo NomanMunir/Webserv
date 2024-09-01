@@ -1,5 +1,13 @@
 #include "ServerManager.hpp"
 
+ServerManager::~ServerManager()
+{
+	for (std::vector<Server *>::iterator it = this->servers.begin(); it != this->servers.end(); it++)
+	{
+		delete *it;
+	}
+}
+
 void ServerManager::initServers(Parser &parser)
 {
 	std::vector<ServerConfig> serverConfigs = parser.getServers();
@@ -104,19 +112,12 @@ void ServerManager::run()
 			if (eventInfo.isWrite)
 				processWriteEvent(eventInfo);
 		}
+
 		for (size_t i = 0; i < numOfEvents; i++)
 		{
 			EventInfo eventInfo = this->kqueue.getEventInfo(i);
 			if (eventInfo.isTimeout)
 				processTimeoutEvent(eventInfo);
 		}
-	}
-}
-
-ServerManager::~ServerManager()
-{
-	for (std::vector<Server *>::iterator it = this->servers.begin(); it != this->servers.end(); it++)
-	{
-		delete *it;
 	}
 }

@@ -177,6 +177,7 @@ void Client::sendResponse()
 	this->response.handleResponse(this->request);
 	this->writeBuffer = this->response.getResponse();
     // std::cout << "Response: " << this->writeBuffer << std::endl;
+    std::cout << "isConnectionClosed: " << this->response.getIsConnectionClosed() << std::endl;
 	this->writePending = true;
 	this->readPending = false;
 	this->readBuffer.clear();
@@ -187,6 +188,7 @@ void Client::readFromSocket(ServerConfig &serverConfig)
 {
     try
     {
+        std::cout << "Reading from client socket " << this->fd << std::endl;
         recvHeader();
         // std::cout << "headers: : " << this->request.getHeaders().getRawHeaders() << std::endl;
         this->request.getHeaders().parseHeader(this->response);
@@ -201,14 +203,11 @@ void Client::readFromSocket(ServerConfig &serverConfig)
 
         this->request.handleRequest(serverConfig, this->response);
         if (this->request.isComplete())
-        {
-            std::cout << "Request is complete" << std::endl;
             sendResponse();
-        }
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << std::endl;
+        std::cout << e.what() << std::endl;
         sendResponse();
     }
 }

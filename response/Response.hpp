@@ -47,7 +47,7 @@ class Response
 		int getErrorCode() const;
 		void setErrorCode(int errorStatus, std::string errorMsg);
 		bool getIsConnectionClosed() const;
-		void handleCGIGET(bool isGet, Request &request);
+
 
 	private:
 		std::map<int, std::string> statusCodes;
@@ -58,9 +58,12 @@ class Response
 		int errorCode;
 		bool isConnectionClosed;
 		
-		void handleGET(bool isGet, std::string &uri);
+		void handleGET(bool isGet, std::string &uri, bool isHEAD);
 		void handlePOST(bool isPost, std::string &uri, Body &body);
 		void handleDELETE(bool isDelete, std::string &uri);
+		void handlePUT(bool isPut, std::string &uri, Body &body);
+		void handleCGI(Request &request);
+
 
 		void defaultErrorPage(std::string errorCode);
 		void findErrorPage(std::string errorCode, std::map<std::string, std::string> errorPages);
@@ -70,7 +73,7 @@ class Response
 		int checkType(std::string path);
 		std::string listDirectory(const std::string& dirPath, const std::string& uriPath);
 		bool handleDirectory(std::string &fullPath, std::string &path, RouteConfig &targetRoute);
-		void generateResponseFromFile(std::string &path);
+		void generateResponseFromFile(std::string &path, bool isHEAD);
 		void handleRedirect(std::string redirect);
 
 

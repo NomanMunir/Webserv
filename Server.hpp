@@ -77,6 +77,8 @@ private:
     void bindAndListen();
     void socketInUse();
     void initSocket();
+    void removeClient(int fd);
+
 };
 
 #endif // SERVER_HPP

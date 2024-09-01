@@ -61,14 +61,17 @@
 [*] 404 close connection.
 
 [*] close connection in certain error codes
-[ ] Duplicate headers?
+[*] Fix validateQuery function.
+[*] Duplicate headers?
+[*] set route root from server root if not specified
+[*] Make the route able to accept uploaded files and configure where they should be saved.
+[*] are we closing the fd after removing event queue?
+[*] free servers
+[*] need to check redirect if they are working or not.
+[*] http://localhost/case3/../
+[*] work on head and put requests.
 
-[ ] response recieve with chunked encoding will be send back as chunked encoding.
-[ ] go back to chunked encoding when cgi is done (6.1 Transfer-Encoding).
-[ ] Fix validateQuery function.
-[ ] are we closing the fd after removing event queue?
-[ ] need to check redirect if they are working or not.
-[ ] work on head and put requests.
-[ ] Make the route able to accept uploaded files and configure where they should
-be saved.
-[ ] set route root from server root if not specified
+[*] std::find(uri, "%20", " ");
+[ ] timeout for server
+[ ] signals
+[ ] infinit loop when we distrupt the connection.
