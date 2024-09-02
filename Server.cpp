@@ -192,8 +192,6 @@ void Server::handleRead(int fd)
 void Server::handleDisconnection(int fd)
 {
     std::cout << "Handling timeout for client " << fd << std::endl;
-    if (clients[fd].getRequest().getIsCGI())
-    {}
     kqueue.removeFromQueue(fd, READ_EVENT);
     kqueue.removeFromQueue(fd, TIMEOUT_EVENT);
     close(fd);

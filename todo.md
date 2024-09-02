@@ -70,8 +70,8 @@
 [*] need to check redirect if they are working or not.
 [*] http://localhost/case3/../
 [*] work on head and put requests.
-
 [*] std::find(uri, "%20", " ");
+[*] signals
+[*] infinit loop when we distrupt the connection.
+
 [ ] timeout for server
-[ ] signals
-[ ] infinit loop when we distrupt the connection.

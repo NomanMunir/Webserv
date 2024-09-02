@@ -45,8 +45,8 @@ class Request
 		void handleRequest(ServerConfig &serverConfig, Response &structResponse);
 		bool isBodyExist(ServerConfig &serverConfig, Response &structResponse, int fd);
 
+
 	private:
-	
 		void findServer(Response &structResponse, Parser &parser);
 		bool chooseRoute(std::string path, ServerConfig server, RouteConfig &targetRoute);
 		void createSystemENV(ServerConfig &serverConfig);

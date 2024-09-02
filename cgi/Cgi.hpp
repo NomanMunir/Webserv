@@ -3,8 +3,11 @@
 
 #include <map>
 #include <string>
+#include <signal.h>
+#include <time.h>
 #include "../response/Response.hpp"
 
+#define CGI_TIMEOUT 5
 
 class Request;
 
@@ -22,27 +25,17 @@ public:
     void execute();
 
 private:
-    int 												pid;
 	int													pipeFd[2];
     std::string											_fullPath;
     Response &											_response;
     Request &                                           _request;
-	// int													postBodyFd;
-	// int													cgiClientSocket;
-	// std::string											cgiResponseMessage;
-	// std::chrono::time_point<std::chrono::steady_clock>	startTime;
-
-	// bool												isValid;
-    // Helper methods
 
     bool checkFilePermission(const char* path);
     void freeEnv(char** envp);
     void setCGIEnv();
     void vecToChar(std::vector<std::string> &envMaker);
+    void checkCGITimeout(pid_t pid);
 
-
-    // Configuration map
-    std::map<std::string, std::string> config_;
     char** _envp;
 };
 

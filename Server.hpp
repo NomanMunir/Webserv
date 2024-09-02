@@ -29,9 +29,9 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <cerrno>
-#include <dirent.h>
-#include <poll.h>
+#include <dirent.h> 
 #include <sys/time.h>
+#include <signal.h>
 
 #include "utils/utils.hpp"
 #include "parsing/Parser.hpp"

@@ -48,7 +48,6 @@ class Response
 		void setErrorCode(int errorStatus, std::string errorMsg);
 		bool getIsConnectionClosed() const;
 
-
 	private:
 		std::map<int, std::string> statusCodes;
 		std::string response;

@@ -49,6 +49,33 @@ bool Cgi::checkFilePermission(const char* path)
            (fileStat.st_mode & S_IXOTH);   // Others have execute permission
 }
 
+void Cgi::checkCGITimeout(pid_t pid)
+{
+    int     status;
+    int     childStatus = 0;
+    double  time = 0;
+    clock_t start = clock();
+    while (childStatus == 0)
+    {
+        childStatus = waitpid(pid, &status, WNOHANG);
+        clock_t end = clock();
+        time = static_cast<double>(end - start) / CLOCKS_PER_SEC;
+        
+        if (time > CGI_TIMEOUT)
+        {
+            if (kill(pid, SIGKILL) < 0)
+            {
+                std::cerr << "Failed to kill CGI process with pid " << pid << std::endl;
+                freeEnv(_envp);
+                this->_response.setErrorCode(500, "Internal Server Error: Failed to kill CGI process");
+            }
+            std::cout << "Killed CGI process with pid " << pid << std::endl;
+            freeEnv(_envp);
+            this->_response.setErrorCode(504, "Gateway Timeout: CGI script execution timed out");
+        }
+    }
+}
+
 void Cgi::execute()
 {
     // Check file permissions
@@ -108,23 +135,14 @@ void Cgi::execute()
             }
         }
         close(fd_in[1]);
+        checkCGITimeout(pid);
 
         char buffer[1024];
         ssize_t count;
 
-        while ((count = read(fd_out[0], buffer, sizeof(buffer))) > 0) {
+        while ((count = read(fd_out[0], buffer, sizeof(buffer))) > 0)
             output.append(buffer, count);
-        }
         close(fd_out[0]);
-
-        int status;
-        waitpid(pid, &status, 0);
-        
-        if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
-        {
-            freeEnv(_envp);
-            _response.setErrorCode(500, "Internal Server Error: CGI script execution failed");
-        }
     }
 }
 
