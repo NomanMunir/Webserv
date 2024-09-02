@@ -71,10 +71,12 @@ class Response
 
 
 		int checkType(std::string path);
-		std::string listDirectory(const std::string& dirPath, const std::string& uriPath);
-		bool handleDirectory(std::string &fullPath, std::string &path, RouteConfig &targetRoute);
+
+		std::string generateDirectoryListing(const std::string& dirPath, const std::string& uriPath);
+		bool checkDefaultFile(std::string &fullPath);
+		void handleDirectory(std::string &fullPath, std::string &uri);
 		void generateResponseFromFile(std::string &path, bool isHEAD);
-		void handleRedirect(std::string redirect);
+		bool handleRedirect(bool isRedir, std::string redirect);
 
 
 

@@ -13,37 +13,6 @@
 #include "Response.hpp"
 #include "../cgi/Cgi.hpp"
 
-std::string Response::listDirectory(const std::string& dirPath, const std::string& uriPath)
-{
-    std::string htmlContent;
-
-    DIR *dir;
-    struct dirent *ent;
-	std::string newUriPath = (uriPath == "/") ? "" : uriPath;
-    if ((dir = opendir(dirPath.c_str())) != NULL) {
-        htmlContent += "<html><head><title>Index of " + dirPath + "</title></head><body>";
-        htmlContent += "<h1>Index of " + dirPath + "</h1><hr><ul>";
-
-        while ((ent = readdir(dir)) != NULL)
-		{
-            std::string filename = ent->d_name;
-
-            if (filename == "." || filename == "..")
-                continue;
-			if (checkType(dirPath + filename) == IS_DIR)
-				filename += "/";
-            htmlContent += "<li><a href=\"" + newUriPath  + filename + "\">" + filename + "</a></li>";
-        }
-
-        htmlContent += "</ul><hr></body></html>";
-
-        closedir(dir);
-    }
-	else
-		this->setErrorCode(404, "Response::listDirectory: Could not open directory");
-    return htmlContent;
-}
-
 int Response::checkType(std::string path)
 {
 	struct stat info;
@@ -70,6 +39,37 @@ int Response::checkType(std::string path)
 	return (0);
 }
 
+std::string Response::generateDirectoryListing(const std::string& dirPath, const std::string& uriPath)
+{
+    std::string htmlContent;
+
+    DIR *dir;
+    struct dirent *ent;
+	std::string newUriPath = (uriPath == "/") ? "" : uriPath;
+    if ((dir = opendir(dirPath.c_str())) != NULL) {
+        htmlContent += "<html><head><title>Index of " + dirPath + "</title></head><body>";
+        htmlContent += "<h1>Index of " + dirPath + "</h1><hr><ul>";
+
+        while ((ent = readdir(dir)) != NULL)
+		{
+            std::string filename = ent->d_name;
+
+            if (filename == "." || filename == "..")
+                continue;
+			if (checkType(dirPath + filename) == IS_DIR)
+				filename += "/";
+            htmlContent += "<li><a href=\"" + newUriPath  + filename + "\">" + filename + "</a></li>";
+        }
+
+        htmlContent += "</ul><hr></body></html>";
+
+        closedir(dir);
+    }
+	else
+		this->setErrorCode(404, "Response::generateDirectoryListing: Could not open directory");
+    return htmlContent;
+}
+
 std::string resolvePath(std::string &fullPath, std::string &defaultFile)
 {
 	std::vector<std::string> rootTokens = split(fullPath, '/');
@@ -89,32 +89,36 @@ std::string resolvePath(std::string &fullPath, std::string &defaultFile)
 
     return (join(resolvedTokens, '/'));
 }
-bool Response::handleDirectory(std::string &fullPath, std::string &path, RouteConfig &targetRoute)
+
+bool Response::checkDefaultFile(std::string &fullPath)
 {
 	std::string newPath;
-	for (size_t i = 0; i < targetRoute.defaultFile.size(); i++)
+	for (size_t i = 0; i < this->targetRoute.defaultFile.size(); i++)
 	{
-		if (targetRoute.defaultFile[i][0] == '/')
-			newPath = targetRoute.defaultFile[i];
+		if (this->targetRoute.defaultFile[i][0] == '/')
+			newPath = this->targetRoute.defaultFile[i];
 		else
-			newPath = resolvePath(fullPath, targetRoute.defaultFile[i]);
-		// std::cout << "New Path: " << newPath << std::endl;
-		// std::string newPath = fullPath + targetRoute.defaultFile[i];
-		if (newPath.find(targetRoute.root) != 0)
+			newPath = resolvePath(fullPath, this->targetRoute.defaultFile[i]);
+		if (newPath.find(this->targetRoute.root) != 0)
 		{
 			std::cout << "Error: " << "What are you trying to access oui?" << std::endl;
 			this->setErrorCode(403, "Response::handleDirectory: Access denied");
-			return (false);
 		}
 		if (isFile(newPath))
-		{
-			fullPath = newPath;
-			return (true);
-		}
+			return (generateResponseFromFile(newPath, false), true);
 	}
-	if (targetRoute.directoryListing)
+	return (false);
+}
+
+void Response::handleDirectory(std::string &fullPath, std::string &uri)
+{
+	if (fullPath.back() != '/')
+		this->setErrorCode(301, "Response::handleGET: Redirecting to directory without trailing slash");
+	if(checkDefaultFile(fullPath))
+		return ;
+	if (this->targetRoute.directoryListing)
 	{
-		std::string body = listDirectory(fullPath, path);
+		std::string body = generateDirectoryListing(fullPath, uri);
 		HttpResponse httpResponse;
 		httpResponse.setVersion("HTTP/1.1");
 		httpResponse.setStatusCode(200);
@@ -127,7 +131,6 @@ bool Response::handleDirectory(std::string &fullPath, std::string &path, RouteCo
 	}
 	else
 		this->setErrorCode(403, "Response::handleDirectory: Directory listing not allowed");
-	return (false);
 }
 
 std::string generateFullPath(std::string rootPath, std::string path)
@@ -148,21 +151,23 @@ void Response::generateResponseFromFile(std::string &path, bool isHEAD)
 	std::string body = buffer.str();
 	std::string extention = path.substr(path.find_last_of(".") + 1);
 	std::string mimeType = getMimeType(extention);
-
 	HttpResponse httpResponse;
 	httpResponse.setVersion("HTTP/1.1");
 	httpResponse.setStatusCode(200);
 	httpResponse.setHeader("Content-Type", mimeType);
 	httpResponse.setHeader("Content-Length", std::to_string(body.size()));
 	httpResponse.setHeader("Connection", "keep-alive");
+
 	httpResponse.setHeader("Server", "LULUGINX");
 	if (!isHEAD)
 		httpResponse.setBody(body);
 	response = httpResponse.generateResponse();
 }
 
-void Response::handleRedirect(std::string redirect)
+bool Response::handleRedirect(bool isRedir, std::string redirect)
 {
+	if (!isRedir)
+		return false;
 	std::cout << "Redirect: " << redirect << std::endl;
 	std::stringstream ss(redirect);
 	int errorCode;
@@ -197,11 +202,11 @@ void Response::handleRedirect(std::string redirect)
 			httpResponse.setHeader("Server", "LULUGINX");
 			httpResponse.setBody(value);
 			response = httpResponse.generateResponse();
-			// response = "HTTP/1.1" + std::to_string(errorCode) + " " + getStatusMsg(std::to_string(errorCode)) + "\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(value.size()) + "\r\n\r\n" + value + "\n";
 		}
 	}
 	else
 		setErrorCode(errorCode, "Response::handleRedirect: Invalid redirect");
+	return true;
 }
 
 void Response::handleGET(bool isGet, std::string &uri, bool isHEAD)
@@ -210,26 +215,15 @@ void Response::handleGET(bool isGet, std::string &uri, bool isHEAD)
 	if (isGet)
 	{
 		std::string fullPath = generateFullPath(targetRoute.root, uri);
-		if (targetRoute.redirect != "")
-		{
-			handleRedirect(targetRoute.redirect);
-			return;
-		}
 
+		if(handleRedirect(this->targetRoute.redirect != "", targetRoute.redirect))
+			return;
 		std::cout << "FullPath : " << fullPath << std::endl;
 		int type = checkType(fullPath);
 		if (type == IS_FILE)
 			generateResponseFromFile(fullPath, isHEAD);
 		else if (type == IS_DIR)
-		{
-			if (fullPath.back() != '/')
-				this->setErrorCode(301, "Response::handleGET: Redirecting to directory without trailing slash");
-			else
-			{
-				if(handleDirectory(fullPath, uri, targetRoute))
-					generateResponseFromFile(fullPath, isHEAD);
-			}
-		}
+			handleDirectory(fullPath, uri);
 	}
 }
 
@@ -348,7 +342,6 @@ void Response::handleResponse(Request &request)
 	std::string method = request.getHeaders().getValue("method");
 	std::string uri = request.getHeaders().getValue("uri");
 	Body &body = request.getBody();
-
 	if (this->errorCode != 0)
 		return (sendError(std::to_string(this->errorCode)));
 	if (request.getIsCGI())
@@ -487,15 +480,20 @@ void Response::printResponse()
 	std::cout << "Response: " << response << std::endl;
 }
 
-Response::Response() : errorCode(0) { }
+Response::Response() : errorCode(0), isConnectionClosed(false) { }
 
-Response::Response(const Response &c) : statusCodes(c.statusCodes), response(c.response), targetServer(c.targetServer), targetRoute(c.targetRoute), errorCode(c.errorCode) { }
+Response::Response(const Response &c) 
+: isConnectionClosed(c.isConnectionClosed),
+ statusCodes(c.statusCodes), response(c.response),
+  targetServer(c.targetServer), targetRoute(c.targetRoute)
+  , errorCode(c.errorCode) { }
 
 Response& Response::operator=(const Response &c)
 {
 	if (this == &c)
 		return *this;
 	statusCodes = c.statusCodes;
+	this->isConnectionClosed = c.isConnectionClosed;
 	response = c.response;
 	targetServer = c.targetServer;
 	targetRoute = c.targetRoute;

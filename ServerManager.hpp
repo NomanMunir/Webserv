@@ -13,6 +13,7 @@ class ServerManager
 		~ServerManager();
 		// ServerManager(const ServerManager &other);
 		// ServerManager &operator=(const ServerManager &other);
+		static bool running;
 		void run();
 
 	private:
@@ -24,8 +25,9 @@ class ServerManager
 		void processWriteEvent(EventInfo eventInfo);
 		void processTimeoutEvent(EventInfo eventInfo);
 
+		void stop();
+
 		void initServers(Parser &parser);
-		
 };
 
 #endif // SERVERMANAGER_HPP

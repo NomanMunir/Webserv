@@ -127,14 +127,14 @@ void Validation::validateCgiExtensions(std::vector<std::string> cgiExtensions)
 	}
 }
 
-Validation::Validation(Parser parser)
+Validation::Validation(Parser &parser)
 {
 	validateDirectives(parser.getDirectives());
 	std::vector<ServerConfig> servers = parser.getServers();
 	for (size_t i = 0; i < servers.size(); i++)
 	{
 		isDirectory(servers[i].root);
-		std::string cgiDir = servers[i].root + "/" + servers[i].cgi_directory;
+		const std::string cgiDir = servers[i].root + "/" + servers[i].cgi_directory;
 		isDirectory(cgiDir);
 		validateListen(servers[i].listen);
 		for (size_t j = 0; j < servers[i].serverName.size(); j++)

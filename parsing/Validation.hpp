@@ -22,7 +22,7 @@ struct ServerConfig;
 class Validation
 {
 	public:
-		Validation(Parser parser);
+		Validation(Parser &parser);
 		~Validation();
 	private:
 		void validateServerNames(std::string& value);

@@ -1,5 +1,7 @@
 #include "ServerManager.hpp"
 
+bool ServerManager::running = true;
+
 ServerManager::~ServerManager()
 {
 	for (std::vector<Server *>::iterator it = this->servers.begin(); it != this->servers.end(); it++)
@@ -83,9 +85,11 @@ void ServerManager::processTimeoutEvent(EventInfo eventInfo)
 
 void ServerManager::run()
 {
-	while (true)
+	while (ServerManager::running)
 	{
 		int numOfEvents = this->kqueue.getNumOfEvents();
+		if (running == false)
+			break;
 		if (numOfEvents < 0)
 		{
 			std::cerr << "run1::Error: " << strerror(errno) << std::endl;

@@ -129,6 +129,18 @@ void Server::handleWrite(int fd)
     std::cout << "Handling write for client " << fd << std::endl;
     try
     {
+        bool isClosed = !clients[fd].isKeepAlive() || clients[fd].getResponse().getIsConnectionClosed();
+        if (isClosed)
+        {
+            ssize_t bytesSent = send(fd, clients[fd].getWriteBuffer().c_str(), clients[fd].getWriteBuffer().size(), 0);
+            std::cout << "Connection closed by server bec KeepAlive or IsConnectionClosed on socket fd " << fd << std::endl;
+            kqueue.removeFromQueue(fd, WRITE_EVENT);
+            kqueue.removeFromQueue(fd, TIMEOUT_EVENT);
+            kqueue.removeFromQueue(fd, READ_EVENT);
+            close(fd);
+            clients.erase(fd);
+            return;
+        }
         if (!clients[fd].isWritePending()) return;
 
         ssize_t bytesSent = send(fd, clients[fd].getWriteBuffer().c_str(), clients[fd].getWriteBuffer().size(), 0);
@@ -141,18 +153,11 @@ void Server::handleWrite(int fd)
         
         kqueue.removeFromQueue(fd, WRITE_EVENT);
         clients[fd].getWriteBuffer().clear();
-        clients[fd].reset();
         clients[fd].setWritePending(false);
-        if (!clients[fd].isKeepAlive() || clients[fd].getResponse().getIsConnectionClosed())
-        {
-            std::cout << "Connection closed by server bec KeepAlive or IsConnectionClosed on socket fd " << fd << std::endl;
-            kqueue.removeFromQueue(fd, TIMEOUT_EVENT);
-            kqueue.removeFromQueue(fd, READ_EVENT);
-            close(fd);
-            clients.erase(fd);
-            return;
-        }
+
+        clients[fd].reset();
         kqueue.addToQueue(fd, TIMEOUT_EVENT);
+
     }
     catch(const std::exception& e)
     {
@@ -187,6 +192,8 @@ void Server::handleRead(int fd)
 void Server::handleDisconnection(int fd)
 {
     std::cout << "Handling timeout for client " << fd << std::endl;
+    if (clients[fd].getRequest().getIsCGI())
+    {}
     kqueue.removeFromQueue(fd, READ_EVENT);
     kqueue.removeFromQueue(fd, TIMEOUT_EVENT);
     close(fd);

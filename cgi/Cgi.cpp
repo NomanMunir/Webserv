@@ -22,7 +22,7 @@ Cgi::Cgi(Request &request, std::string fullPath, Response &response)
 Cgi::~Cgi()
 {
     // Free allocated environment variables
-    freeEnv(_envp);
+    // freeEnv(_envp);
     // if (fd_out[0] != -1)
 	// {
 	// 	close(fd_out[0]);

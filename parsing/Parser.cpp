@@ -224,7 +224,6 @@ void Parser::parseBlocks()
             tokens.erase(tokens.begin(), tokens.begin() + 2);
             // serverBlock.push_back(ServerBlock(tokens));
             checkServerDirective();
-            
         }
         else
             checkHttpDirective();

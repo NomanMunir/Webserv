@@ -122,7 +122,6 @@ bool Headers::validateQuery(const std::string &uri)
 
 bool Headers::validateUri(const std::string &uri)
 {
-	std::cout << "uri : " << uri << std::endl;
 	if (uri.empty() || uri.find("/") == std::string::npos)
 		return false;
 	if (uri.find("?") != std::string::npos)
