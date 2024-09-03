@@ -4,13 +4,13 @@
 #include "Server.hpp"
 #include <vector>
 #include "parsing/Parser.hpp"
-#include "events/KQueue.hpp"
+#include "events/EventPoller.hpp"
 #include "utils/Logs.hpp"
 
 class ServerManager
 {
 	public:
-		ServerManager(Parser &parser);
+		ServerManager(Parser &parser, EventPoller *poller);
 		~ServerManager();
 		// ServerManager(const ServerManager &other);
 		// ServerManager &operator=(const ServerManager &other);
@@ -20,7 +20,7 @@ class ServerManager
 	private:
 		std::vector<Server *> servers;
 		std::vector<int> serverSockets;
-		KQueue kqueue;
+		EventPoller *_poller;
 
 		void processReadEvent(EventInfo eventInfo);
 		void processWriteEvent(EventInfo eventInfo);

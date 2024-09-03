@@ -166,3 +166,38 @@
 [Tue Sep  3 15:15:12 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 6
 [Tue Sep  3 15:15:12 2024] [INFO] [handleWrite]		 Handling write for client 6
 [Tue Sep  3 15:15:12 2024] [INFO] [removeFromQueue]		 Removing write event for fd: 6
+[Tue Sep  3 16:54:32 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
+[Tue Sep  3 17:43:47 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
+[Tue Sep  3 17:44:05 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 61327
+[Tue Sep  3 17:44:05 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 6
+[Tue Sep  3 17:44:05 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 61330
+[Tue Sep  3 17:44:05 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Tue Sep  3 17:44:05 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 6
+[Tue Sep  3 17:44:05 2024] [ERROR] [checkType]		 File not found
+[Tue Sep  3 17:44:05 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Tue Sep  3 17:44:05 2024] [INFO] [handleWrite]		 Connection closed for client [6] with IP 127.0.0.1 on port 8080
+[Tue Sep  3 17:44:52 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 7
+[Tue Sep  3 17:44:52 2024] [ERROR] [checkType]		 File not found
+[Tue Sep  3 17:44:52 2024] [INFO] [handleWrite]		 Handling write for client 7
+[Tue Sep  3 17:44:52 2024] [INFO] [handleWrite]		 Connection closed for client [7] with IP 127.0.0.1 on port 8080
+[Tue Sep  3 17:44:52 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 61334
+[Tue Sep  3 17:44:52 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 61335
+[Tue Sep  3 17:45:46 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
+[Tue Sep  3 17:45:49 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 61354
+[Tue Sep  3 17:45:49 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 6
+[Tue Sep  3 17:45:49 2024] [ERROR] [checkType]		 File not found /Users/nmunir/Desktop/Webserv/asdf
+[Tue Sep  3 17:45:49 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 61356
+[Tue Sep  3 17:45:49 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Tue Sep  3 17:45:49 2024] [INFO] [handleWrite]		 Connection closed for client [6] with IP 127.0.0.1 on port 8080
+[Tue Sep  3 17:45:55 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 7
+[Tue Sep  3 17:45:55 2024] [INFO] [handleWrite]		 Handling write for client 7
+[Tue Sep  3 17:45:55 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 61363
+[Tue Sep  3 17:47:37 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
+[Tue Sep  3 17:47:39 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 61391
+[Tue Sep  3 17:47:39 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Tue Sep  3 17:47:39 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 61393
+[Tue Sep  3 17:47:39 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Tue Sep  3 17:47:42 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Tue Sep  3 17:47:42 2024] [ERROR] [checkType]		 File not found /Users/nmunir/Desktop/Webserv/asdf
+[Tue Sep  3 17:47:42 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Tue Sep  3 17:47:42 2024] [INFO] [handleWrite]		 Connection closed for client [6] with IP 127.0.0.1 on port 8080

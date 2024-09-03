@@ -22,14 +22,14 @@ int Response::checkType(std::string path)
         {
         case EACCES:
 		{
-            this->setErrorCode(403, "[checkType]\t\t Access denied"); break;
+            this->setErrorCode(403, "[checkType]\t\t Access denied " + path); break;
 		}
         case ENOENT:
 		{
-            this->setErrorCode(404, "[checkType]\t\t File not found"); break;
+            this->setErrorCode(404, "[checkType]\t\t File not found " + path); break;
 		}
         default:
-			this->setErrorCode(500, "[checkType]\t\t Could not get file info");
+			this->setErrorCode(500, "[checkType]\t\t Could not get file info " + path);
         }
 	}
 	if (S_ISREG(info.st_mode))

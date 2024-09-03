@@ -10,6 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "events/EventPoller.hpp"
+#if defined(__APPLE__) || defined(__FreeBSD__)
+    #include "events/KQueuePoller.hpp"
+#elif defined(__linux__)
+    #include "events/EpollPoller.hpp"
+#endif
+
 #include "ServerManager.hpp"
 #include <csignal>
 #include <stdexcept>
@@ -50,6 +57,7 @@ void initializeSignalHandling()
 
 int main(int ac, const char **av, char **env)
 {
+    EventPoller *poller;
     try
     {
         Logs::init();
@@ -62,7 +70,16 @@ int main(int ac, const char **av, char **env)
 
         Validation validation(parser);
         parser.setEnv(env);
-        ServerManager serverManager(parser);
+
+        #if defined(__APPLE__) || defined(__FreeBSD__)
+            poller = new KQueuePoller();
+        #elif defined(__linux__)
+            poller = new EpollPoller();
+        #else
+            throw std::runtime_error("[main]\t\t\t Unsupported OS");
+        #endif
+
+        ServerManager serverManager(parser, poller);
         serverManager.run();
     }
     catch (std::exception &e)

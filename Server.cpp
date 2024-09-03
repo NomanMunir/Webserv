@@ -1,7 +1,7 @@
 #include "Server.hpp"
 
 #if defined(__APPLE__) || defined(__FreeBSD__)
-#include "events/KQueue.hpp"
+#include "events/EventPoller.hpp"
 #endif // __APPLE__ || __FreeBSD__
 
 #if defined(__linux__)
@@ -11,26 +11,20 @@
 #define MAX_CONNECTIONS 10
 
 
-Server::Server(ServerConfig &serverConfig, KQueue &queue) 
-    :serverConfig(serverConfig), kqueue(queue), serverError(0)
+Server::Server(ServerConfig &serverConfig, EventPoller *poller) 
+    :serverConfig(serverConfig), _poller(poller), serverError(0)
 {
     std::string serverPort = serverConfig.listen.back().back();
     this->port =  std::atoi(serverPort.c_str());
     std::memset((char *)&addr, 0, sizeof(addr));
 }
 
-Server::~Server()
-{
-    close(this->serverSocket);
-}
+Server::~Server() { close(this->serverSocket); }
 
-Server::Server(const Server &other) : serverConfig(other.serverConfig), kqueue(other.kqueue)
-{
-    this->addr = other.addr;
-    this->port = other.port;
-    this->serverError = other.serverError;
-    this->serverConfig = other.serverConfig;
-}
+Server::Server(const Server &other) 
+    : serverConfig(other.serverConfig),
+     _poller(other._poller), serverError(other.serverError),
+      port(other.port), addr(other.addr), serverSocket(other.serverSocket) {}
 
 Server &Server::operator=(const Server &other)
 {
@@ -38,7 +32,7 @@ Server &Server::operator=(const Server &other)
     {
         this->serverSocket = other.serverSocket;
         this->addr = other.addr;
-        this->kqueue = other.kqueue;
+        this->_poller = other._poller;
         this->port = other.port;
         this->serverError = other.serverError;
         this->serverConfig = other.serverConfig;
@@ -110,8 +104,8 @@ bool Server::acceptClient()
     }
     Logs::appendLog("INFO", "[acceptClient]\t\t New connection, socket fd is [" + std::to_string(clientSocket) + "], IP is : " + inet_ntoa(clientAddr.sin_addr) + ", port : " + std::to_string(ntohs(clientAddr.sin_port)));
     clients[clientSocket] = Client(clientSocket);
-    kqueue.addToQueue(clientSocket, READ_EVENT);
-    kqueue.addToQueue(clientSocket, TIMEOUT_EVENT);
+    this->_poller->addToQueue(clientSocket, READ_EVENT);
+    this->_poller->addToQueue(clientSocket, TIMEOUT_EVENT);
     return true;
 }
 
@@ -131,9 +125,9 @@ void Server::handleWrite(int fd)
         {
             ssize_t bytesSent = send(fd, clients[fd].getWriteBuffer().c_str(), clients[fd].getWriteBuffer().size(), 0);
             Logs::appendLog("INFO", "[handleWrite]\t\t Connection closed for client [" + std::to_string(fd) + "] with IP " + inet_ntoa(this->addr.sin_addr) + " on port " + std::to_string(this->port));
-            kqueue.removeFromQueue(fd, WRITE_EVENT);
-            kqueue.removeFromQueue(fd, TIMEOUT_EVENT);
-            kqueue.removeFromQueue(fd, READ_EVENT);
+            this->_poller->removeFromQueue(fd, WRITE_EVENT);
+            this->_poller->removeFromQueue(fd, TIMEOUT_EVENT);
+            this->_poller->removeFromQueue(fd, READ_EVENT);
             close(fd);
             clients.erase(fd);
             return;
@@ -144,22 +138,22 @@ void Server::handleWrite(int fd)
         if (bytesSent < 0)
         {
             Logs::appendLog("ERROR", "[handleWrite]\t\t Error sending data to client " + std::string(strerror(errno)));
-            kqueue.removeFromQueue(fd, WRITE_EVENT);
+            this->_poller->removeFromQueue(fd, WRITE_EVENT);
             return;
         }
         
-        kqueue.removeFromQueue(fd, WRITE_EVENT);
+        this->_poller->removeFromQueue(fd, WRITE_EVENT);
         clients[fd].getWriteBuffer().clear();
         clients[fd].setWritePending(false);
 
         clients[fd].reset();
-        kqueue.addToQueue(fd, TIMEOUT_EVENT);
+        this->_poller->addToQueue(fd, TIMEOUT_EVENT);
 
     }
     catch(const std::exception& e)
     {
         std::cerr << e.what() << '\n';
-        kqueue.removeFromQueue(fd, TIMEOUT_EVENT);
+        this->_poller->removeFromQueue(fd, TIMEOUT_EVENT);
         close(fd);
         clients.erase(fd);
     }
@@ -171,16 +165,16 @@ void Server::handleRead(int fd)
     {
         clients[fd].readFromSocket(this->serverConfig);
         if (clients[fd].getResponse().getIsConnectionClosed() || !clients[fd].isKeepAlive())
-            kqueue.removeFromQueue(fd, READ_EVENT);
+            this->_poller->removeFromQueue(fd, READ_EVENT);
 
         if (clients[fd].isWritePending())
-            kqueue.addToQueue(fd, WRITE_EVENT);
+            this->_poller->addToQueue(fd, WRITE_EVENT);
     }
     catch(const std::exception& e)
     {
         std::cerr << e.what() << '\n';
-        kqueue.removeFromQueue(fd, READ_EVENT);
-        kqueue.removeFromQueue(fd, TIMEOUT_EVENT);
+        this->_poller->removeFromQueue(fd, READ_EVENT);
+        this->_poller->removeFromQueue(fd, TIMEOUT_EVENT);
         close(fd);
         clients.erase(fd);
     }
@@ -189,8 +183,8 @@ void Server::handleRead(int fd)
 void Server::handleDisconnection(int fd)
 {
     Logs::appendLog("DEBUG", "[handleDisconnection]\t\t Handling disconnection for client " + std::to_string(fd));
-    kqueue.removeFromQueue(fd, READ_EVENT);
-    kqueue.removeFromQueue(fd, TIMEOUT_EVENT);
+    this->_poller->removeFromQueue(fd, READ_EVENT);
+    this->_poller->removeFromQueue(fd, TIMEOUT_EVENT);
     close(fd);
     clients.erase(fd);
 }

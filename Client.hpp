@@ -6,7 +6,6 @@
 #include "request/Request.hpp"
 #include "response/Response.hpp"
 #include "parsing/Parser.hpp"
-#include "events/KQueue.hpp"
 #include "utils/Logs.hpp"
 class Client {
 private:

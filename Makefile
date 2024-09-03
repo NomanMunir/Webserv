@@ -14,9 +14,9 @@ SRCS = main.cpp \
 		cgi/Cgi.cpp \
 
 		ifeq ($(shell uname), Linux)
-			SRCS += events/Epoll.cpp
+			SRCS += events/EpollPoller.cpp
 		else
-			SRCS += events/KQueue.cpp
+			SRCS += events/KQueuePoller.cpp
 		endif
 
 OBJS = $(SRCS:.cpp=.o)

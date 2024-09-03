@@ -19,13 +19,13 @@
 #include "request/Request.hpp"
 #include "response/Response.hpp"
 #include "Client.hpp"
-#include "events/KQueue.hpp"
+#include "events/EventPoller.hpp"
 #include "utils/Logs.hpp"
 
 class Server
 {
 public:
-    Server(ServerConfig &serverConfig, KQueue &kqueue);
+    Server(ServerConfig &serverConfig, EventPoller *poller);
     ~Server();
     Server(const Server &other);
     Server &operator=(const Server &other);
@@ -53,7 +53,7 @@ private:
     int port;
     ServerConfig serverConfig;
     std::unordered_map<int, Client> clients;
-    KQueue &kqueue;
+    EventPoller *_poller;
 
     void bindAndListen();
     void socketInUse();

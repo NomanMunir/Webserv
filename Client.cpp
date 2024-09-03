@@ -74,17 +74,17 @@ void Client::recvChunk()
         while (true)
         {
             if (recv(this->fd, &buffer, 1, 0) <= 0)
-                throw std::runtime_error("[Client::recvChunk]\t\t Error reading from client socket " + std::to_string(this->fd) + " " + strerror(errno));
+                throw std::runtime_error("[recvChunk]\t\t Error reading from client socket " + std::to_string(this->fd) + " " + strerror(errno));
 
             if (buffer == '\r')
             {
                 // Expecting '\n' after '\r'
                 if (recv(this->fd, &buffer, 1, 0) <= 0)
-                    throw std::runtime_error("[Client::recvChunk]\t\t Error reading from client socket " + std::to_string(this->fd) + " " + strerror(errno));
+                    throw std::runtime_error("[recvChunk]\t\t Error reading from client socket " + std::to_string(this->fd) + " " + strerror(errno));
                 if (buffer == '\n')
                     break;
                 else
-                    throw std::runtime_error("[Client::recvChunk]\t\t Malformed chunk size");
+                    throw std::runtime_error("[recvChunk]\t\t Malformed chunk size");
             }
             chunkSizeStr.append(1, buffer);
         }
@@ -96,36 +96,36 @@ void Client::recvChunk()
         }
         catch (const std::exception &e)
         {
-            throw std::runtime_error("[Client::recvChunk]\t\t Error converting chunk size to integer");
+            throw std::runtime_error("[recvChunk]\t\t Error converting chunk size to integer");
         }
 
         if (chunkSize == 0)
         {
             if (recv(this->fd, &buffer, 1, 0) <= 0 || buffer != '\r')
-                throw std::runtime_error("[Client::recvChunk]\t\t Malformed final chunk");
+                throw std::runtime_error("[recvChunk]\t\t Malformed final chunk");
             if (recv(this->fd, &buffer, 1, 0) <= 0 || buffer != '\n')
-                throw std::runtime_error("[Client::recvChunk]\t\t Malformed final chunk");
+                throw std::runtime_error("[recvChunk]\t\t Malformed final chunk");
             break;
         }
 
         std::string chunkData(chunkSize, 0);
         int bytesRead = recv(this->fd, &chunkData[0], chunkSize, 0);
         if (bytesRead != chunkSize)
-            throw std::runtime_error("[Client::recvChunk]\t\t Error reading chunk data");
+            throw std::runtime_error("[recvChunk]\t\t Error reading chunk data");
         bodyContent += chunkData;
 
         std::cout << "bodyContent: " << bodyContent << std::endl;
 
         // Read the trailing CRLF after the chunk data
         if (recv(this->fd, &buffer, 1, 0) <= 0 || buffer != '\r')
-            throw std::runtime_error("[Client::recvChunk]\t\t Malformed chunk data");
+            throw std::runtime_error("[recvChunk]\t\t Malformed chunk data");
         if (recv(this->fd, &buffer, 1, 0) <= 0 || buffer != '\n')
-            throw std::runtime_error("[Client::recvChunk]\t\t Malformed chunk data");
+            throw std::runtime_error("[recvChunk]\t\t Malformed chunk data");
 
         chunkSizeStr.clear();
     }
 
-    Logs::appendLog("DEBUG", "[Client::recvChunk]\t\t Chunked body received with size of " + std::to_string(bodyContent.size()));
+    Logs::appendLog("DEBUG", "[recvChunk]\t\t Chunked body received with size of " + std::to_string(bodyContent.size()));
 }
 
 
@@ -180,7 +180,7 @@ void Client::readFromSocket(ServerConfig &serverConfig)
 {
     try
     {
-        Logs::appendLog("DEBUG", "[Client::readFromSocket]\t\t Reading from client socket " + std::to_string(this->fd));
+        Logs::appendLog("DEBUG", "[readFromSocket]\t\t Reading from client socket " + std::to_string(this->fd));
         recvHeader();
         this->request.getHeaders().parseHeader(this->response);
 
