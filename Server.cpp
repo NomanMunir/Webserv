@@ -50,28 +50,33 @@ void Server::socketInUse()
 {
     int e = 1;
     if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, (char *)&e, sizeof(e)) < 0)
-        throw std::runtime_error("Error setsockopt option");
+        throw std::runtime_error("[socketInUse]\t\t Error setting socket options " + std::string(strerror(errno)));
 }
 
 void Server::bindAndListen()
 {
-   this->addr.sin_family = AF_INET;
-   this->addr.sin_addr.s_addr = INADDR_ANY;
-   this->addr.sin_port = htons(this->port);
-    
-    if (bind(this->serverSocket, (struct sockaddr *)&addr, sizeof(addr)) < 0)
-       throw std::runtime_error("Error binding socket");
-    if (listen(this->serverSocket, MAX_CONNECTIONS) < 0)
-        throw std::runtime_error("Error listening on socket");
+    this->addr.sin_family = AF_INET;
+    std::string ipAddress = this->serverConfig.listen.back().front();
+    this->addr.sin_port = htons(this->port);
 
-    std::cout << "Server is running on port " << this->port << std::endl;
+    if (inet_pton(AF_INET, ipAddress.c_str(), &this->addr.sin_addr) <= 0)
+        throw std::runtime_error("[bindAndListen]\t\t Invalid address/ Address not supported " + std::string(strerror(errno)));
+
+    if (bind(this->serverSocket, (struct sockaddr *)&addr, sizeof(addr)) < 0)
+       throw std::runtime_error("[bindAndListen]\t\t Error binding socket " + std::string(strerror(errno)));
+
+    if (listen(this->serverSocket, MAX_CONNECTIONS) < 0)
+        throw std::runtime_error("[bindAndListen]\t\t Error listening on socket " + std::string(strerror(errno)));
+
+    std::cout << "Server is listening at http://" << inet_ntoa(addr.sin_addr) << ":" << this->port << std::endl;
+    Logs::appendLog("INFO", "[bindAndListen]\t\t Server is listening at http://" + ipAddress + ":" + std::to_string(this->port));
 }
 
 void Server::initSocket()
 {
     this->serverSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (this->serverSocket < 0)
-        throw std::runtime_error("Error opening socket");
+        throw std::runtime_error("[initSocket]\t\t Error opening socket " + std::string(strerror(errno)));
 }
 
 void Server::init()
@@ -85,6 +90,7 @@ void Server::init()
     catch(const std::exception& e)
     {
         std::cerr << e.what() << '\n';
+        Logs::appendLog("ERROR", e.what());
         if (this->serverSocket > 0)
             close(this->serverSocket);
         this->serverError = -1;
@@ -99,10 +105,10 @@ bool Server::acceptClient()
     int clientSocket = accept(this->serverSocket, (struct sockaddr *)&clientAddr, &clientLen);
     if (clientSocket < 0)
     {
-        std::cerr << "Error accepting client connection" << std::endl;
+        Logs::appendLog("ERROR", "[acceptClient]\t\t Error accepting client " + std::string(strerror(errno)));
         return false;
     }
-    std::cout << "New connection, socket fd is " << clientSocket << ", ip is : " << inet_ntoa(clientAddr.sin_addr) << ", port : " << ntohs(clientAddr.sin_port) << std::endl;
+    Logs::appendLog("INFO", "[acceptClient]\t\t New connection, socket fd is [" + std::to_string(clientSocket) + "], IP is : " + inet_ntoa(clientAddr.sin_addr) + ", port : " + std::to_string(ntohs(clientAddr.sin_port)));
     clients[clientSocket] = Client(clientSocket);
     kqueue.addToQueue(clientSocket, READ_EVENT);
     kqueue.addToQueue(clientSocket, TIMEOUT_EVENT);
@@ -115,25 +121,16 @@ bool Server::isMyClient(int fd)
     return clients.find(fd) != clients.end();
 }
 
-// void Server::removeClient(int fd)
-// {
-//     kqueue.removeFromQueue(fd, READ_EVENT);
-//     kqueue.removeFromQueue(fd, WRITE_EVENT);
-//     kqueue.removeFromQueue(fd, TIMEOUT_EVENT);
-//     close(fd);
-//     clients.erase(fd);
-// }
-
 void Server::handleWrite(int fd)
 {
-    std::cout << "Handling write for client " << fd << std::endl;
+    Logs::appendLog("INFO", "[handleWrite]\t\t Handling write for client " + std::to_string(fd));
     try
     {
         bool isClosed = !clients[fd].isKeepAlive() || clients[fd].getResponse().getIsConnectionClosed();
         if (isClosed)
         {
             ssize_t bytesSent = send(fd, clients[fd].getWriteBuffer().c_str(), clients[fd].getWriteBuffer().size(), 0);
-            std::cout << "Connection closed by server bec KeepAlive or IsConnectionClosed on socket fd " << fd << std::endl;
+            Logs::appendLog("INFO", "[handleWrite]\t\t Connection closed for client [" + std::to_string(fd) + "] with IP " + inet_ntoa(this->addr.sin_addr) + " on port " + std::to_string(this->port));
             kqueue.removeFromQueue(fd, WRITE_EVENT);
             kqueue.removeFromQueue(fd, TIMEOUT_EVENT);
             kqueue.removeFromQueue(fd, READ_EVENT);
@@ -146,7 +143,7 @@ void Server::handleWrite(int fd)
         ssize_t bytesSent = send(fd, clients[fd].getWriteBuffer().c_str(), clients[fd].getWriteBuffer().size(), 0);
         if (bytesSent < 0)
         {
-            perror("Error sending data to client");
+            Logs::appendLog("ERROR", "[handleWrite]\t\t Error sending data to client " + std::string(strerror(errno)));
             kqueue.removeFromQueue(fd, WRITE_EVENT);
             return;
         }
@@ -191,7 +188,7 @@ void Server::handleRead(int fd)
 
 void Server::handleDisconnection(int fd)
 {
-    std::cout << "Handling timeout for client " << fd << std::endl;
+    Logs::appendLog("DEBUG", "[handleDisconnection]\t\t Handling disconnection for client " + std::to_string(fd));
     kqueue.removeFromQueue(fd, READ_EVENT);
     kqueue.removeFromQueue(fd, TIMEOUT_EVENT);
     close(fd);

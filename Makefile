@@ -9,7 +9,7 @@ SRCS = main.cpp \
 		parsing/Parser.cpp parsing/Validation.cpp \
 		request/Headers.cpp request/Request.cpp request/Body.cpp \
 		response/Response.cpp response/HttpResponse.cpp \
-		utils/utils.cpp \
+		utils/utils.cpp utils/Logs.cpp \
 		Client.cpp \
 		cgi/Cgi.cpp \
 

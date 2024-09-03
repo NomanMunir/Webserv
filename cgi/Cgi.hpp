@@ -6,6 +6,7 @@
 #include <signal.h>
 #include <time.h>
 #include "../response/Response.hpp"
+#include "../utils/Logs.hpp"
 
 #define CGI_TIMEOUT 5
 

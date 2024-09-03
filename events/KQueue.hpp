@@ -15,7 +15,7 @@
 #include "../parsing/Parser.hpp"
 #include "../Client.hpp"
 #include <map>
-
+#include "../utils/Logs.hpp"
 #define MAX_EVENTS 100
 
 enum EventType

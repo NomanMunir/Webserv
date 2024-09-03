@@ -13,6 +13,7 @@
 #include "ServerManager.hpp"
 #include <csignal>
 #include <stdexcept>
+#include "utils/Logs.hpp"
 
 void handleSignal(int signal)
 {
@@ -51,8 +52,9 @@ int main(int ac, const char **av, char **env)
 {
     try
     {
+        Logs::init();
         if (ac > 2)
-            throw std::runtime_error("Usage: ./webserv <config_file>");
+            throw std::runtime_error("[main]\t\t\t Usage: ./webserv <config_file>");
         if (ac == 1)
             av[1] = "config1.conf";
         initializeSignalHandling();
@@ -65,6 +67,8 @@ int main(int ac, const char **av, char **env)
     }
     catch (std::exception &e)
     {
+        Logs::appendLog("ERROR", e.what());
+        Logs::close();
         std::cerr << e.what() << std::endl;
         return 1;
     }

@@ -21,19 +21,11 @@ Cgi::Cgi(Request &request, std::string fullPath, Response &response)
 
 Cgi::~Cgi()
 {
-    // Free allocated environment variables
-    // freeEnv(_envp);
-    // if (fd_out[0] != -1)
-	// {
-	// 	close(fd_out[0]);
-	// 	fd_out[0] = -1;
-	// }
-	// if (fd_in[0] != -1)
-	// {
-	// 	close(fd_in[0]);
-	// 	fd_in[0] = -1;
-	// }
-
+    if (fd_out[0] != -1) close(fd_out[0]);
+    if (fd_out[1] != -1) close(fd_out[1]);
+    if (fd_in[0] != -1) close(fd_in[0]);
+    if (fd_in[1] != -1) close(fd_in[1]);
+    if (_envp) freeEnv(_envp);
 }
 
 bool Cgi::checkFilePermission(const char* path) 
@@ -41,7 +33,7 @@ bool Cgi::checkFilePermission(const char* path)
     struct stat fileStat;
     if (stat(path, &fileStat) < 0) 
     {
-        std::cerr << "Error retrieving file stats: " << strerror(errno) << std::endl;
+        Logs::appendLog("ERROR", "[checkFilePermission]\t\t " + std::string(strerror(errno)));
         return false;
     }
     return (fileStat.st_mode & S_IXUSR) || // Owner has execute permission
@@ -65,13 +57,13 @@ void Cgi::checkCGITimeout(pid_t pid)
         {
             if (kill(pid, SIGKILL) < 0)
             {
-                std::cerr << "Failed to kill CGI process with pid " << pid << std::endl;
+                Logs::appendLog("ERROR", "[checkCGITimeout]\t\t Failed to kill CGI process " + std::string(strerror(errno)));
                 freeEnv(_envp);
-                this->_response.setErrorCode(500, "Internal Server Error: Failed to kill CGI process");
+                this->_response.setErrorCode(500, "[checkCGITimeout]\t\t Internal Server Error: Failed to kill CGI process " + std::string(strerror(errno)));
             }
-            std::cout << "Killed CGI process with pid " << pid << std::endl;
+            Logs::appendLog("INFO", "[checkCGITimeout]\t\t CGI script execution timed out and was killed");
             freeEnv(_envp);
-            this->_response.setErrorCode(504, "Gateway Timeout: CGI script execution timed out");
+            this->_response.setErrorCode(504, "[checkCGITimeout]\t\t CGI script execution timed out");
         }
     }
 }
@@ -80,13 +72,13 @@ void Cgi::execute()
 {
     // Check file permissions
     if (!checkFilePermission(this->_fullPath.c_str()))
-        this->_response.setErrorCode(500, "Internal Server Error: CGI script is not executable");
+        this->_response.setErrorCode(500, "[execute]\t\t CGI script is not executable");
 
     int fd_in[2], fd_out[2];  // read fd[0]  write fd[1]
     if (pipe(fd_in) < 0)
-        this->_response.setErrorCode(500, "Internal Server Error: Failed to create pipe");
+        this->_response.setErrorCode(500, "[execute]\t\t Failed to create pipe");
     if (pipe(fd_out) < 0)
-        this->_response.setErrorCode(500, "Internal Server Error: Failed to create pipe");
+        this->_response.setErrorCode(500, "[execute]\t\t Failed to create pipe");
     setCGIEnv();
     pid_t pid = fork();
 
@@ -95,7 +87,7 @@ void Cgi::execute()
         // Fork failed
         close(fd_in[0]); close(fd_in[1]);
         close(fd_out[0]); close(fd_out[1]);
-        this->_response.setErrorCode(500, "Internal Server Error: Failed to fork process");
+        this->_response.setErrorCode(500, "[execute]\t\t Failed to fork process");
     }
 
     if (pid == 0) 
@@ -114,7 +106,7 @@ void Cgi::execute()
 
         if (execve(this->_fullPath.c_str(), argv, _envp) < 0)
         {
-            std::cerr << "Failed to execute " << this->_fullPath << std::endl;
+            Logs::appendLog("ERROR", "[execute]\t\t Failed to execute " + std::string(strerror(errno)));
             freeEnv(_envp);
             exit(1);
         }
@@ -131,7 +123,7 @@ void Cgi::execute()
             if (write(fd_in[1], body.c_str(), body.size()) < 0)
             {
                 close(fd_in[1]); close(fd_out[0]); freeEnv(_envp);
-                this->_response.setErrorCode(500, "Internal Server Error: Failed to write to pipe");
+                this->_response.setErrorCode(500, "[execute]\t\t Failed to write to pipe");
             }
         }
         close(fd_in[1]);
@@ -150,20 +142,20 @@ void Cgi::execute()
 void Cgi::freeEnv(char** envp) 
 {
     for (size_t i = 0; envp[i] != nullptr; ++i) 
-        delete[] envp[i];
-    delete[] envp;
+        if (envp[i]) delete[] envp[i];
+    if (envp) delete[] envp;
 }
 
 void Cgi::vecToChar(std::vector<std::string> &envMaker)
 {
     _envp = new char*[envMaker.size() + 1];
     if (!_envp)
-        this->_response.setErrorCode(500, "Internal Server Error: Failed to allocate memory for environment variables");
+        this->_response.setErrorCode(500, "[vecToChar]\t\t Failed to allocate memory for environment variables");
     for (size_t i = 0; i < envMaker.size(); ++i) 
     {
         _envp[i] = new char[envMaker[i].length() + 1];
         if (!_envp[i])
-            this->_response.setErrorCode(500, "Internal Server Error: Failed to allocate memory for environment variables");
+            this->_response.setErrorCode(500, "[vecToChar]\t\t Failed to allocate memory for environment variables");
         strcpy(_envp[i], envMaker[i].c_str());
     }
     _envp[envMaker.size()] = NULL;
@@ -206,31 +198,5 @@ void Cgi::setCGIEnv()
     envMaker.push_back("SERVER_PORT=" + _request.getHeaders().getValue("Port"));
     envMaker.push_back("HTTP_HOST=" + _request.getHeaders().getValue("Host"));
 
-    // Print the environment variables for debugging
-    // for (it = envMaker.begin(); it != envMaker.end(); ++it)
-    //     std::cout << *it << std::endl;
     vecToChar(envMaker);
 }
-
-
-// int main() {
-//     std::string method = "GET";
-//     std::string query = "name=John&age=30";
-//     std::string contentLength = "0";
-//     std::string this->_fullPath = "e.cgi";
-//     std::map<std::string, std::string > allConf;
-//     allConf["REQUEST_METHOD"] = "GET";
-//     allConf["QUERY_STRING"] = "name=John&age=30";
-//     allConf["CONTENT_LENGTH"] = "15";
-//     allConf["scriptPath"] = "testp.py";
-//     allConf["postData"] = "Hi How are you today are you okay, are you taking exam today";
-
-// // for(int i = 0; i < 10000; i++)
-// // {
-//      Cgi cgi(allConf);
-//     cgi.execute();
-// // }
-   
-
-//     return 0;
-// }

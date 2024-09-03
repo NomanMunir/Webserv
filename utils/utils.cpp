@@ -80,68 +80,6 @@ void removeCharsFromString(std::string &str, std::string charsToRemove)
     }
 }
 
-void isDirectory(const std::string &path)
-{
-    struct stat info;
-    if (stat(path.c_str(), &info) != 0)
-    {
-        switch (errno)
-        {
-        case EACCES:
-            throw std::runtime_error("Permission denied to access " + path);
-        case ENOENT:
-            throw std::runtime_error("Directory " + path + " does not exist");
-        case ENOTDIR:
-            throw std::runtime_error("A component of the path " + path + " is not a directory");
-        default:
-            throw std::runtime_error("Error accessing " + path + ": " + strerror(errno));
-        }
-    }
-    if (!S_ISDIR(info.st_mode))
-        throw std::runtime_error(path + " is not a directory");
-}
-bool isDirectory(std::string &path)
-{
-    struct stat info;
-    if (stat(path.c_str(), &info) != 0)
-    {
-        switch (errno)
-        {
-        case EACCES:
-            return (false);
-        case ENOENT:
-            return (false);
-        case ENOTDIR:
-            return (false);
-        default:
-            return (false);
-        }
-    }
-    if (!S_ISDIR(info.st_mode))
-        return (false);
-    return (true);
-}
-
-bool isFile(std::string &path)
-{
-    struct stat info;
-    if (stat(path.c_str(), &info) != 0)
-    {
-        switch (errno)
-        {
-        case EACCES:
-            return (false);
-        case ENOENT:
-            return (false);
-        default:
-            return (false);
-        }
-    }
-    if (!S_ISREG(info.st_mode))
-        return (false);
-    return (true);
-}
-
 void isFile(const std::string &path)
 {
     struct stat info;
@@ -271,17 +209,6 @@ void printServers(std::vector<ServerConfig> servers)
     }
 }
 
-bool responseClient(int fd, std::string response)
-{
-        ssize_t bytesSent = send(fd, response.c_str(), response.size(), 0);
-        if (bytesSent == -1)
-        {
-            perror("Error sending response to client fd ");
-            std::cout << fd << std::endl;
-            return (false);
-        }
-        return (true);
-}
 
 std::string getStatusMsg(std::string errorCode)
 {

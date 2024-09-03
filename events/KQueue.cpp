@@ -10,7 +10,7 @@ KQueue::KQueue()
     this->kqueueFd = kqueue();
     if (this->kqueueFd == -1)
     {
-        std::cerr << "KQueue::Error: " << strerror(errno) << std::endl;
+        Logs::appendLog("ERROR", "[KQueue]\t\t " + std::string(strerror(errno)));
         throw std::exception();
     }
 }
@@ -33,13 +33,13 @@ void setNoneBlocking(int fd)
     int flags = fcntl(fd, F_GETFL, 0);
     if (flags == -1)
     {
-        std::cerr << "setNoneBlocking::Error: " << strerror(errno) << std::endl;
+        Logs::appendLog("ERROR", "[setNoneBlocking]\t\t " + std::string(strerror(errno)));
         close(fd);
         throw std::exception();
     }
     if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
     {
-        std::cerr << "setNoneBlocking::Error: " << strerror(errno) << std::endl;
+        Logs::appendLog("ERROR", "[setNoneBlocking]\t\t " + std::string(strerror(errno)));
         close(fd);
         throw std::exception();
     }
@@ -66,10 +66,10 @@ void KQueue::addToQueue(int fd, EventType ev)
         fdState[fd].isTimeout = true;
     }
     else
-        throw std::runtime_error("Error Invalid Event Type");
+        throw std::runtime_error("[addToQueue]\t\t Invalid Event Type");
 
     if (kevent(this->kqueueFd, &evSet, 1, NULL, 0, NULL) == -1)
-        std::cerr << "Error adding event: " << strerror(errno) << std::endl;
+        Logs::appendLog("ERROR", "[addToQueue]\t\tError Adding Event " + std::string(strerror(errno)));
 }
 
 void KQueue::removeFromQueue(int fd, EventType ev)
@@ -80,10 +80,10 @@ void KQueue::removeFromQueue(int fd, EventType ev)
     {
         if (fdState[fd].isRead)
         {
-            std::cout << "Removing read event for fd: " << fd << std::endl;
+            Logs::appendLog("INFO", "[removeFromQueue]\t\t Removing read event for fd: " + std::to_string(fd));
             EV_SET(&evSet, fd, EVFILT_READ, EV_DELETE, 0, 0, NULL);
             if (kevent(this->kqueueFd, &evSet, 1, NULL, 0, NULL) == -1)
-                std::cerr << "Error removing event: " << strerror(errno) << std::endl;
+                Logs::appendLog("ERROR", "[removeFromQueue]\t\tError Removing Event " + std::string(strerror(errno)));
             fdState[fd].isRead = false;
         }
     }
@@ -91,10 +91,10 @@ void KQueue::removeFromQueue(int fd, EventType ev)
     {
         if (fdState[fd].isWrite)
         {
-            std::cout << "Removing write event for fd: " << fd << std::endl;
+            Logs::appendLog("INFO", "[removeFromQueue]\t\t Removing write event for fd: " + std::to_string(fd));
             EV_SET(&evSet, fd, EVFILT_WRITE, EV_DELETE, 0, 0, NULL);
             if (kevent(this->kqueueFd, &evSet, 1, NULL, 0, NULL) == -1)
-                std::cerr << "Error removing event: " << strerror(errno) << std::endl;
+                Logs::appendLog("ERROR", "[removeFromQueue]\t\tError Removing Event " + std::string(strerror(errno)));
             fdState[fd].isWrite = false;
         }
     }
@@ -102,15 +102,15 @@ void KQueue::removeFromQueue(int fd, EventType ev)
     {
         if (fdState[fd].isTimeout)
         {
-            std::cout << "Removing timeout event for fd: " << fd << std::endl;
+            Logs::appendLog("INFO", "[removeFromQueue]\t\t Removing timeout event for fd: " + std::to_string(fd));
             EV_SET(&evSet, fd, EVFILT_TIMER, EV_DELETE, 0, 0, NULL);
             if (kevent(this->kqueueFd, &evSet, 1, NULL, 0, NULL) == -1)
-                std::cerr << "Error removing event: " << strerror(errno) << std::endl;
+                Logs::appendLog("ERROR", "[removeFromQueue]\t\tError Removing Event " + std::string(strerror(errno)));
             fdState[fd].isTimeout = false;
         }
     }
     else
-        throw std::runtime_error("Error Invalid Event Type");
+        throw std::runtime_error("[removeFromQueue]\t\t Invalid Event Type");
 
     if (!fdState[fd].isRead || !fdState[fd].isWrite || !fdState[fd].isTimeout)
         fdState.erase(fd);

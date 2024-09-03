@@ -20,6 +20,7 @@
 #include <unordered_map>
 #include <ctime>
 #include <iomanip>
+#include "Logs.hpp"
 
 struct ServerConfig;
 
@@ -29,16 +30,13 @@ std::string trimChar(const std::string s, char c);
 void removeCharsFromString(std::string &str, std::string charsToRemove);
 std::vector<std::string> split(const std::string &s, char delimiter);
 void isFile(const std::string &path);
-bool isFile(std::string &path);
-void isDirectory(const std::string &path);
-bool isDirectory(std::string &path);
+// bool isFile(std::string &path);
 void printServers(std::vector<ServerConfig> servers);
 bool validateNumber(std::string key, std::string value);
 bool myFind(std::vector<std::string> &v, std::string &s);
 void initializeVector(std::vector<std::string> &v, const std::string s[], size_t size);
 void initializeVector(std::vector<std::string> &v, std::string s[], size_t size);
 std::string getStatusMsg(std::string errorCode);
-bool responseClient(int fd, std::string response);
 std::string getMimeType(std::string extention);
 std::string getCurrentTimestamp();
 std::string toUpperCase(const std::string &str);

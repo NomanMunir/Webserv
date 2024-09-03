@@ -13,26 +13,6 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-#include <string>
-#include <vector>
-#include <netinet/in.h>
-#include <map>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <unistd.h>
-#include <cstring>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/stat.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <fcntl.h>
-#include <cerrno>
-#include <dirent.h> 
-#include <sys/time.h>
-#include <signal.h>
-
 #include "utils/utils.hpp"
 #include "parsing/Parser.hpp"
 #include "parsing/Validation.hpp"
@@ -40,6 +20,7 @@
 #include "response/Response.hpp"
 #include "Client.hpp"
 #include "events/KQueue.hpp"
+#include "utils/Logs.hpp"
 
 class Server
 {

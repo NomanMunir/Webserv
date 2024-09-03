@@ -29,11 +29,12 @@ class Validation
 		void validateListen(std::vector<std::vector<std::string> > &value);
 		void validateIP(std::string ip);
 		void validateMethods(std::vector<std::string> methods);
-		bool validateErrorPages(std::string key, std::string value);		
+		bool validateErrorPages(std::string key, std::string value, std::string root);		
 		void validateDirectives(std::map<std::string, std::string> directives);
 		void validateRouteMap(std::map<std::string, RouteConfig> &routeMap);
 		void validateReturn(std::string &redirect);
 		void validateCgiExtensions(std::vector<std::string> cgiExtensions);
+		void isDirectory(const std::string &path);
 
 };
 

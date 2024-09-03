@@ -27,7 +27,7 @@ void ServerManager::initServers(Parser &parser)
 	}
 
 	if (this->servers.size() == 0)
-		throw std::runtime_error("No server was created");
+		throw std::runtime_error("[initServers]\t\t Unable to create any server");
 
 	for (size_t i = 0; i < this->serverSockets.size(); i++)
 		this->kqueue.addToQueue(this->serverSockets[i], READ_EVENT);
@@ -92,7 +92,7 @@ void ServerManager::run()
 			break;
 		if (numOfEvents < 0)
 		{
-			std::cerr << "run1::Error: " << strerror(errno) << std::endl;
+			Logs::appendLog("ERROR", "[run]\t\t Number of events is invalid");
 			continue;
 		}
 		if (numOfEvents == 0)
@@ -103,7 +103,7 @@ void ServerManager::run()
 			EventInfo eventInfo = this->kqueue.getEventInfo(i);
 			if (eventInfo.isError)
 			{
-				std::cerr << "run::Error: " << strerror(errno) << std::endl;
+				Logs::appendLog("ERROR", "[run]\t\t Error event at fd: [" + std::to_string(eventInfo.fd) + "]");
 				continue;
 			}
 			if (eventInfo.isRead || eventInfo.isEOF)

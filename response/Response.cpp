@@ -22,14 +22,14 @@ int Response::checkType(std::string path)
         {
         case EACCES:
 		{
-            this->setErrorCode(403, "Response::checkType: Permission denied"); break;
+            this->setErrorCode(403, "[checkType]\t\t Access denied"); break;
 		}
         case ENOENT:
 		{
-            this->setErrorCode(404, "Response::checkType: File not found"); break;
+            this->setErrorCode(404, "[checkType]\t\t File not found"); break;
 		}
         default:
-			this->setErrorCode(500, "Response::checkType: Internal server error");
+			this->setErrorCode(500, "[checkType]\t\t Could not get file info");
         }
 	}
 	if (S_ISREG(info.st_mode))
@@ -66,7 +66,7 @@ std::string Response::generateDirectoryListing(const std::string& dirPath, const
         closedir(dir);
     }
 	else
-		this->setErrorCode(404, "Response::generateDirectoryListing: Could not open directory");
+		this->setErrorCode(404, "[generateDirectoryListing]\t\t Could not open directory");
     return htmlContent;
 }
 
@@ -101,10 +101,10 @@ bool Response::checkDefaultFile(std::string &fullPath)
 			newPath = resolvePath(fullPath, this->targetRoute.defaultFile[i]);
 		if (newPath.find(this->targetRoute.root) != 0)
 		{
-			std::cout << "Error: " << "What are you trying to access oui?" << std::endl;
-			this->setErrorCode(403, "Response::handleDirectory: Access denied");
+			Logs::appendLog("Error", "What are you trying to access oui? " + newPath);
+			this->setErrorCode(403, "[checkDefaultFile]\t\t Access denied");
 		}
-		if (isFile(newPath))
+		if (checkType(newPath) == IS_FILE)
 			return (generateResponseFromFile(newPath, false), true);
 	}
 	return (false);
@@ -113,7 +113,7 @@ bool Response::checkDefaultFile(std::string &fullPath)
 void Response::handleDirectory(std::string &fullPath, std::string &uri)
 {
 	if (fullPath.back() != '/')
-		this->setErrorCode(301, "Response::handleGET: Redirecting to directory without trailing slash");
+		this->setErrorCode(301, "[handleDirectory]\t\t Redirecting to directory with trailing slash");
 	if(checkDefaultFile(fullPath))
 		return ;
 	if (this->targetRoute.directoryListing)
@@ -130,7 +130,7 @@ void Response::handleDirectory(std::string &fullPath, std::string &uri)
 		response = httpResponse.generateResponse();
 	}
 	else
-		this->setErrorCode(403, "Response::handleDirectory: Directory listing not allowed");
+		this->setErrorCode(403, "[handleDirectory]\t\t Directory listing is disabled");
 }
 
 std::string generateFullPath(std::string rootPath, std::string path)
@@ -168,7 +168,6 @@ bool Response::handleRedirect(bool isRedir, std::string redirect)
 {
 	if (!isRedir)
 		return false;
-	std::cout << "Redirect: " << redirect << std::endl;
 	std::stringstream ss(redirect);
 	int errorCode;
 	ss >> errorCode;
@@ -205,20 +204,18 @@ bool Response::handleRedirect(bool isRedir, std::string redirect)
 		}
 	}
 	else
-		setErrorCode(errorCode, "Response::handleRedirect: Invalid redirect");
+		setErrorCode(errorCode, "[handleRedirect]\t\t Redirect error");
 	return true;
 }
 
 void Response::handleGET(bool isGet, std::string &uri, bool isHEAD)
 {
-	std::cout << "Path : " << uri << std::endl;
 	if (isGet)
 	{
 		std::string fullPath = generateFullPath(targetRoute.root, uri);
 
 		if(handleRedirect(this->targetRoute.redirect != "", targetRoute.redirect))
 			return;
-		std::cout << "FullPath : " << fullPath << std::endl;
 		int type = checkType(fullPath);
 		if (type == IS_FILE)
 			generateResponseFromFile(fullPath, isHEAD);
@@ -232,21 +229,18 @@ void Response::handlePOST(bool isPost, std::string &uri, Body &body)
 
 	if (isPost)
 	{
-		// std::cout << "body: " << body.getContent() << std::endl;
 		HttpResponse httpResponse;
 
 		if (body.getContent().empty())
-			return (setErrorCode(400, "Response::handlePOST: Empty body"));
+			return (setErrorCode(400, "[handlePOST]\t\t Empty body"));
 
 		std::string fullPath = generateFullPath(targetRoute.root, uri);
-		// fullPath = fullPath.back() != '/' ? fullPath + '/' : fullPath;
-		std::cout << "Full Path: " << fullPath << std::endl;
 		std::ofstream file(fullPath + getCurrentTimestamp());
 		if (!file.is_open())
-			return (setErrorCode(500, "Response::handlePOST: Could not open file"));
+			return (setErrorCode(500, "[handlePOST]\t\t Could not open file"));
 		file << body.getContent();
 		if (!file.good())
-			return (setErrorCode(500, "Response::handlePOST: Could not write to file"));
+			return (setErrorCode(500, "[handlePOST]\t\t Could not write to file"));
 		file.close();
 
 		std::string body  = "<center> <h2>File uploaded successfully</h2></center>";
@@ -258,8 +252,6 @@ void Response::handlePOST(bool isPost, std::string &uri, Body &body)
 		httpResponse.setHeader("Server", "LULUGINX");
 		httpResponse.setBody(body);
 		response = httpResponse.generateResponse();
-
-		// response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 	}
 }
 
@@ -272,9 +264,9 @@ void Response::handleDELETE(bool isDelete, std::string &uri)
 
 		int type = checkType(fullPath);
 		if (type == IS_DIR)
-			setErrorCode(403, "Response::handleDELETE: Cannot delete directory");
+			setErrorCode(403, "[handleDELETE]\t\t Cannot delete directory");
 		if (remove(fullPath.c_str()) != 0)
-			return (setErrorCode(500, "Response::handleDELETE: Could not delete file"));
+			return (setErrorCode(500, "[handleDELETE]\t\t Could not delete file"));
 		std::string body = "<center> <h2>File deleted successfully</h2></center>";
 		httpResponse.setVersion("HTTP/1.1");
 		httpResponse.setStatusCode(200);
@@ -284,8 +276,6 @@ void Response::handleDELETE(bool isDelete, std::string &uri)
 		httpResponse.setHeader("Server", "LULUGINX");
 		httpResponse.setBody(body);
 		response = httpResponse.generateResponse();
-
-		// response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
 	}
 }
 
@@ -297,13 +287,13 @@ void Response::handlePUT(bool isPut, std::string &uri, Body &body)
 		std::string fullPath = generateFullPath(targetRoute.root, uri);
 
 		if (body.getContent().empty())
-			return (setErrorCode(400, "Response::handlePUT: Empty body"));
+			return (setErrorCode(400, "[handlePUT]\t\t Empty body"));
 		std::ofstream file(fullPath);
 		if (!file.is_open())
-			return (setErrorCode(500, "Response::handlePUT: Could not open file"));
+			return (setErrorCode(500, "[handlePUT]\t\t Could not open file"));
 		file << body.getContent();
 		if (!file.good())
-			return (setErrorCode(500, "Response::handlePUT: Could not write to file"));
+			return (setErrorCode(500, "[handlePUT]\t\t Could not write to file"));
 		file.close();
 
 		std::string body = "<center> <h2>File updated successfully</h2></center>";
@@ -325,7 +315,6 @@ void Response::handleCGI(Request &request)
 	Cgi cgi(request, fullPath, *this);
 	cgi.execute();
 	std::string body = cgi.output;
-	std::cout << "Body: " << body << std::endl;
 	HttpResponse httpResponse;
 	httpResponse.setVersion("HTTP/1.1");
 	httpResponse.setStatusCode(200);
@@ -375,12 +364,6 @@ void Response::defaultErrorPage(std::string errorCode)
 	httpResponse.setHeader("Server", "LULUGINX");
 	httpResponse.setBody(body);
 	response = httpResponse.generateResponse();
-
-    // response = "HTTP/1.1 " + errorCode + " " + getStatusMsg(errorCode) + "\r\n"
-    //            "Content-Type: text/html\r\n"
-	// 		   "Connection: keep-alive\r\n"
-    //            "Content-Length: " + std::to_string(body.size()) + "\r\n\r\n"
-    //            + body;
 }
 
 

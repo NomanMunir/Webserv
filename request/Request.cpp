@@ -84,12 +84,6 @@ void Request::findServer(Response &structResponse, Parser &parser)
 {
 	std::string host = this->headers.getValue("Host");
 	std::string port = this->headers.getValue("Port");
-
-	if (host.empty())
-	{
-		structResponse.setTargetServer(parser.getServers()[0]);
-		structResponse.setErrorCode(400, "Request::findServer : Host is empty");
-	}
 	structResponse.setTargetServer(chooseServer(parser, host, port));
 }
 
@@ -106,21 +100,21 @@ bool Request::isBodyExist(ServerConfig &serverConfig, Response &structResponse, 
 		else
 		{
 			// while(recv(fd, buffer, 1, 0) > 0){}
-			structResponse.setErrorCode(411, "Request::isBodyExist : Content-Length or Transfer-Encoding is missing");
+			structResponse.setErrorCode(411, "[isBodyExist]\t\t Content-Length or Transfer-Encoding is missing");
 		}
 	}
 	if (!length.empty())
 	{
 		std::string maxBodySize = serverConfig.clientBodySizeLimit == "" ? "1000000" : serverConfig.clientBodySizeLimit;
 		if (!validateNumber("Content-Length", length))
-			structResponse.setErrorCode(411,"Request::isBodyExist : Content-Length is not a number");
+			structResponse.setErrorCode(411,"[isBodyExist]\t\t Invalid Content-Length");
 		if (std::atof(length.c_str()) > std::atof(maxBodySize.c_str()))
-			structResponse.setErrorCode(413,"Request::isBodyExist : Content-Length is too big");
+			structResponse.setErrorCode(413,"[isBodyExist]\t\t Request Entity Too Large");
 	}
 	if (!encoding.empty())
 	{
 		if (encoding != "chunked")
-			structResponse.setErrorCode(411, "Request::isBodyExist : Transfer-Encoding is not chunked");
+			structResponse.setErrorCode(411, "[isBodyExist]\t\t Transfer-Encoding Not Implemented");
 		this->body.setIsChunked(true);
 	}
 	return true;
@@ -145,7 +139,7 @@ void  Request::handleRequest(ServerConfig &serverConfig, Response &structRespons
 	if (uri.find(serverConfig.cgi_directory) != std::string::npos)
 	{
 		if (method != "GET" && method != "POST")
-			structResponse.setErrorCode(405, "Request::handleRequest : CGI method not allowed");
+			structResponse.setErrorCode(405, "[handleRequest]\t\t CGI Method Not Allowed");
 		this->isCGI = true;
 		createSystemENV(serverConfig);
 	}
@@ -155,12 +149,12 @@ void  Request::handleRequest(ServerConfig &serverConfig, Response &structRespons
 		if (!chooseRoute(uri, serverConfig, route))
 		{
 			if (method == "POST" || method == "DELETE" || method == "PUT")
-				structResponse.setErrorCode(403, "Request::handleRequest : Route not found");
+				structResponse.setErrorCode(403, "[handleRequest]\t\t Route not found");
 			else
-				structResponse.setErrorCode(404, "Request::handleRequest : Route not found");
+				structResponse.setErrorCode(404, "[handleRequest]\t\t Route not found");
 		}
 		if ((std::find(route.methods.begin(), route.methods.end(), method) == route.methods.end()))
-			structResponse.setErrorCode(405, "Request::handleRequest : Method not allowed");
+			structResponse.setErrorCode(405, "[handleRequest]\t\t Method Not Allowed");
 		structResponse.setTargetRoute(route);
 	}
 	this->complete = true;

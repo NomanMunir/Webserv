@@ -21,6 +21,7 @@
 #include "../parsing/Parser.hpp"
 #include "../request/Request.hpp"
 #include "HttpResponse.hpp"
+#include "../utils/Logs.hpp"
 
 #define IS_DIR 1
 #define IS_FILE 2

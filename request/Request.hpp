@@ -22,6 +22,7 @@
 #include <string>
 #include <sstream>
 #include "./Body.hpp"
+#include "../utils/Logs.hpp"
 
 #define MAX_BODY_SIZE 1000000 // 1MB
 

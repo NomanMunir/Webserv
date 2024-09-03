@@ -49,12 +49,10 @@ class Headers
 		bool complete;
 		
 		void parseFirstLine(Response &structResponse, std::istringstream &iss);
-		void parseRequestURI(Response &structResponse);
 		void parseHeaderBody(std::istringstream &iss, Response &structResponse);
 
 
 		void validateAscii(Response &structResponse);
-		bool validateQuery(const std::string &uri);
 		bool validateMethod(const std::string &method);
 		bool validateUri(const std::string &uri);
 		bool validateVersion(const std::string &version);

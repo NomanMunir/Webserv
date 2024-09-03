@@ -15,7 +15,7 @@
 void Parser::setRouteBlock(std::string &key, std::string &value)
 {
     if (value.empty())
-        throw std::runtime_error("Error: invalid configuration file " + value);
+        throw std::runtime_error("[setRouteBlock]\t\t invalid configuration file " + value);
     if (key == "methods")
         routeConfig.methods = split(value, ' ');
     else if (key == "cgi_extensions")
@@ -38,7 +38,7 @@ void Parser::setRouteBlock(std::string &key, std::string &value)
 void Parser::checkLocationBlock()
 {
     if (tokens.size() < 2)
-        throw std::runtime_error("Error: invalid configuration file " + tokens[0]);
+        throw std::runtime_error("[checkLocationBlock]\t\t invalid configuration file " + tokens[0]);
     std::string key = tokens[0];
     std::string value = tokens[1]; 
     tokens.erase(tokens.begin(), tokens.begin() + 2);
@@ -50,17 +50,17 @@ void Parser::checkLocationBlock()
     initializeVector(keys, keyArray, sizeof(keyArray) / sizeof(keyArray[0]));
 
     if (!myFind(keys, key))
-        throw std::runtime_error("Error: invalid configuration file " + key);
+        throw std::runtime_error("[checkLocationBlock]\t\t invalid configuration file " + key);
 
     while (value.find(";") == std::string::npos)
     {
         if (tokens.empty())
-            throw std::runtime_error("Error: invalid configuration file " + key);
+            throw std::runtime_error("[checkLocationBlock]\t\t invalid configuration file " + key);
         value += " " + tokens[0];
         tokens.erase(tokens.begin());
     }
     if (value.empty() || value.back() != ';')
-        throw std::runtime_error("Error: invalid configuration file " + value);
+        throw std::runtime_error("[checkLocationBlock]\t\t invalid configuration file " + value);
     else
     {
         value = value.substr(0, value.size() - 1);
@@ -71,7 +71,7 @@ void Parser::checkLocationBlock()
 void Parser::setListen(std::string &value)
 {
     if (value.empty())
-        throw std::runtime_error("Error: invalid configuration file " + value);
+        throw std::runtime_error("[setListen]\t\t invalid configuration file " + value);
     std::vector<std::string> listenValues;
     std::vector<std::string> splitedValues = split(value, ':');
     if (splitedValues.size() == 2)
@@ -85,7 +85,7 @@ void Parser::setListen(std::string &value)
         listenValues.push_back(splitedValues[0]);
     }
     else
-        throw std::runtime_error("Error: invalid configuration file " + value);
+        throw std::runtime_error("[setListen]\t\t invalid configuration file " + value);
     serverConfig.listen.push_back(listenValues);
 }
 void Parser::setServerBlock(std::string &key, std::string &value)
@@ -120,13 +120,13 @@ void Parser::setServerBlock(std::string &key, std::string &value)
     else if (key == "cgi_directory")
         serverConfig.cgi_directory = value;
     else
-        throw std::runtime_error("Error: invalid configuration file " + key);
+        throw std::runtime_error("[setServerBlock]\t\t invalid configuration file " + key);
 }
 
 void Parser::checkServerBlock()
 {
     if (tokens.size() < 2)
-        throw std::runtime_error("Error: invalid configuration file " + tokens[0]);
+        throw std::runtime_error("[checkServerBlock]\t\t invalid configuration file " + tokens[0]);
     std::string key = tokens[0];
     std::string value = tokens[1];
     tokens.erase(tokens.begin(), tokens.begin() + 2);
@@ -137,11 +137,11 @@ void Parser::checkServerBlock()
     std::vector<std::string> keys;
     initializeVector(keys, keyArray, sizeof(keyArray) / sizeof(keyArray[0]));
     if (!myFind(keys, key))
-        throw std::runtime_error("Error: invalid configuration file " + key);
+        throw std::runtime_error("[checkServerBlock]\t\t invalid configuration file " + key);
     while (value.find(";") == std::string::npos && key != "location")
     {
         if (tokens.empty())
-            throw std::runtime_error("Error: invalid configuration file " + key);
+            throw std::runtime_error("[checkServerBlock]\t\t invalid configuration file " + key);
         value += " " + tokens[0];
         tokens.erase(tokens.begin());
     }
@@ -149,7 +149,7 @@ void Parser::checkServerBlock()
     if (key == "location")
     {
         if (tokens[0] != "{")
-            throw std::runtime_error("Error: invalid configuration file " + tokens[0]);
+            throw std::runtime_error("[checkServerBlock]\t\t invalid configuration file " + tokens[0]);
         // std::cout << key << " " << value << std::endl;
         tokens.erase(tokens.begin());
         while (tokens[0] != "}")
@@ -157,7 +157,7 @@ void Parser::checkServerBlock()
         for (std::map<std::string, RouteConfig>::iterator it = serverConfig.routeMap.begin(); it != serverConfig.routeMap.end(); it++)
         {
             if (it->first == value)
-                throw std::runtime_error("Error: invalid configuration file " + value);
+                throw std::runtime_error("[checkServerBlock]\t\t invalid configuration file " + value);
         }
         setDefaultRoute();
         serverConfig.routeMap[value] = routeConfig;
@@ -172,14 +172,14 @@ void Parser::checkServerBlock()
             setServerBlock(key, value);
         }
         else
-            throw std::runtime_error("Error: invalid configuration file " + value);
+            throw std::runtime_error("[checkServerBlock]\t\t invalid configuration file " + value);
     }
 }
 
 void Parser::checkServerDirective()
 {
     if (tokens.size() < 2)
-        throw std::runtime_error("Error: invalid configuration file " + tokens[0] + tokens[1]);
+        throw std::runtime_error("[checkServerDirective]\t\t invalid configuration file " + tokens[0] + tokens[1]);
     while (tokens[0] != "}")
         checkServerBlock();
     serverConfig.routeMap.erase("");
@@ -191,7 +191,7 @@ void Parser::checkServerDirective()
 void Parser::checkHttpDirective()
 {
     if (tokens.size() < 2)
-        throw std::runtime_error("Error: invalid configuration file " + tokens[0] + tokens[1]);
+        throw std::runtime_error("[checkHttpDirective]\t\t invalid configuration file " + tokens[0] + tokens[1]);
 
     const std::string key = tokens[0];
     const std::string value = tokens[1];
@@ -200,27 +200,27 @@ void Parser::checkHttpDirective()
     if (key == "client_body_size" || key == "keepalive_timeout")
     {
         if (value.back() != ';')
-            throw std::runtime_error("Error: invalid configuration file " + value);
+            throw std::runtime_error("[checkHttpDirective]\t\t invalid configuration file " + value);
     }
     else
-        throw std::runtime_error("Error: invalid configuration file " + key);
+        throw std::runtime_error("[checkHttpDirective]\t\t invalid configuration file " + key);
     directives[key] = value;
 }
 
 void Parser::parseBlocks()
 {
     if (tokens.empty() || tokens[0] != "http" || tokens[1] != "{")
-        throw std::runtime_error("Error: invalid configuration file " + tokens[0] + tokens[1]);
+        throw std::runtime_error("[parseBlocks]\t\t invalid configuration file " + tokens[0] + tokens[1]);
     tokens.erase(tokens.begin(), tokens.begin() + 2);
     if (tokens[tokens.size() - 1] != "}")
-        throw std::runtime_error("Error: invalid configuration file " + tokens[tokens.size() - 1]);
+        throw std::runtime_error("[parseBlocks]\t\t invalid configuration file " + tokens[tokens.size() - 1]);
     tokens.pop_back();
     while (tokens.size() > 0)
     {
         if (tokens[0] == "server")
         {
             if (tokens[1] != "{")
-                throw std::runtime_error("Error: invalid configuration file " + tokens[1]);
+                throw std::runtime_error("[parseBlocks]\t\t invalid configuration file " + tokens[1]);
             tokens.erase(tokens.begin(), tokens.begin() + 2);
             // serverBlock.push_back(ServerBlock(tokens));
             checkServerDirective();
@@ -289,7 +289,7 @@ void Parser::setDefault()
         if (servers[i].listen.empty())
         {
             servers[i].listen.push_back(std::vector<std::string>());
-            servers[i].listen[0].push_back("0.0.0.0");
+            servers[i].listen[0].push_back("127.0.0.1");
             servers[i].listen[0].push_back("80");
         }
         if (servers[i].errorPages.empty())
@@ -351,20 +351,19 @@ Parser::Parser(const std::string configFile)
 {
     std::ifstream file(configFile.c_str());
     if (!file.is_open())
-        throw std::runtime_error("Error: could not open file " + configFile);
+        throw std::runtime_error("[Parser]\t\t could not open file " + configFile);
     std::stringstream ss;
     ss << file.rdbuf();
     file.close();
     buffer = ss.str();
     tokanize(ss);
     if (tokens.empty())
-        throw std::runtime_error("Error: invalid configuration file :(");
-    // setDefault();
+        throw std::runtime_error("[Parser]\t\t invalid configuration file :(");
     reset();
     parseBlocks();
     setDefault();
     if (servers.empty())
-        throw std::runtime_error("Error: invalid configuration file :(");
+        throw std::runtime_error("[Parser]\t\t invalid configuration file :(");
 }
 
 std::vector<ServerConfig> Parser::getServers()
