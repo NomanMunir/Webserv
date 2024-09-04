@@ -27,7 +27,7 @@
 #include <algorithm>
 #include "../utils/utils.hpp"
 
-
+#define DEFAULT_ROOT "/home/vscode/src"
 struct RouteConfig
 {
 	std::vector<std::string> methods;

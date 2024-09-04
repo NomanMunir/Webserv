@@ -52,8 +52,9 @@ void EpollPoller::addToQueue(int fd, EventType ev)
     }
     else if (ev == TIMEOUT_EVENT)
     {
-        event.events = EPOLLIN;
+        lastActivity[fd] = time(NULL);
         fdState[fd].isTimeout = true;
+        return ;
     }
     else
     {

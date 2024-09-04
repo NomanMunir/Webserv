@@ -9,6 +9,7 @@
 #include <sys/time.h>
 #include <fcntl.h>
 #include <cstring>
+#include <sys/event.h>
 
 class KQueuePoller : public EventPoller
 {

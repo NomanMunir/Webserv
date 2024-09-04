@@ -251,3 +251,5 @@
 [Wed Sep  4 10:21:53 2024] [INFO] [handleWrite]		 Connection closed for client [7] with IP 0.0.0.0 on port 8080
 [Wed Sep  4 10:21:53 2024] [ERROR] [removeFromQueue]		Error Removing Event No such file or directory
 [Wed Sep  4 10:21:53 2024] [ERROR] [removeFromQueue]		Error Removing Event No such file or directory
+[Wed Sep  4 10:42:23 2024] [ERROR] [validateRouteMap]		 Directory /var/www/html does not exist
+[Wed Sep  4 06:57:41 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
