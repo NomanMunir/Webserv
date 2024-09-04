@@ -35,7 +35,6 @@ class Response
 		Response(const Response &c);
 		Response& operator=(const Response &c);
 
-
 		std::string getResponse();
 		void printResponse();
 		void setTargetServer(ServerConfig server);
@@ -57,12 +56,12 @@ class Response
 		RouteConfig targetRoute;
 		int errorCode;
 		bool isConnectionClosed;
-		
+		std::string cookies;
+
 		void handleGET(bool isGet, std::string &uri, bool isHEAD);
 		void handlePOST(bool isPost, std::string &uri, Body &body);
 		void handleDELETE(bool isDelete, std::string &uri);
 		void handlePUT(bool isPut, std::string &uri, Body &body);
-		void handleCGI(Request &request);
 
 
 		void defaultErrorPage(std::string errorCode);

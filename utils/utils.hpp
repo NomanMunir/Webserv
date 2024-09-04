@@ -40,5 +40,6 @@ std::string getStatusMsg(std::string errorCode);
 std::string getMimeType(std::string extention);
 std::string getCurrentTimestamp();
 std::string toUpperCase(const std::string &str);
+std::string generateFullPath(std::string rootPath, std::string path);
 
 #endif // UTILS_HPP	

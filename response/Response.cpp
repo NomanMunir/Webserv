@@ -125,22 +125,14 @@ void Response::handleDirectory(std::string &fullPath, std::string &uri)
 		httpResponse.setHeader("Content-Type", "text/html");
 		httpResponse.setHeader("Content-Length", std::to_string(body.size()));
 		httpResponse.setHeader("Connection", "keep-alive");
+		if (this->cookies != "")
+			httpResponse.setHeader("Set-Cookie", this->cookies);
 		httpResponse.setHeader("Server", "LULUGINX");
 		httpResponse.setBody(body);
 		response = httpResponse.generateResponse();
 	}
 	else
 		this->setErrorCode(403, "[handleDirectory]\t\t Directory listing is disabled");
-}
-
-std::string generateFullPath(std::string rootPath, std::string path)
-{
-	if (rootPath.back() == '/')
-		rootPath.pop_back();
-	if (path.front() == '/')
-		path.erase(0, 1);
-	std::string fullPath = rootPath + "/" + path;
-	return fullPath;
 }
 
 void Response::generateResponseFromFile(std::string &path, bool isHEAD)
@@ -157,7 +149,8 @@ void Response::generateResponseFromFile(std::string &path, bool isHEAD)
 	httpResponse.setHeader("Content-Type", mimeType);
 	httpResponse.setHeader("Content-Length", std::to_string(body.size()));
 	httpResponse.setHeader("Connection", "keep-alive");
-
+	if (this->cookies != "")
+		httpResponse.setHeader("Set-Cookie", this->cookies);
 	httpResponse.setHeader("Server", "LULUGINX");
 	if (!isHEAD)
 		httpResponse.setBody(body);
@@ -249,6 +242,8 @@ void Response::handlePOST(bool isPost, std::string &uri, Body &body)
 		httpResponse.setHeader("Content-Type", "text/html");
 		httpResponse.setHeader("Content-Length", std::to_string(body.size()));
 		httpResponse.setHeader("Connection", "keep-alive");
+		if (this->cookies != "")
+			httpResponse.setHeader("Set-Cookie", this->cookies);
 		httpResponse.setHeader("Server", "LULUGINX");
 		httpResponse.setBody(body);
 		response = httpResponse.generateResponse();
@@ -273,6 +268,8 @@ void Response::handleDELETE(bool isDelete, std::string &uri)
 		httpResponse.setHeader("Content-Type", "text/html");
 		httpResponse.setHeader("Content-Length", std::to_string(body.size()));
 		httpResponse.setHeader("Connection", "keep-alive");
+		if (this->cookies != "")
+			httpResponse.setHeader("Set-Cookie", this->cookies);
 		httpResponse.setHeader("Server", "LULUGINX");
 		httpResponse.setBody(body);
 		response = httpResponse.generateResponse();
@@ -302,46 +299,27 @@ void Response::handlePUT(bool isPut, std::string &uri, Body &body)
 		httpResponse.setHeader("Content-Type", "text/html");
 		httpResponse.setHeader("Content-Length", std::to_string(body.size()));
 		httpResponse.setHeader("Connection", "keep-alive");
+		if (this->cookies != "")
+			httpResponse.setHeader("Set-Cookie", this->cookies);
 		httpResponse.setHeader("Server", "LULUGINX");
 		httpResponse.setBody(body);
 		response = httpResponse.generateResponse();
 	}
 }
 
-void Response::handleCGI(Request &request)
-{
-	std::string uri = request.getHeaders().getValue("uri");
-	std::string fullPath = generateFullPath(this->targetServer.root, uri);
-	Cgi cgi(request, fullPath, *this);
-	cgi.execute();
-	std::string body = cgi.output;
-	HttpResponse httpResponse;
-	httpResponse.setVersion("HTTP/1.1");
-	httpResponse.setStatusCode(200);
-	httpResponse.setHeader("Content-Type", "text/html");
-	httpResponse.setHeader("Content-Length", std::to_string(body.size()));
-	httpResponse.setHeader("Connection", "keep-alive");
-	httpResponse.setHeader("Server", "LULUGINX");
-	httpResponse.setBody(body);
-	response = httpResponse.generateResponse();
-}
-
 void Response::handleResponse(Request &request)
 {
+	this->cookies = request.getHeaders().getValue("Cookie");
 	std::string method = request.getHeaders().getValue("method");
 	std::string uri = request.getHeaders().getValue("uri");
 	Body &body = request.getBody();
 	if (this->errorCode != 0)
 		return (sendError(std::to_string(this->errorCode)));
-	if (request.getIsCGI())
-		handleCGI(request);
-	else
-	{
-		handleGET(method == "GET" || method == "HEAD", uri, method == "HEAD");
-		handlePOST(method == "POST", uri, body);
-		handleDELETE(method == "DELETE", uri);
-		handlePUT(method == "PUT", uri, body);
-	}
+
+	handleGET(method == "GET" || method == "HEAD", uri, method == "HEAD");
+	handlePOST(method == "POST", uri, body);
+	handleDELETE(method == "DELETE", uri);
+	handlePUT(method == "PUT", uri, body);
 }
 
 void Response::defaultErrorPage(std::string errorCode)
@@ -360,7 +338,11 @@ void Response::defaultErrorPage(std::string errorCode)
 	if (isClosingCode(errorCode))
 		httpResponse.setHeader("Connection", "close");
 	else
+	{
+		if (this->cookies != "")
+			httpResponse.setHeader("Set-Cookie", this->cookies);
 		httpResponse.setHeader("Connection", "keep-alive");
+	}
 	httpResponse.setHeader("Server", "LULUGINX");
 	httpResponse.setBody(body);
 	response = httpResponse.generateResponse();
@@ -385,7 +367,11 @@ void Response::findErrorPage(std::string errorCode, std::map<std::string, std::s
 		if (isClosingCode(errorCode))
 		httpResponse.setHeader("Connection", "close");
 		else
+		{
+		if (this->cookies != "")
+			httpResponse.setHeader("Set-Cookie", this->cookies);
 			httpResponse.setHeader("Connection", "keep-alive");
+		}
 		httpResponse.setHeader("Server", "LULUGINX");
 		httpResponse.setBody(body);
 		response = httpResponse.generateResponse();

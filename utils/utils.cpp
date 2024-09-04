@@ -12,6 +12,16 @@
 
 #include "utils.hpp"
 
+std::string generateFullPath(std::string rootPath, std::string path)
+{
+	if (rootPath.back() == '/')
+		rootPath.pop_back();
+	if (path.front() == '/')
+		path.erase(0, 1);
+	std::string fullPath = rootPath + "/" + path;
+	return fullPath;
+}
+
 std::string getCurrentTimestamp() 
 {
     std::time_t now = std::time(nullptr);

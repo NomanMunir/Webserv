@@ -1,255 +1,273 @@
-
-[Tue Sep  3 10:32:43 2024] [ERROR] [main] "Usage: ./webserv <config_file>"
-[Tue Sep  3 10:37:49 2024] [ERROR] [main] "Usage: ./webserv <config_file>"
-[Tue Sep  3 10:37:54 2024] [ERROR] [main] "Error: invalid error pages"
-[Tue Sep  3 10:40:25 2024] [ERROR]  "[main] Usage: ./webserv <config_file>"
-[Tue Sep  3 10:41:26 2024] [ERROR]  "[main]		 Usage: ./webserv <config_file>"
-[Tue Sep  3 10:42:14 2024] [ERROR] [main]		 Usage: ./webserv <config_file>
-[Tue Sep  3 10:51:28 2024] [ERROR] Error: invalid error pages
-[Tue Sep  3 10:53:09 2024] [ERROR] [checkServerBlock]		 invalid configuration file hi
-[Tue Sep  3 10:53:59 2024] [ERROR] [checkServerBlock]			 invalid configuration file hi
-[Tue Sep  3 10:54:13 2024] [ERROR] [main]			 Usage: ./webserv <config_file>
-[Tue Sep  3 10:54:46 2024] [ERROR] [main]			 Usage: ./webserv <config_file>
-[Tue Sep  3 10:58:34 2024] [ERROR] [main]			 Usage: ./webserv <config_file>
-[Tue Sep  3 10:58:38 2024] [ERROR] Directory /Users/nmunir/Desktop/Webserv/ error_pages 403 /errors/403.html//cgi-bin does not exist
-[Tue Sep  3 11:15:32 2024] [ERROR] [Validation]		 Directory /Users/nmunir/Desktop/Webserv/ error_pages 403 /errors/403.html//cgi-bin does not exist
-[Tue Sep  3 11:20:30 2024] [ERROR] [validateErrorPages]		 File /var/www/html//errors/40.html does not exist
-[Tue Sep  3 11:23:28 2024] [ERROR] [validateErrorPages]		 File /var/www/html//errors/403.html does not exist
-[Tue Sep  3 11:32:25 2024] [ERROR] [validateErrorPages]		 File /Users/nmunir/Desktop/Webserv//errors/40.html does not exist
-[Tue Sep  3 11:37:53 2024] [ERROR] [Parser]		 invalid configuration file :(
-[Tue Sep  3 11:42:11 2024] [ERROR] [Parser]		 invalid configuration file :(
-[Tue Sep  3 11:42:23 2024] [ERROR] No server was created
-[Tue Sep  3 11:44:34 2024] [ERROR] [initServers]		 No servers found
-[Tue Sep  3 11:50:26 2024] [ERROR] [run]		 Undefined error: 0
-[Tue Sep  3 11:50:31 2024] [ERROR] [run]		 Undefined error: 0
-[Tue Sep  3 11:50:36 2024] [ERROR] [run]		 Undefined error: 0
-[Tue Sep  3 11:50:41 2024] [ERROR] [run]		 Undefined error: 0
-[Tue Sep  3 11:50:46 2024] [ERROR] [run]		 Undefined error: 0
-[Tue Sep  3 11:50:51 2024] [ERROR] [run]		 Undefined error: 0
-[Tue Sep  3 11:50:56 2024] [ERROR] [run]		 Undefined error: 0
-[Tue Sep  3 11:51:01 2024] [ERROR] [run]		 Undefined error: 0
-[Tue Sep  3 11:51:06 2024] [ERROR] [run]		 Undefined error: 0
-[Tue Sep  3 11:51:11 2024] [ERROR] [run]		 Undefined error: 0
-[Tue Sep  3 11:51:16 2024] [ERROR] [run]		 Undefined error: 0
-[Tue Sep  3 11:51:21 2024] [ERROR] [run]		 Undefined error: 0
-[Tue Sep  3 11:51:26 2024] [ERROR] [run]		 Undefined error: 0
-[Tue Sep  3 11:51:31 2024] [ERROR] [run]		 Undefined error: 0
-[Tue Sep  3 11:51:36 2024] [ERROR] [run]		 Undefined error: 0
-[Tue Sep  3 11:51:41 2024] [ERROR] [run]		 Undefined error: 0
-[Tue Sep  3 11:51:46 2024] [ERROR] [run]		 Undefined error: 0
-[Tue Sep  3 11:51:51 2024] [ERROR] [run]		 Undefined error: 0
-[Tue Sep  3 11:51:59 2024] [ERROR] [run]		 Undefined error: 0
-[Tue Sep  3 11:52:56 2024] [ERROR] [run]		 Number of events is invalid
-[Tue Sep  3 11:53:01 2024] [ERROR] [run]		 Number of events is invalid
-[Tue Sep  3 11:53:06 2024] [ERROR] [run]		 Number of events is invalid
-[Tue Sep  3 12:07:18 2024] [INFO] Server listening on port 80
-[Tue Sep  3 12:10:21 2024] [INFO] Server listening on port 80
-[Tue Sep  3 12:17:53 2024] [ERROR] [bindAndListen]		 Error binding socket
-[Tue Sep  3 12:17:53 2024] [ERROR] [initServers]		 Unable to create any server
-[Tue Sep  3 12:19:34 2024] [ERROR] [bindAndListen]		 Error binding socket
-[Tue Sep  3 12:19:34 2024] [ERROR] [initServers]		 Unable to create any server
-[Tue Sep  3 12:21:04 2024] [ERROR] [bindAndListen]		 Error binding socket
-[Tue Sep  3 12:21:04 2024] [ERROR] [initServers]		 Unable to create any server
-[Tue Sep  3 12:25:06 2024] [INFO] Server listening on port 80
-[Tue Sep  3 12:32:13 2024] [ERROR] [bindAndListen]		 Error binding socket
-[Tue Sep  3 12:32:13 2024] [ERROR] [initServers]		 Unable to create any server
-[Tue Sep  3 12:47:13 2024] [ERROR] [bindAndListen]		 Error binding socket
-[Tue Sep  3 12:47:13 2024] [ERROR] [initServers]		 Unable to create any server
-[Tue Sep  3 12:47:27 2024] [ERROR] [bindAndListen]		 Error binding socket
-[Tue Sep  3 12:47:27 2024] [ERROR] [initServers]		 Unable to create any server
-[Tue Sep  3 12:50:03 2024] [ERROR] [bindAndListen]		 Error binding socket
-[Tue Sep  3 12:50:03 2024] [ERROR] [initServers]		 Unable to create any server
-[Tue Sep  3 12:50:11 2024] [ERROR] [bindAndListen]		 Error binding socket
-[Tue Sep  3 12:50:11 2024] [ERROR] [initServers]		 Unable to create any server
-[Tue Sep  3 12:51:48 2024] [ERROR] [bindAndListen]		 Error binding socket
-[Tue Sep  3 12:51:48 2024] [ERROR] [initServers]		 Unable to create any server
-[Tue Sep  3 12:53:09 2024] [INFO] Server listening on port 80
-[Tue Sep  3 12:54:52 2024] [INFO] Server listening on port 80
-[Tue Sep  3 12:55:01 2024] [INFO] Server listening on port 80
-[Tue Sep  3 12:55:18 2024] [ERROR] [bindAndListen]		 Error binding socket
-[Tue Sep  3 12:55:18 2024] [ERROR] [initServers]		 Unable to create any server
-[Tue Sep  3 12:55:46 2024] [ERROR] [bindAndListen]		 Error binding socket
-[Tue Sep  3 12:55:46 2024] [ERROR] [initServers]		 Unable to create any server
-[Tue Sep  3 12:58:13 2024] [ERROR] [bindAndListen]		 Error binding socketPermission denied
-[Tue Sep  3 12:58:13 2024] [ERROR] [initServers]		 Unable to create any server
-[Tue Sep  3 12:58:22 2024] [ERROR] [bindAndListen]		 Error binding socket Permission denied
-[Tue Sep  3 12:58:22 2024] [ERROR] [initServers]		 Unable to create any server
-[Tue Sep  3 12:58:54 2024] [INFO] Server listening on port 80
-[Tue Sep  3 13:00:44 2024] [INFO] Server listening on port 8080
-[Tue Sep  3 13:24:38 2024] [INFO] Server listening on port 8080
-[Tue Sep  3 13:25:50 2024] [INFO] Server listening on port 8080
-[Tue Sep  3 13:26:19 2024] [INFO] [bindAndListen]		 Server listening on port 8080
-[Tue Sep  3 13:29:26 2024] [INFO] [bindAndListen]		 Server listening on port 8080
-[Tue Sep  3 13:30:51 2024] [INFO] [bindAndListen]		 Server listening on port 8080
-[Tue Sep  3 13:30:53 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 57792
-[Tue Sep  3 13:30:53 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 6
-[Tue Sep  3 13:30:53 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 57793
-[Tue Sep  3 13:30:53 2024] [INFO] [handleWrite]		 Handling write for client 6
-[Tue Sep  3 13:30:53 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 6
-[Tue Sep  3 13:30:53 2024] [ERROR] Response::checkType: File not found
-[Tue Sep  3 13:30:53 2024] [INFO] [handleWrite]		 Handling write for client 6
-[Tue Sep  3 13:30:53 2024] [INFO] [handleWrite]		 Connection closed for client [6] with IP 127.0.0.1 on port 8080
-[Tue Sep  3 13:35:53 2024] [DEBUG] [handleDisconnection]		 Handling disconnection for client 7
-[Tue Sep  3 14:35:41 2024] [INFO] [bindAndListen]		 Server listening on port 8080
-[Tue Sep  3 14:35:56 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
-[Tue Sep  3 14:36:00 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 58851
-[Tue Sep  3 14:36:00 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 6
-[Tue Sep  3 14:36:00 2024] [INFO] [handleWrite]		 Handling write for client 6
-[Tue Sep  3 14:36:00 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 58854
-[Tue Sep  3 14:36:00 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 7
-[Tue Sep  3 14:36:00 2024] [ERROR] [checkType]: File not found
-[Tue Sep  3 14:36:00 2024] [INFO] [handleWrite]		 Handling write for client 7
-[Tue Sep  3 14:36:00 2024] [INFO] [handleWrite]		 Connection closed for client [7] with IP 127.0.0.1 on port 8080
-[Tue Sep  3 14:37:00 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 6
-[Tue Sep  3 14:37:00 2024] [ERROR] [recvHeader]		 Client disconnected 6
-[Tue Sep  3 14:37:00 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 6
-[Tue Sep  3 14:37:00 2024] [ERROR] [recvHeader]		 Client disconnected 6
-[Tue Sep  3 14:37:00 2024] [INFO] [handleWrite]		 Handling write for client 6
-[Tue Sep  3 14:37:00 2024] [INFO] [handleWrite]		 Connection closed for client [6] with IP 127.0.0.1 on port 8080
-[Tue Sep  3 15:03:24 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
-[Tue Sep  3 15:13:49 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
-[Tue Sep  3 15:14:23 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
-[Tue Sep  3 15:14:36 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 59683
-[Tue Sep  3 15:14:36 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 6
-[Tue Sep  3 15:14:36 2024] [INFO] [handleWrite]		 Handling write for client 6
-[Tue Sep  3 15:14:36 2024] [INFO] [removeFromQueue]		 Removing write event for fd: 6
-[Tue Sep  3 15:14:41 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 59684
-[Tue Sep  3 15:14:41 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 7
-[Tue Sep  3 15:14:41 2024] [INFO] [handleWrite]		 Handling write for client 7
-[Tue Sep  3 15:14:41 2024] [INFO] [removeFromQueue]		 Removing write event for fd: 7
-[Tue Sep  3 15:14:45 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 6
-[Tue Sep  3 15:14:45 2024] [INFO] [handleWrite]		 Handling write for client 6
-[Tue Sep  3 15:14:45 2024] [INFO] [removeFromQueue]		 Removing write event for fd: 6
-[Tue Sep  3 15:14:45 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 6
-[Tue Sep  3 15:14:45 2024] [ERROR] [recvHeader]		 Client disconnected 6
-[Tue Sep  3 15:14:45 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 6
-[Tue Sep  3 15:14:45 2024] [ERROR] [recvHeader]		 Client disconnected 6
-[Tue Sep  3 15:14:45 2024] [INFO] [handleWrite]		 Handling write for client 6
-[Tue Sep  3 15:14:45 2024] [INFO] [handleWrite]		 Connection closed for client [6] with IP 127.0.0.1 on port 8080
-[Tue Sep  3 15:14:45 2024] [INFO] [removeFromQueue]		 Removing write event for fd: 6
-[Tue Sep  3 15:14:45 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 59687
-[Tue Sep  3 15:14:45 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 6
-[Tue Sep  3 15:14:45 2024] [INFO] [handleWrite]		 Handling write for client 6
-[Tue Sep  3 15:14:45 2024] [INFO] [removeFromQueue]		 Removing write event for fd: 6
-[Tue Sep  3 15:14:55 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 7
-[Tue Sep  3 15:14:55 2024] [INFO] [handleWrite]		 Handling write for client 7
-[Tue Sep  3 15:14:55 2024] [INFO] [removeFromQueue]		 Removing write event for fd: 7
-[Tue Sep  3 15:14:56 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 7
-[Tue Sep  3 15:14:56 2024] [INFO] [handleWrite]		 Handling write for client 7
-[Tue Sep  3 15:14:56 2024] [INFO] [removeFromQueue]		 Removing write event for fd: 7
-[Tue Sep  3 15:14:59 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 6
-[Tue Sep  3 15:14:59 2024] [INFO] [handleWrite]		 Handling write for client 6
-[Tue Sep  3 15:14:59 2024] [INFO] [removeFromQueue]		 Removing write event for fd: 6
-[Tue Sep  3 15:14:59 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 6
-[Tue Sep  3 15:14:59 2024] [ERROR] [recvHeader]		 Client disconnected 6
-[Tue Sep  3 15:14:59 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 6
-[Tue Sep  3 15:14:59 2024] [ERROR] [recvHeader]		 Client disconnected 6
-[Tue Sep  3 15:14:59 2024] [INFO] [handleWrite]		 Handling write for client 6
-[Tue Sep  3 15:14:59 2024] [INFO] [handleWrite]		 Connection closed for client [6] with IP 127.0.0.1 on port 8080
-[Tue Sep  3 15:14:59 2024] [INFO] [removeFromQueue]		 Removing write event for fd: 6
-[Tue Sep  3 15:14:59 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 59691
-[Tue Sep  3 15:14:59 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 6
-[Tue Sep  3 15:14:59 2024] [INFO] [handleWrite]		 Handling write for client 6
-[Tue Sep  3 15:14:59 2024] [INFO] [removeFromQueue]		 Removing write event for fd: 6
-[Tue Sep  3 15:15:06 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 7
-[Tue Sep  3 15:15:06 2024] [INFO] [handleWrite]		 Handling write for client 7
-[Tue Sep  3 15:15:06 2024] [INFO] [removeFromQueue]		 Removing write event for fd: 7
-[Tue Sep  3 15:15:08 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 6
-[Tue Sep  3 15:15:08 2024] [ERROR] [handleDirectory]		 Redirecting to directory with trailing slash
-[Tue Sep  3 15:15:08 2024] [INFO] [handleWrite]		 Handling write for client 6
-[Tue Sep  3 15:15:08 2024] [INFO] [removeFromQueue]		 Removing write event for fd: 6
-[Tue Sep  3 15:15:08 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 7
-[Tue Sep  3 15:15:08 2024] [ERROR] [checkType]		 File not found
-[Tue Sep  3 15:15:08 2024] [INFO] [handleWrite]		 Handling write for client 7
-[Tue Sep  3 15:15:08 2024] [INFO] [handleWrite]		 Connection closed for client [7] with IP 127.0.0.1 on port 8080
-[Tue Sep  3 15:15:08 2024] [INFO] [removeFromQueue]		 Removing write event for fd: 7
-[Tue Sep  3 15:15:12 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 6
-[Tue Sep  3 15:15:12 2024] [INFO] [handleWrite]		 Handling write for client 6
-[Tue Sep  3 15:15:12 2024] [INFO] [removeFromQueue]		 Removing write event for fd: 6
-[Tue Sep  3 16:54:32 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
-[Tue Sep  3 17:43:47 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
-[Tue Sep  3 17:44:05 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 61327
-[Tue Sep  3 17:44:05 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 6
-[Tue Sep  3 17:44:05 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 61330
-[Tue Sep  3 17:44:05 2024] [INFO] [handleWrite]		 Handling write for client 6
-[Tue Sep  3 17:44:05 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 6
-[Tue Sep  3 17:44:05 2024] [ERROR] [checkType]		 File not found
-[Tue Sep  3 17:44:05 2024] [INFO] [handleWrite]		 Handling write for client 6
-[Tue Sep  3 17:44:05 2024] [INFO] [handleWrite]		 Connection closed for client [6] with IP 127.0.0.1 on port 8080
-[Tue Sep  3 17:44:52 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 7
-[Tue Sep  3 17:44:52 2024] [ERROR] [checkType]		 File not found
-[Tue Sep  3 17:44:52 2024] [INFO] [handleWrite]		 Handling write for client 7
-[Tue Sep  3 17:44:52 2024] [INFO] [handleWrite]		 Connection closed for client [7] with IP 127.0.0.1 on port 8080
-[Tue Sep  3 17:44:52 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 61334
-[Tue Sep  3 17:44:52 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 61335
-[Tue Sep  3 17:45:46 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
-[Tue Sep  3 17:45:49 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 61354
-[Tue Sep  3 17:45:49 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 6
-[Tue Sep  3 17:45:49 2024] [ERROR] [checkType]		 File not found /Users/nmunir/Desktop/Webserv/asdf
-[Tue Sep  3 17:45:49 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 61356
-[Tue Sep  3 17:45:49 2024] [INFO] [handleWrite]		 Handling write for client 6
-[Tue Sep  3 17:45:49 2024] [INFO] [handleWrite]		 Connection closed for client [6] with IP 127.0.0.1 on port 8080
-[Tue Sep  3 17:45:55 2024] [DEBUG] [Client::readFromSocket]		 Reading from client socket 7
-[Tue Sep  3 17:45:55 2024] [INFO] [handleWrite]		 Handling write for client 7
-[Tue Sep  3 17:45:55 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 61363
-[Tue Sep  3 17:47:37 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
-[Tue Sep  3 17:47:39 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 61391
-[Tue Sep  3 17:47:39 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
-[Tue Sep  3 17:47:39 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 61393
-[Tue Sep  3 17:47:39 2024] [INFO] [handleWrite]		 Handling write for client 6
-[Tue Sep  3 17:47:42 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
-[Tue Sep  3 17:47:42 2024] [ERROR] [checkType]		 File not found /Users/nmunir/Desktop/Webserv/asdf
-[Tue Sep  3 17:47:42 2024] [INFO] [handleWrite]		 Handling write for client 6
-[Tue Sep  3 17:47:42 2024] [INFO] [handleWrite]		 Connection closed for client [6] with IP 127.0.0.1 on port 8080
-[Wed Sep  4 09:25:03 2024] [ERROR] [Validation]		 Directory /Users/nmunir/Desktop/Webserv does not exist
-[Wed Sep  4 09:26:42 2024] [ERROR] [validateErrorPages]		 File /home/nomi/Webserv/Users/nmunir/Desktop/Webserv/error.html does not exist
-[Wed Sep  4 09:33:14 2024] [ERROR] [Validation]		 Directory ///cgi-bin does not exist
-[Wed Sep  4 09:35:38 2024] [ERROR] [Validation]		 Directory ///cgi-bin does not exist
-[Wed Sep  4 09:35:59 2024] [ERROR] [validateErrorPages]		 File /var/www/html/Users/nmunir/Desktop/Webserv/error.html does not exist
-[Wed Sep  4 09:38:36 2024] [ERROR] [validateErrorPages]		 File /var/www/html/Users/nmunir/Desktop/Webserv/error.html does not exist
-[Wed Sep  4 09:44:01 2024] [INFO] [bindAndListen]		 Server is listening at http://0.0.0.0:8080
-[Wed Sep  4 09:44:14 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 52548
-[Wed Sep  4 09:44:14 2024] [ERROR] [addToQueue]		Error Adding Event File exists
-[Wed Sep  4 09:44:14 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
-[Wed Sep  4 09:44:14 2024] [ERROR] [execute]		 Failed to execute Permission denied
-[Wed Sep  4 09:44:14 2024] [ERROR] [addToQueue]		Error Adding Event File exists
-[Wed Sep  4 09:44:14 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 52550
-[Wed Sep  4 09:44:14 2024] [ERROR] [addToQueue]		Error Adding Event File exists
-[Wed Sep  4 09:44:14 2024] [INFO] [acceptClient]		 New connection, socket fd is [8], IP is : 127.0.0.1, port : 52560
-[Wed Sep  4 09:44:14 2024] [ERROR] [addToQueue]		Error Adding Event File exists
-[Wed Sep  4 09:44:19 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
-[Wed Sep  4 09:44:19 2024] [ERROR] [recvHeader]		 Client disconnected 7
-[Wed Sep  4 09:44:19 2024] [DEBUG] [readFromSocket]		 Reading from client socket 8
-[Wed Sep  4 09:44:19 2024] [ERROR] [recvHeader]		 Client disconnected 8
-[Wed Sep  4 09:44:19 2024] [INFO] [handleWrite]		 Handling write for client 7
-[Wed Sep  4 09:44:19 2024] [INFO] [handleWrite]		 Connection closed for client [7] with IP 0.0.0.0 on port 8080
-[Wed Sep  4 09:44:19 2024] [ERROR] [removeFromQueue]		Error Removing Event No such file or directory
-[Wed Sep  4 09:44:19 2024] [ERROR] [removeFromQueue]		Error Removing Event No such file or directory
-[Wed Sep  4 09:44:19 2024] [INFO] [handleWrite]		 Handling write for client 8
-[Wed Sep  4 09:44:19 2024] [INFO] [handleWrite]		 Connection closed for client [8] with IP 0.0.0.0 on port 8080
-[Wed Sep  4 09:44:19 2024] [ERROR] [removeFromQueue]		Error Removing Event No such file or directory
-[Wed Sep  4 09:44:19 2024] [ERROR] [removeFromQueue]		Error Removing Event No such file or directory
-[Wed Sep  4 10:21:47 2024] [INFO] [bindAndListen]		 Server is listening at http://0.0.0.0:8080
-[Wed Sep  4 10:21:52 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 50650
-[Wed Sep  4 10:21:52 2024] [ERROR] [addToQueue]		Error Adding Event File exists
-[Wed Sep  4 10:21:52 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 50652
-[Wed Sep  4 10:21:52 2024] [ERROR] [addToQueue]		Error Adding Event File exists
-[Wed Sep  4 10:21:52 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
-[Wed Sep  4 10:21:52 2024] [ERROR] [execute]		 Failed to execute Permission denied
-[Wed Sep  4 10:21:52 2024] [ERROR] [addToQueue]		Error Adding Event File exists
-[Wed Sep  4 10:21:52 2024] [INFO] [acceptClient]		 New connection, socket fd is [8], IP is : 127.0.0.1, port : 50664
-[Wed Sep  4 10:21:52 2024] [ERROR] [addToQueue]		Error Adding Event File exists
-[Wed Sep  4 10:21:53 2024] [DEBUG] [readFromSocket]		 Reading from client socket 8
-[Wed Sep  4 10:21:53 2024] [ERROR] [recvHeader]		 Client disconnected 8
-[Wed Sep  4 10:21:53 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
-[Wed Sep  4 10:21:53 2024] [ERROR] [recvHeader]		 Client disconnected 7
-[Wed Sep  4 10:21:53 2024] [INFO] [handleWrite]		 Handling write for client 8
-[Wed Sep  4 10:21:53 2024] [INFO] [handleWrite]		 Connection closed for client [8] with IP 0.0.0.0 on port 8080
-[Wed Sep  4 10:21:53 2024] [ERROR] [removeFromQueue]		Error Removing Event No such file or directory
-[Wed Sep  4 10:21:53 2024] [ERROR] [removeFromQueue]		Error Removing Event No such file or directory
-[Wed Sep  4 10:21:53 2024] [INFO] [handleWrite]		 Handling write for client 7
-[Wed Sep  4 10:21:53 2024] [INFO] [handleWrite]		 Connection closed for client [7] with IP 0.0.0.0 on port 8080
-[Wed Sep  4 10:21:53 2024] [ERROR] [removeFromQueue]		Error Removing Event No such file or directory
-[Wed Sep  4 10:21:53 2024] [ERROR] [removeFromQueue]		Error Removing Event No such file or directory
-[Wed Sep  4 10:42:23 2024] [ERROR] [validateRouteMap]		 Directory /var/www/html does not exist
-[Wed Sep  4 06:57:41 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
+[Wed Sep  4 12:17:46 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
+[Wed Sep  4 12:17:48 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 51719
+[Wed Sep  4 12:17:48 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 12:17:48 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 51720
+[Wed Sep  4 12:17:48 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Wed Sep  4 12:18:00 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 12:18:00 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Wed Sep  4 12:18:00 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 12:18:00 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
+[Wed Sep  4 12:18:00 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Wed Sep  4 12:18:00 2024] [INFO] [handleWrite]		 Handling write for client 7
+[Wed Sep  4 12:18:14 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
+[Wed Sep  4 12:18:14 2024] [INFO] [handleWrite]		 Handling write for client 7
+[Wed Sep  4 12:23:00 2024] [DEBUG] [handleDisconnection]		 Handling disconnection for client 6
+[Wed Sep  4 12:23:14 2024] [DEBUG] [handleDisconnection]		 Handling disconnection for client 7
+[Wed Sep  4 12:25:15 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
+[Wed Sep  4 12:25:26 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 51829
+[Wed Sep  4 12:25:45 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
+[Wed Sep  4 12:26:03 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 51996
+[Wed Sep  4 12:26:03 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 12:26:03 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 51997
+[Wed Sep  4 12:26:03 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Wed Sep  4 12:26:09 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 12:26:09 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Wed Sep  4 12:26:29 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 12:26:29 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Wed Sep  4 12:26:30 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 12:26:30 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Wed Sep  4 12:26:30 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 12:26:30 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Wed Sep  4 12:26:30 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 12:26:30 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Wed Sep  4 12:28:26 2024] [INFO] [acceptClient]		 New connection, socket fd is [8], IP is : 127.0.0.1, port : 52626
+[Wed Sep  4 12:28:26 2024] [DEBUG] [readFromSocket]		 Reading from client socket 8
+[Wed Sep  4 12:28:26 2024] [INFO] [handleWrite]		 Handling write for client 8
+[Wed Sep  4 12:28:52 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
+[Wed Sep  4 12:28:52 2024] [ERROR] [recvHeader]		 Client disconnected 7
+[Wed Sep  4 12:28:52 2024] [INFO] [handleWrite]		 Handling write for client 7
+[Wed Sep  4 12:28:52 2024] [INFO] [handleWrite]		 Connection closed for client [7] with IP 127.0.0.1 on port 8080
+[Wed Sep  4 12:31:30 2024] [DEBUG] [handleDisconnection]		 Handling disconnection for client 6
+[Wed Sep  4 12:33:26 2024] [DEBUG] [handleDisconnection]		 Handling disconnection for client 8
+[Wed Sep  4 13:01:46 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
+[Wed Sep  4 13:01:53 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 60954
+[Wed Sep  4 13:01:53 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 13:01:53 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 60955
+[Wed Sep  4 13:01:53 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Wed Sep  4 13:01:56 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 13:01:56 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Wed Sep  4 13:23:18 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
+[Wed Sep  4 13:23:34 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 50016
+[Wed Sep  4 13:23:34 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 13:23:34 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 50017
+[Wed Sep  4 13:23:34 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Wed Sep  4 13:24:18 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 13:24:23 2024] [INFO] [checkCGITimeout]		 CGI script execution timed out and was killed
+[Wed Sep  4 13:24:58 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
+[Wed Sep  4 13:25:01 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 50034
+[Wed Sep  4 13:25:01 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 13:25:06 2024] [INFO] [checkCGITimeout]		 CGI script execution timed out and was killed
+[Wed Sep  4 13:25:06 2024] [ERROR] [checkCGITimeout]		 CGI script execution timed out
+[Wed Sep  4 13:25:06 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 50035
+[Wed Sep  4 13:25:06 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Wed Sep  4 13:25:06 2024] [INFO] [handleWrite]		 Connection closed for client [6] with IP 127.0.0.1 on port 8080
+[Wed Sep  4 13:25:06 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 50043
+[Wed Sep  4 13:25:06 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
+[Wed Sep  4 13:25:11 2024] [INFO] [checkCGITimeout]		 CGI script execution timed out and was killed
+[Wed Sep  4 13:25:11 2024] [ERROR] [checkCGITimeout]		 CGI script execution timed out
+[Wed Sep  4 13:25:11 2024] [INFO] [acceptClient]		 New connection, socket fd is [8], IP is : 127.0.0.1, port : 50050
+[Wed Sep  4 13:25:11 2024] [INFO] [handleWrite]		 Handling write for client 7
+[Wed Sep  4 13:25:11 2024] [INFO] [handleWrite]		 Connection closed for client [7] with IP 127.0.0.1 on port 8080
+[Wed Sep  4 13:25:11 2024] [DEBUG] [readFromSocket]		 Reading from client socket 8
+[Wed Sep  4 13:25:11 2024] [INFO] [handleWrite]		 Handling write for client 8
+[Wed Sep  4 13:29:48 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 13:29:48 2024] [ERROR] [recvHeader]		 Client disconnected 6
+[Wed Sep  4 13:29:48 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 50120
+[Wed Sep  4 13:29:48 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Wed Sep  4 13:29:48 2024] [INFO] [handleWrite]		 Connection closed for client [6] with IP 127.0.0.1 on port 8080
+[Wed Sep  4 13:30:11 2024] [DEBUG] [handleDisconnection]		 Handling disconnection for client 8
+[Wed Sep  4 13:30:52 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
+[Wed Sep  4 13:30:52 2024] [ERROR] [recvHeader]		 Client disconnected 7
+[Wed Sep  4 13:30:52 2024] [INFO] [handleWrite]		 Handling write for client 7
+[Wed Sep  4 13:30:52 2024] [INFO] [handleWrite]		 Connection closed for client [7] with IP 127.0.0.1 on port 8080
+[Wed Sep  4 13:34:46 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
+[Wed Sep  4 13:35:15 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 50199
+[Wed Sep  4 13:35:15 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 50201
+[Wed Sep  4 13:35:15 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 13:35:15 2024] [ERROR] [checkType]		 File not found /Users/nmunir/Desktop/Webserv/asdf
+[Wed Sep  4 13:35:15 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Wed Sep  4 13:35:15 2024] [INFO] [handleWrite]		 Connection closed for client [6] with IP 127.0.0.1 on port 8080
+[Wed Sep  4 13:35:15 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
+[Wed Sep  4 13:35:15 2024] [ERROR] [checkType]		 File not found /Users/nmunir/Desktop/Webserv/favicon.ico
+[Wed Sep  4 13:35:15 2024] [INFO] [handleWrite]		 Handling write for client 7
+[Wed Sep  4 13:35:15 2024] [INFO] [handleWrite]		 Connection closed for client [7] with IP 127.0.0.1 on port 8080
+[Wed Sep  4 13:35:31 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 50206
+[Wed Sep  4 13:35:31 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 13:42:09 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
+[Wed Sep  4 13:42:10 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 50265
+[Wed Sep  4 13:42:10 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 13:42:11 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Wed Sep  4 13:42:17 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 50268
+[Wed Sep  4 13:42:17 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
+[Wed Sep  4 13:44:13 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
+[Wed Sep  4 13:44:15 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 50290
+[Wed Sep  4 13:44:15 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 13:44:15 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Wed Sep  4 13:44:16 2024] [ERROR] [run]		 Number of events is invalid
+[Wed Sep  4 13:44:26 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 50295
+[Wed Sep  4 13:44:26 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
+[Wed Sep  4 13:44:26 2024] [INFO] [acceptClient]		 New connection, socket fd is [8], IP is : 127.0.0.1, port : 50296
+[Wed Sep  4 13:44:26 2024] [INFO] [handleWrite]		 Handling write for client 7
+[Wed Sep  4 15:03:58 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
+[Wed Sep  4 15:04:05 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 51656
+[Wed Sep  4 15:04:05 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 51657
+[Wed Sep  4 15:04:05 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 15:04:05 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Wed Sep  4 15:04:12 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 15:04:12 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Wed Sep  4 15:04:12 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 15:04:12 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
+[Wed Sep  4 15:04:12 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Wed Sep  4 15:04:12 2024] [INFO] [handleWrite]		 Handling write for client 7
+[Wed Sep  4 15:04:22 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
+[Wed Sep  4 15:04:22 2024] [INFO] [handleWrite]		 Handling write for client 7
+[Wed Sep  4 15:04:22 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
+[Wed Sep  4 15:04:22 2024] [INFO] [acceptClient]		 New connection, socket fd is [8], IP is : 127.0.0.1, port : 51658
+[Wed Sep  4 15:04:22 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 15:04:22 2024] [INFO] [handleWrite]		 Handling write for client 7
+[Wed Sep  4 15:04:22 2024] [INFO] [acceptClient]		 New connection, socket fd is [9], IP is : 127.0.0.1, port : 51659
+[Wed Sep  4 15:04:22 2024] [DEBUG] [readFromSocket]		 Reading from client socket 8
+[Wed Sep  4 15:04:22 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Wed Sep  4 15:04:22 2024] [INFO] [acceptClient]		 New connection, socket fd is [10], IP is : 127.0.0.1, port : 51660
+[Wed Sep  4 15:04:22 2024] [DEBUG] [readFromSocket]		 Reading from client socket 9
+[Wed Sep  4 15:04:22 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
+[Wed Sep  4 15:04:23 2024] [INFO] [handleWrite]		 Handling write for client 8
+[Wed Sep  4 15:04:23 2024] [INFO] [acceptClient]		 New connection, socket fd is [11], IP is : 127.0.0.1, port : 51661
+[Wed Sep  4 15:04:23 2024] [DEBUG] [readFromSocket]		 Reading from client socket 10
+[Wed Sep  4 15:04:23 2024] [INFO] [handleWrite]		 Handling write for client 9
+[Wed Sep  4 15:04:23 2024] [INFO] [handleWrite]		 Handling write for client 7
+[Wed Sep  4 15:04:23 2024] [DEBUG] [readFromSocket]		 Reading from client socket 11
+[Wed Sep  4 15:04:23 2024] [INFO] [handleWrite]		 Handling write for client 10
+[Wed Sep  4 15:04:23 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
+[Wed Sep  4 15:04:23 2024] [DEBUG] [readFromSocket]		 Reading from client socket 9
+[Wed Sep  4 15:04:23 2024] [INFO] [handleWrite]		 Handling write for client 11
+[Wed Sep  4 15:04:23 2024] [DEBUG] [readFromSocket]		 Reading from client socket 10
+[Wed Sep  4 15:04:23 2024] [DEBUG] [readFromSocket]		 Reading from client socket 8
+[Wed Sep  4 15:04:23 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 15:04:23 2024] [INFO] [handleWrite]		 Handling write for client 7
+[Wed Sep  4 15:04:23 2024] [INFO] [handleWrite]		 Handling write for client 9
+[Wed Sep  4 15:04:23 2024] [DEBUG] [readFromSocket]		 Reading from client socket 11
+[Wed Sep  4 15:04:23 2024] [INFO] [handleWrite]		 Handling write for client 10
+[Wed Sep  4 15:04:23 2024] [INFO] [handleWrite]		 Handling write for client 8
+[Wed Sep  4 15:04:23 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Wed Sep  4 15:04:23 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
+[Wed Sep  4 15:04:23 2024] [INFO] [handleWrite]		 Handling write for client 11
+[Wed Sep  4 15:04:23 2024] [DEBUG] [readFromSocket]		 Reading from client socket 8
+[Wed Sep  4 15:04:23 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 15:04:23 2024] [DEBUG] [readFromSocket]		 Reading from client socket 10
+[Wed Sep  4 15:04:24 2024] [DEBUG] [readFromSocket]		 Reading from client socket 9
+[Wed Sep  4 15:04:24 2024] [INFO] [handleWrite]		 Handling write for client 7
+[Wed Sep  4 15:04:24 2024] [DEBUG] [readFromSocket]		 Reading from client socket 11
+[Wed Sep  4 15:04:24 2024] [INFO] [handleWrite]		 Handling write for client 8
+[Wed Sep  4 15:04:24 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Wed Sep  4 15:04:24 2024] [INFO] [handleWrite]		 Handling write for client 10
+[Wed Sep  4 15:04:24 2024] [INFO] [handleWrite]		 Handling write for client 9
+[Wed Sep  4 15:04:24 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
+[Wed Sep  4 15:04:24 2024] [INFO] [handleWrite]		 Handling write for client 11
+[Wed Sep  4 15:04:24 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 15:04:24 2024] [DEBUG] [readFromSocket]		 Reading from client socket 10
+[Wed Sep  4 15:04:24 2024] [DEBUG] [readFromSocket]		 Reading from client socket 8
+[Wed Sep  4 15:04:24 2024] [DEBUG] [readFromSocket]		 Reading from client socket 9
+[Wed Sep  4 15:04:24 2024] [INFO] [handleWrite]		 Handling write for client 7
+[Wed Sep  4 15:04:24 2024] [DEBUG] [readFromSocket]		 Reading from client socket 11
+[Wed Sep  4 15:04:24 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Wed Sep  4 15:04:24 2024] [INFO] [handleWrite]		 Handling write for client 10
+[Wed Sep  4 15:04:24 2024] [INFO] [handleWrite]		 Handling write for client 8
+[Wed Sep  4 15:04:24 2024] [INFO] [handleWrite]		 Handling write for client 9
+[Wed Sep  4 15:04:24 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
+[Wed Sep  4 15:04:24 2024] [INFO] [handleWrite]		 Handling write for client 11
+[Wed Sep  4 15:04:24 2024] [DEBUG] [readFromSocket]		 Reading from client socket 8
+[Wed Sep  4 15:04:24 2024] [DEBUG] [readFromSocket]		 Reading from client socket 10
+[Wed Sep  4 15:04:24 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 15:04:24 2024] [DEBUG] [readFromSocket]		 Reading from client socket 9
+[Wed Sep  4 15:04:24 2024] [INFO] [handleWrite]		 Handling write for client 7
+[Wed Sep  4 15:04:24 2024] [DEBUG] [readFromSocket]		 Reading from client socket 11
+[Wed Sep  4 15:04:24 2024] [INFO] [handleWrite]		 Handling write for client 8
+[Wed Sep  4 15:04:24 2024] [INFO] [handleWrite]		 Handling write for client 10
+[Wed Sep  4 15:04:24 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Wed Sep  4 15:04:24 2024] [INFO] [handleWrite]		 Handling write for client 9
+[Wed Sep  4 15:04:24 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
+[Wed Sep  4 15:04:24 2024] [INFO] [handleWrite]		 Handling write for client 11
+[Wed Sep  4 15:04:24 2024] [DEBUG] [readFromSocket]		 Reading from client socket 10
+[Wed Sep  4 15:04:25 2024] [DEBUG] [readFromSocket]		 Reading from client socket 8
+[Wed Sep  4 15:04:25 2024] [DEBUG] [readFromSocket]		 Reading from client socket 9
+[Wed Sep  4 15:04:25 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 15:04:25 2024] [INFO] [handleWrite]		 Handling write for client 7
+[Wed Sep  4 15:04:25 2024] [DEBUG] [readFromSocket]		 Reading from client socket 11
+[Wed Sep  4 15:04:25 2024] [INFO] [handleWrite]		 Handling write for client 10
+[Wed Sep  4 15:04:25 2024] [INFO] [handleWrite]		 Handling write for client 8
+[Wed Sep  4 15:04:25 2024] [INFO] [handleWrite]		 Handling write for client 9
+[Wed Sep  4 15:04:25 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Wed Sep  4 15:04:25 2024] [INFO] [handleWrite]		 Handling write for client 11
+[Wed Sep  4 15:04:25 2024] [DEBUG] [readFromSocket]		 Reading from client socket 11
+[Wed Sep  4 15:04:25 2024] [INFO] [handleWrite]		 Handling write for client 11
+[Wed Sep  4 15:04:56 2024] [DEBUG] [readFromSocket]		 Reading from client socket 11
+[Wed Sep  4 15:04:56 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:04:56 2024] [ERROR] [execute]		 CGI script is not executable
+[Wed Sep  4 15:04:56 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:04:56 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 15:04:56 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:04:56 2024] [ERROR] [execute]		 CGI script is not executable
+[Wed Sep  4 15:04:56 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:04:56 2024] [DEBUG] [readFromSocket]		 Reading from client socket 9
+[Wed Sep  4 15:04:56 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:04:56 2024] [ERROR] [execute]		 CGI script is not executable
+[Wed Sep  4 15:04:56 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:04:56 2024] [DEBUG] [readFromSocket]		 Reading from client socket 8
+[Wed Sep  4 15:04:56 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:04:56 2024] [ERROR] [execute]		 CGI script is not executable
+[Wed Sep  4 15:04:56 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:04:56 2024] [DEBUG] [readFromSocket]		 Reading from client socket 10
+[Wed Sep  4 15:04:56 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:04:56 2024] [ERROR] [execute]		 CGI script is not executable
+[Wed Sep  4 15:04:56 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:04:56 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
+[Wed Sep  4 15:04:56 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:04:56 2024] [ERROR] [execute]		 CGI script is not executable
+[Wed Sep  4 15:04:56 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:04:56 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 51663
+[Wed Sep  4 15:04:56 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 15:04:56 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:04:56 2024] [ERROR] [execute]		 CGI script is not executable
+[Wed Sep  4 15:04:56 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:04:57 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 51664
+[Wed Sep  4 15:04:57 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 15:04:57 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:04:57 2024] [ERROR] [execute]		 CGI script is not executable
+[Wed Sep  4 15:04:57 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:04:57 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 51665
+[Wed Sep  4 15:05:02 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 15:05:02 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:05:02 2024] [ERROR] [execute]		 CGI script is not executable
+[Wed Sep  4 15:05:02 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:05:02 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 51666
+[Wed Sep  4 15:05:02 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 15:05:02 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:05:02 2024] [ERROR] [execute]		 CGI script is not executable
+[Wed Sep  4 15:05:02 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:05:02 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 51667
+[Wed Sep  4 15:05:02 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 15:05:02 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:05:02 2024] [ERROR] [execute]		 CGI script is not executable
+[Wed Sep  4 15:05:02 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:05:48 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
+[Wed Sep  4 15:05:48 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 51685
+[Wed Sep  4 15:05:48 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 15:05:48 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:05:48 2024] [ERROR] [execute]		 CGI script is not executable
+[Wed Sep  4 15:05:48 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:05:48 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 51686
+[Wed Sep  4 15:05:49 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 15:05:49 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:05:49 2024] [ERROR] [execute]		 CGI script is not executable
+[Wed Sep  4 15:05:49 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:05:49 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 51687
+[Wed Sep  4 15:05:49 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 15:05:49 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:05:49 2024] [ERROR] [execute]		 CGI script is not executable
+[Wed Sep  4 15:05:49 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:05:49 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 51688
+[Wed Sep  4 15:05:49 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 15:05:49 2024] [ERROR] [checkFilePermission]		 No such file or directory
+[Wed Sep  4 15:05:49 2024] [ERROR] [execute]		 CGI script is not executable
+[Wed Sep  4 15:05:49 2024] [ERROR] [checkFilePermission]		 No such file or directory

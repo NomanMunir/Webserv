@@ -2,13 +2,13 @@
 
 Client::~Client() {}
 
-Client::Client() : fd(-1), writePending(false) {}
+Client::Client() : fd(-1), writePending(false)
+{
+}
 
-Client::Client(int fd) : fd(fd), writePending(false), readPending(false) { }
+Client::Client(int fd, EventPoller *poller) : _poller(poller), fd(fd), writePending(false), readPending(false) { }
 
 int Client::getFd() const { return this->fd; }
-
-std::string& Client::getReadBuffer() { return readBuffer; }
 
 std::string& Client::getWriteBuffer() { return writeBuffer; }
 
@@ -30,7 +30,6 @@ Response& Client::getResponse() { return response; }
 
 void Client::reset()
 {
-	readBuffer.clear();
 	writeBuffer.clear();
 	writePending = false;
 	readPending = false;
@@ -47,17 +46,20 @@ bool Client::isKeepAlive()
 	return true;
 }
 
-Client::Client(const Client &c) : fd(c.fd), readBuffer(c.readBuffer), writeBuffer(c.writeBuffer), writePending(c.writePending), request(c.request), response(c.response) {}
+Client::Client(const Client &c)
+: fd(c.fd), writeBuffer(c.writeBuffer),
+writePending(c.writePending), _poller(c._poller),
+request(c.request), response(c.response) {}
 
 Client& Client::operator=(const Client &c)
 {
 	if (this == &c)
 		return *this;
 	fd = c.fd;
-	readBuffer = c.readBuffer;
 	writeBuffer = c.writeBuffer;
 	writePending = c.writePending;
 	request = c.request;
+    _poller = c._poller;
 	response = c.response;
 	return *this;
 }
@@ -166,13 +168,38 @@ void Client::recvBody()
     }
 }
 
-void Client::sendResponse()
+void Client::handleCGI(ServerConfig &serverConfig)
 {
-	this->response.handleResponse(this->request);
-	this->writeBuffer = this->response.getResponse();
-	this->writePending = true;
-	this->readPending = false;
-	this->readBuffer.clear();
+	std::string uri = request.getHeaders().getValue("uri");
+	std::string fullPath = generateFullPath(serverConfig.root, uri);
+    std::cout << "fullPath: " << fullPath << std::endl;
+	this->cgi.execute(this->_poller, this->request, this->response, fullPath);
+	std::string body = cgi.output;
+	HttpResponse httpResponse;
+	httpResponse.setVersion("HTTP/1.1");
+	httpResponse.setStatusCode(200);
+	httpResponse.setHeader("Content-Type", "text/html");
+	httpResponse.setHeader("Content-Length", std::to_string(body.size()));
+	httpResponse.setHeader("Connection", "keep-alive");
+    std::string cookies = this->request.getHeaders().getValue("Cookie");
+	if (cookies != "")
+		httpResponse.setHeader("Set-Cookie", cookies);
+	httpResponse.setHeader("Server", "LULUGINX");
+	httpResponse.setBody(body);
+    this->writeBuffer = httpResponse.generateResponse();
+}
+
+void Client::sendResponse(ServerConfig &serverConfig)
+{
+    if (this->request.getIsCGI())
+        handleCGI(serverConfig);
+    else
+    {
+        this->response.handleResponse(this->request);
+        this->writeBuffer = this->response.getResponse();
+        this->writePending = true;
+        this->readPending = false;
+    }
 
 }
 
@@ -194,12 +221,12 @@ void Client::readFromSocket(ServerConfig &serverConfig)
 
         this->request.handleRequest(serverConfig, this->response);
         if (this->request.isComplete())
-            sendResponse();
+            sendResponse(serverConfig);
     }
     catch(const std::exception& e)
     {
         std::cout << e.what() << std::endl;
         Logs::appendLog("ERROR", e.what());
-        sendResponse();
+        sendResponse(serverConfig);
     }
 }

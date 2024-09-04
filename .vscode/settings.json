@@ -75,7 +75,8 @@
     "stack": "cpp",
     "filesystem": "cpp",
     "unordered_set": "cpp",
-    "csignal": "cpp"
+    "csignal": "cpp",
+    "__memory": "cpp"
   },
   "C_Cpp_Runner.msvcBatchPath": "",
   "C_Cpp_Runner.cCompilerPath": "clang",

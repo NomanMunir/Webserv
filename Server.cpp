@@ -96,7 +96,7 @@ bool Server::acceptClient()
         return false;
     }
     Logs::appendLog("INFO", "[acceptClient]\t\t New connection, socket fd is [" + std::to_string(clientSocket) + "], IP is : " + inet_ntoa(clientAddr.sin_addr) + ", port : " + std::to_string(ntohs(clientAddr.sin_port)));
-    clients[clientSocket] = Client(clientSocket);
+    clients[clientSocket] = Client(clientSocket, this->_poller);
     this->_poller->addToQueue(clientSocket, READ_EVENT);
     this->_poller->addToQueue(clientSocket, TIMEOUT_EVENT);
     return true;

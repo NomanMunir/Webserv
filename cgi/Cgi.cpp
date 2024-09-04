@@ -9,23 +9,12 @@
 #include <vector>
 #include "../response/Response.hpp"
 
-
-Cgi::Cgi(Request &request, std::string fullPath, Response &response) 
-    : _request(request),
-    _fullPath(fullPath),
-    _response(response)
-    { 
-        fd_out[0] = -1; fd_out[1] = -1;
-        fd_in[0] = -1; fd_in[1] = -1;
-    }
-
 Cgi::~Cgi()
 {
     if (fd_out[0] != -1) close(fd_out[0]);
     if (fd_out[1] != -1) close(fd_out[1]);
     if (fd_in[0] != -1) close(fd_in[0]);
     if (fd_in[1] != -1) close(fd_in[1]);
-    if (_envp) freeEnv(_envp);
 }
 
 bool Cgi::checkFilePermission(const char* path) 
@@ -41,7 +30,7 @@ bool Cgi::checkFilePermission(const char* path)
            (fileStat.st_mode & S_IXOTH);   // Others have execute permission
 }
 
-void Cgi::checkCGITimeout(pid_t pid)
+void Cgi::checkCGITimeout(pid_t pid, Request &_request, Response &_response)
 {
     int     status;
     int     childStatus = 0;
@@ -59,27 +48,27 @@ void Cgi::checkCGITimeout(pid_t pid)
             {
                 Logs::appendLog("ERROR", "[checkCGITimeout]\t\t Failed to kill CGI process " + std::string(strerror(errno)));
                 freeEnv(_envp);
-                this->_response.setErrorCode(500, "[checkCGITimeout]\t\t Internal Server Error: Failed to kill CGI process " + std::string(strerror(errno)));
+               _response.setErrorCode(500, "[checkCGITimeout]\t\t Internal Server Error: Failed to kill CGI process " + std::string(strerror(errno)));
             }
             Logs::appendLog("INFO", "[checkCGITimeout]\t\t CGI script execution timed out and was killed");
             freeEnv(_envp);
-            this->_response.setErrorCode(504, "[checkCGITimeout]\t\t CGI script execution timed out");
+           _response.setErrorCode(504, "[checkCGITimeout]\t\t CGI script execution timed out");
         }
     }
 }
 
-void Cgi::execute()
+void Cgi::execute(EventPoller *poller, Request &_request, Response &_response, std::string fullPath)
 {
     // Check file permissions
     if (!checkFilePermission(this->_fullPath.c_str()))
-        this->_response.setErrorCode(500, "[execute]\t\t CGI script is not executable");
+        _response.setErrorCode(500, "[execute]\t\t CGI script is not executable");
 
     int fd_in[2], fd_out[2];  // read fd[0]  write fd[1]
     if (pipe(fd_in) < 0)
-        this->_response.setErrorCode(500, "[execute]\t\t Failed to create pipe");
+        _response.setErrorCode(500, "[execute]\t\t Failed to create pipe");
     if (pipe(fd_out) < 0)
-        this->_response.setErrorCode(500, "[execute]\t\t Failed to create pipe");
-    setCGIEnv();
+        _response.setErrorCode(500, "[execute]\t\t Failed to create pipe");
+    setCGIEnv(_request, _response);
     pid_t pid = fork();
 
     if (pid < 0)
@@ -87,7 +76,7 @@ void Cgi::execute()
         // Fork failed
         close(fd_in[0]); close(fd_in[1]);
         close(fd_out[0]); close(fd_out[1]);
-        this->_response.setErrorCode(500, "[execute]\t\t Failed to fork process");
+        _response.setErrorCode(500, "[execute]\t\t Failed to fork process");
     }
 
     if (pid == 0) 
@@ -102,9 +91,9 @@ void Cgi::execute()
         close(fd_out[1]);
 
 
-        char* argv[] = { const_cast<char*>(this->_fullPath.c_str()), NULL };
+        char* argv[] = { const_cast<char*>(_fullPath.c_str()), NULL };
 
-        if (execve(this->_fullPath.c_str(), argv, _envp) < 0)
+        if (execve(_fullPath.c_str(), argv, _envp) < 0)
         {
             Logs::appendLog("ERROR", "[execute]\t\t Failed to execute " + std::string(strerror(errno)));
             freeEnv(_envp);
@@ -123,11 +112,13 @@ void Cgi::execute()
             if (write(fd_in[1], body.c_str(), body.size()) < 0)
             {
                 close(fd_in[1]); close(fd_out[0]); freeEnv(_envp);
-                this->_response.setErrorCode(500, "[execute]\t\t Failed to write to pipe");
+                _response.setErrorCode(500, "[execute]\t\t Failed to write to pipe");
             }
         }
         close(fd_in[1]);
-        checkCGITimeout(pid);
+        int status;
+        waitpid(pid, &status, WNOHANG);
+        // checkCGITimeout(pid);
 
         char buffer[1024];
         ssize_t count;
@@ -146,22 +137,22 @@ void Cgi::freeEnv(char** envp)
     if (envp) delete[] envp;
 }
 
-void Cgi::vecToChar(std::vector<std::string> &envMaker)
+void Cgi::vecToChar(std::vector<std::string> &envMaker, Response &_response)
 {
     _envp = new char*[envMaker.size() + 1];
     if (!_envp)
-        this->_response.setErrorCode(500, "[vecToChar]\t\t Failed to allocate memory for environment variables");
+        _response.setErrorCode(500, "[vecToChar]\t\t Failed to allocate memory for environment variables");
     for (size_t i = 0; i < envMaker.size(); ++i) 
     {
         _envp[i] = new char[envMaker[i].length() + 1];
         if (!_envp[i])
-            this->_response.setErrorCode(500, "[vecToChar]\t\t Failed to allocate memory for environment variables");
+            _response.setErrorCode(500, "[vecToChar]\t\t Failed to allocate memory for environment variables");
         strcpy(_envp[i], envMaker[i].c_str());
     }
     _envp[envMaker.size()] = NULL;
 }
 
-void Cgi::setCGIEnv()
+void Cgi::setCGIEnv(Request &_request, Response &_response)
 {
     std::vector<std::string>::iterator it;
     std::vector<std::string>& envMaker = _request.getSystemENV();
@@ -198,5 +189,31 @@ void Cgi::setCGIEnv()
     envMaker.push_back("SERVER_PORT=" + _request.getHeaders().getValue("Port"));
     envMaker.push_back("HTTP_HOST=" + _request.getHeaders().getValue("Host"));
 
-    vecToChar(envMaker);
+    vecToChar(envMaker, _response);
+}
+
+Cgi::Cgi()
+{
+    fd_out[0] = -1; fd_out[1] = -1;
+    fd_in[0] = -1; fd_in[1] = -1;
+}
+
+Cgi::Cgi(const Cgi &c) 
+{
+    *this = c;
+}
+
+Cgi& Cgi::operator=(const Cgi &c) 
+{
+    if (this != &c) 
+    {
+        this->_fullPath = c._fullPath;
+        this->output = c.output;
+        this->_envp = c._envp;
+        this->fd_in[0] = c.fd_in[0];
+        this->fd_in[1] = c.fd_in[1];
+        this->fd_out[0] = c.fd_out[0];
+        this->fd_out[1] = c.fd_out[1];
+    }
+    return *this;
 }

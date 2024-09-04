@@ -7,6 +7,7 @@
 #include <time.h>
 #include "../response/Response.hpp"
 #include "../utils/Logs.hpp"
+#include "../events/EventPoller.hpp"
 
 #define CGI_TIMEOUT 5
 
@@ -15,27 +16,24 @@ class Request;
 class Cgi 
 {
 public:
-
-    Cgi(Request &request, std::string fullPath, Response &response);
-    std::string output;
-    int fd_in[2];
-    int fd_out[2];
-
+    Cgi();
+    Cgi(const Cgi &c);
+    Cgi& operator=(const Cgi &c);
     ~Cgi();
 
-    void execute();
+    void execute(EventPoller *poller, Request &_request, Response &_response, std::string fullPath);
+    std::string output;
 
 private:
-	int													pipeFd[2];
+    int                                                 fd_in[2];
+    int                                                 fd_out[2];
     std::string											_fullPath;
-    Response &											_response;
-    Request &                                           _request;
 
     bool checkFilePermission(const char* path);
     void freeEnv(char** envp);
-    void setCGIEnv();
-    void vecToChar(std::vector<std::string> &envMaker);
-    void checkCGITimeout(pid_t pid);
+    void setCGIEnv(Request &_request, Response &_response);
+    void vecToChar(std::vector<std::string> &envMaker, Response &_response);
+    void checkCGITimeout(pid_t pid, Request &_request, Response &_response);
 
     char** _envp;
 };

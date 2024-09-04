@@ -6,34 +6,42 @@
 #include "request/Request.hpp"
 #include "response/Response.hpp"
 #include "parsing/Parser.hpp"
+#include "utils/utils.hpp"
 #include "utils/Logs.hpp"
+#include "cgi/Cgi.hpp"
+#include "events/EventPoller.hpp"
+#include "response/HttpResponse.hpp"
+
 class Client {
 private:
     int fd;
-    std::string readBuffer;
     std::string writeBuffer;
     bool writePending;
     bool readPending;
     bool keepAlive;
     char **env;
 
+    EventPoller *_poller;
     Request request;
     Response response;
-
+    Cgi cgi;
+    
     void recvChunk();
     void recvHeader();
     void recvBody();
-    void sendResponse();
+    void sendResponse(ServerConfig &serverConfig);
+
+    void handleCGI(ServerConfig &serverConfig);
+    
 
 public:
 	Client();
-    Client(int fd);
+    Client(int fd, EventPoller *poller);
 	Client(const Client &c);
 	Client& operator=(const Client &c);
     ~Client();
 
     int getFd() const;
-    std::string& getReadBuffer();
     std::string& getWriteBuffer();
     Request& getRequest();
     Response& getResponse();
