@@ -35,6 +35,7 @@ void Client::reset()
 	readPending = false;
 	request = Request();
 	response = Response();
+    cgi = Cgi();
 }
 
 bool Client::isKeepAlive()
