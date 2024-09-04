@@ -29,8 +29,7 @@ private:
     void recvChunk();
     void recvHeader();
     void recvBody();
-    void sendResponse(ServerConfig &serverConfig);
-
+    void handleNormalResponse(ServerConfig &serverConfig);
     void handleCGI(ServerConfig &serverConfig);
     
 

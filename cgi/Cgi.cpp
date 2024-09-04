@@ -59,6 +59,7 @@ void Cgi::checkCGITimeout(pid_t pid, Request &_request, Response &_response)
 
 void Cgi::execute(EventPoller *poller, Request &_request, Response &_response, std::string fullPath)
 {
+    this->_fullPath = fullPath;
     // Check file permissions
     if (!checkFilePermission(this->_fullPath.c_str()))
         _response.setErrorCode(500, "[execute]\t\t CGI script is not executable");
@@ -118,7 +119,7 @@ void Cgi::execute(EventPoller *poller, Request &_request, Response &_response, s
         close(fd_in[1]);
         int status;
         waitpid(pid, &status, WNOHANG);
-        // checkCGITimeout(pid);
+        // checkCGITimeout(pid, _request, _response);
 
         char buffer[1024];
         ssize_t count;

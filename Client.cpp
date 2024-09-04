@@ -172,7 +172,7 @@ void Client::handleCGI(ServerConfig &serverConfig)
 {
 	std::string uri = request.getHeaders().getValue("uri");
 	std::string fullPath = generateFullPath(serverConfig.root, uri);
-    std::cout << "fullPath: " << fullPath << std::endl;
+    std::cout << "fullPath in CGI: " << fullPath << std::endl;
 	this->cgi.execute(this->_poller, this->request, this->response, fullPath);
 	std::string body = cgi.output;
 	HttpResponse httpResponse;
@@ -187,20 +187,16 @@ void Client::handleCGI(ServerConfig &serverConfig)
 	httpResponse.setHeader("Server", "LULUGINX");
 	httpResponse.setBody(body);
     this->writeBuffer = httpResponse.generateResponse();
+    this->writePending = true;
+    this->readPending = false;
 }
 
-void Client::sendResponse(ServerConfig &serverConfig)
+void Client::handleNormalResponse(ServerConfig &serverConfig)
 {
-    if (this->request.getIsCGI())
-        handleCGI(serverConfig);
-    else
-    {
-        this->response.handleResponse(this->request);
-        this->writeBuffer = this->response.getResponse();
-        this->writePending = true;
-        this->readPending = false;
-    }
-
+    this->response.handleResponse(this->request);
+    this->writeBuffer = this->response.getResponse();
+    this->writePending = true;
+    this->readPending = false;
 }
 
 void Client::readFromSocket(ServerConfig &serverConfig)
@@ -221,12 +217,17 @@ void Client::readFromSocket(ServerConfig &serverConfig)
 
         this->request.handleRequest(serverConfig, this->response);
         if (this->request.isComplete())
-            sendResponse(serverConfig);
+        {
+            if (this->request.getIsCGI())
+                handleCGI(serverConfig);
+            else
+                handleNormalResponse(serverConfig);
+        }
     }
     catch(const std::exception& e)
     {
         std::cout << e.what() << std::endl;
         Logs::appendLog("ERROR", e.what());
-        sendResponse(serverConfig);
+        handleNormalResponse(serverConfig);
     }
 }

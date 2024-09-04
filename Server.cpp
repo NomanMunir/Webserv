@@ -141,7 +141,7 @@ void Server::handleWrite(int fd)
 
         clients[fd].reset();
         this->_poller->addToQueue(fd, TIMEOUT_EVENT);
-
+        Logs::appendLog("INFO", "[handleWrite]\t\t Write completed for client " + std::to_string(fd));
     }
     catch(const std::exception& e)
     {
