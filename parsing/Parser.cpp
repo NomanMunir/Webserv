@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Parser.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: nmunir <nmunir@student.42.fr>              +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/29 08:52:26 by nmunir            #+#    #+#             */
-/*   Updated: 2024/07/22 17:45:44 by nmunir           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Parser.hpp"
 
 void Parser::setRouteBlock(std::string &key, std::string &value)
@@ -254,12 +242,12 @@ void Parser::setDefaultRoute()
     if (routeConfig.root.empty())
     {
         if (serverConfig.root.empty())
-            routeConfig.root = "/Users/nmunir/Desktop/Webserv";
+            routeConfig.root = "/var/www/html";
         else
             routeConfig.root = serverConfig.root;
     }
     if (routeConfig.uploadDir.empty())
-        routeConfig.uploadDir = "/Users/nmunir/Desktop/Webserv";
+        routeConfig.uploadDir = "/var/www/html";
     if (routeConfig.defaultFile.empty())
     {
         if (serverConfig.defaultFile.empty())
@@ -279,7 +267,7 @@ void Parser::setDefault()
         if (servers[i].serverName.empty())
             servers[i].serverName.push_back("localhost");
         if (servers[i].root.empty())
-            servers[i].root = "/Users/nmunir/Desktop/Webserv";
+            servers[i].root = "/var/www/html";
         if (servers[i].defaultFile.empty())
             servers[i].defaultFile.push_back("index.html");
         if (servers[i].cgiExtensions.empty())
@@ -294,9 +282,9 @@ void Parser::setDefault()
         }
         if (servers[i].errorPages.empty())
         {
-            servers[i].errorPages["400"] = "/Users/nmunir/Desktop/Webserv/error.html";
-            servers[i].errorPages["404"] = "/Users/nmunir/Desktop/Webserv/error.html";
-            servers[i].errorPages["500"] = "/Users/nmunir/Desktop/Webserv/error.html";
+            servers[i].errorPages["400"] = "/var/www/html/errors/400.html";
+            servers[i].errorPages["404"] = "/var/www/html/errors/404.html";
+            servers[i].errorPages["500"] = "/var/www/html/errors/500.html";
         }
         if (servers[i].clientBodySizeLimit.empty())
             servers[i].clientBodySizeLimit = "1";
@@ -305,7 +293,7 @@ void Parser::setDefault()
             servers[i].routeMap["/"] = routeConfig;
             servers[i].routeMap[""].methods.push_back("GET");
             if (servers[i].root.empty())
-                servers[i].routeMap[""].root = "/Users/nmunir/Desktop/Webserv";
+                servers[i].routeMap[""].root = "/var/www/html";
             else
                 servers[i].routeMap[""].root = servers[i].root;
             servers[i].routeMap[""].directoryListing = false;
@@ -313,7 +301,7 @@ void Parser::setDefault()
                 servers[i].routeMap[""].defaultFile.push_back("index.html");
             else
                 servers[i].routeMap[""].defaultFile = servers[i].defaultFile;
-            servers[i].routeMap[""].uploadDir = "/Users/nmunir/Desktop/Webserv/uploads";
+            servers[i].routeMap[""].uploadDir = "/var/www/html/uploads";
             servers[i].routeMap[""].redirect = "";
         }
     }

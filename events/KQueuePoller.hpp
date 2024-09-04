@@ -4,10 +4,11 @@
 #if defined(__APPLE__) || defined(__FreeBSD__)
 
 #include "EventPoller.hpp"
-
-#define KEVENT_TIMEOUT_SEC 5
-#define SET_TIMEOUT 300000 // 300 ms
-#define MAX_EVENTS 100
+#include <map>
+#include <unistd.h>
+#include <sys/time.h>
+#include <fcntl.h>
+#include <cstring>
 
 class KQueuePoller : public EventPoller
 {

@@ -2,12 +2,6 @@
 #define EVENT_POLLER_HPP
 
 #include "../utils/Logs.hpp"
-#include <map>
-#include <unistd.h>
-#include <sys/event.h>
-#include <sys/time.h>
-#include <fcntl.h>
-#include <cstring>
 
 enum EventType
 {
@@ -26,6 +20,10 @@ struct EventInfo
     bool            isError;
 };
 
+#define MAX_EVENTS 100
+#define KEVENT_TIMEOUT_SEC 5000
+#define EPOLLEVENT_TIMEOUT_SEC 5000
+#define SET_TIMEOUT 300000 // 300 ms
 class EventPoller
 {
     public:

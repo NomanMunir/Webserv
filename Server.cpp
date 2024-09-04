@@ -1,12 +1,5 @@
 #include "Server.hpp"
-
-#if defined(__APPLE__) || defined(__FreeBSD__)
 #include "events/EventPoller.hpp"
-#endif // __APPLE__ || __FreeBSD__
-
-#if defined(__linux__)
-#include "events/EPoll.hpp"
-#endif // __linux__
 
 #define MAX_CONNECTIONS 10
 

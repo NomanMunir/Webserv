@@ -1,158 +1,121 @@
 #if defined(__linux__)
 
-#include "Epoll.hpp"
-#include "../response/Response.hpp"
-#include "../request/Request.hpp"
+#include "EpollPoller.hpp"
+#define CLIENT_TIMEOUT 30  // 30 seconds timeout for clients
 
-Epoll::Epoll()
+EpollPoller::EpollPoller()
 {
     this->epollFd = epoll_create1(0);
     if (this->epollFd == -1)
     {
-        std::cerr << "Epoll::Error creating epoll instance: " << strerror(errno) << std::endl;
-        throw std::runtime_error("Failed to create epoll instance");
+        Logs::appendLog("ERROR", "[EpollPoller]\t\t " + std::string(strerror(errno)));
+        throw std::exception();
     }
-    std::memset(this->events, 0, sizeof(this->events));
 }
 
-Epoll::~Epoll()
-{
-    close(this->epollFd);
-}
+EpollPoller::~EpollPoller() { close(this->epollFd); }
 
-Epoll::Epoll(const Epoll &other)
-{
-    this->epollFd = other.epollFd;
-    std::memcpy(this->events, other.events, sizeof(this->events));
-    this->fdState = other.fdState;
-}
-
-Epoll &Epoll::operator=(const Epoll &other)
-{
-    if (this != &other)
-    {
-        this->epollFd = other.epollFd;
-        std::memcpy(this->events, other.events, sizeof(this->events));
-        this->fdState = other.fdState;
-    }
-    return *this;
-}
-
-void Epoll::setNonBlocking(int fd)
+void setNoneBlocking(int fd)
 {
     int flags = fcntl(fd, F_GETFL, 0);
     if (flags == -1)
     {
-        std::cerr << "Epoll::setNonBlocking::Error getting flags: " << strerror(errno) << std::endl;
+        Logs::appendLog("ERROR", "[setNoneBlocking]\t\t " + std::string(strerror(errno)));
         close(fd);
-        throw std::runtime_error("Failed to get file descriptor flags");
+        throw std::exception();
     }
     if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
     {
-        std::cerr << "Epoll::setNonBlocking::Error setting non-blocking: " << strerror(errno) << std::endl;
+        Logs::appendLog("ERROR", "[setNoneBlocking]\t\t " + std::string(strerror(errno)));
         close(fd);
-        throw std::runtime_error("Failed to set non-blocking mode");
+        throw std::exception();
     }
 }
 
-void Epoll::addToQueue(int fd, EventType type)
+void EpollPoller::addToQueue(int fd, EventType ev)
 {
-    setNonBlocking(fd);
-
     struct epoll_event event;
     std::memset(&event, 0, sizeof(event));
-    event.data.fd = fd;
+    setNoneBlocking(fd);
 
-    if (type == READ_EVENT)
+    event.data.fd = fd;
+    event.events = EPOLL_CTL_MOD;
+    if (ev == READ_EVENT)
     {
-        event.events = EPOLLIN | EPOLLET;
+        event.events = EPOLLIN | EPOLLOUT | EPOLLRDHUP | EPOLLHUP;
         fdState[fd].isRead = true;
     }
-    else if (type == WRITE_EVENT)
+    else if (ev == WRITE_EVENT)
     {
-        event.events = EPOLLOUT | EPOLLET;
+        event.events = EPOLLIN | EPOLLOUT | EPOLLRDHUP | EPOLLHUP;
         fdState[fd].isWrite = true;
+    }
+    else if (ev == TIMEOUT_EVENT)
+    {
+        event.events = EPOLLIN;
+        fdState[fd].isTimeout = true;
     }
     else
     {
-        throw std::runtime_error("Epoll::addToQueue::Invalid Event Type");
+        throw std::runtime_error("[addToQueue]\t\t Invalid Event Type");
     }
 
     if (epoll_ctl(this->epollFd, EPOLL_CTL_ADD, fd, &event) == -1)
     {
-        std::cerr << "Epoll::addToQueue::Error adding fd to epoll: " << strerror(errno) << std::endl;
-        throw std::runtime_error("Failed to add file descriptor to epoll");
+        Logs::appendLog("ERROR", "[addToQueue]\t\tError Adding Event " + std::string(strerror(errno)));
     }
+    lastActivity[fd] = time(NULL);
 }
 
-void Epoll::modifyInQueue(int fd, EventType type)
-{
-    struct epoll_event event;
-    std::memset(&event, 0, sizeof(event));
-    event.data.fd = fd;
-
-    if (type == READ_EVENT)
-    {
-        event.events = EPOLLIN | EPOLLET;
-        fdState[fd].isRead = true;
-        fdState[fd].isWrite = false;
-    }
-    else if (type == WRITE_EVENT)
-    {
-        event.events = EPOLLOUT | EPOLLET;
-        fdState[fd].isWrite = true;
-        fdState[fd].isRead = false;
-    }
-    else
-    {
-        throw std::runtime_error("Epoll::modifyInQueue::Invalid Event Type");
-    }
-
-    if (epoll_ctl(this->epollFd, EPOLL_CTL_MOD, fd, &event) == -1)
-    {
-        std::cerr << "Epoll::modifyInQueue::Error modifying fd in epoll: " << strerror(errno) << std::endl;
-        throw std::runtime_error("Failed to modify file descriptor in epoll");
-    }
-}
-
-void Epoll::removeFromQueue(int fd)
+void EpollPoller::removeFromQueue(int fd, EventType ev)
 {
     if (epoll_ctl(this->epollFd, EPOLL_CTL_DEL, fd, NULL) == -1)
     {
-        std::cerr << "Epoll::removeFromQueue::Error removing fd from epoll: " << strerror(errno) << std::endl;
-        throw std::runtime_error("Failed to remove file descriptor from epoll");
+        Logs::appendLog("ERROR", "[removeFromQueue]\t\tError Removing Event " + std::string(strerror(errno)));
     }
     fdState.erase(fd);
-    close(fd);
+    lastActivity.erase(fd);
 }
 
-int Epoll::getNumOfEvents()
+int EpollPoller::getNumOfEvents()
 {
-    int eventCount = epoll_wait(this->epollFd, this->events, MAX_EVENTS, EPOLL_TIMEOUT);
-    if (eventCount == -1)
-    {
-        std::cerr << "Epoll::getNumOfEvents::Error during epoll_wait: " << strerror(errno) << std::endl;
-        throw std::runtime_error("epoll_wait failed");
-    }
-    return eventCount;
+    int nev = epoll_wait(this->epollFd, this->events, MAX_EVENTS, EPOLLEVENT_TIMEOUT_SEC);
+    return nev;
 }
 
-EventInfo Epoll::getEventInfo(int i)
+EventInfo EpollPoller::getEventInfo(int i)
 {
     EventInfo info;
     std::memset(&info, 0, sizeof(info));
 
     info.fd = this->events[i].data.fd;
 
-    if (events[i].events & EPOLLERR)
-        info.isError = true;
-    if (events[i].events & EPOLLHUP)
-        info.isHup = true;
-    if (events[i].events & EPOLLIN)
-        info.isRead = true;
-    if (events[i].events & EPOLLOUT)
-        info.isWrite = true;
+    time_t now = time(NULL);
 
+    if (now - lastActivity[info.fd] > CLIENT_TIMEOUT) {
+        info.isTimeout = true;
+        return info;
+    }
+
+    lastActivity[info.fd] = now;
+    
+
+    if (this->events[i].events & EPOLLERR)
+    {
+        info.isError = true;
+    }
+    else if (this->events[i].events & EPOLLHUP)
+    {
+        info.isEOF = true;
+    }
+    else if (this->events[i].events & EPOLLIN)
+    {
+        info.isRead = true;
+    }
+    else if (this->events[i].events & EPOLLOUT)
+    {
+        info.isWrite = true;
+    }
     return info;
 }
 

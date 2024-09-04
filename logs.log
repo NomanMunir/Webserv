@@ -201,3 +201,53 @@
 [Tue Sep  3 17:47:42 2024] [ERROR] [checkType]		 File not found /Users/nmunir/Desktop/Webserv/asdf
 [Tue Sep  3 17:47:42 2024] [INFO] [handleWrite]		 Handling write for client 6
 [Tue Sep  3 17:47:42 2024] [INFO] [handleWrite]		 Connection closed for client [6] with IP 127.0.0.1 on port 8080
+[Wed Sep  4 09:25:03 2024] [ERROR] [Validation]		 Directory /Users/nmunir/Desktop/Webserv does not exist
+[Wed Sep  4 09:26:42 2024] [ERROR] [validateErrorPages]		 File /home/nomi/Webserv/Users/nmunir/Desktop/Webserv/error.html does not exist
+[Wed Sep  4 09:33:14 2024] [ERROR] [Validation]		 Directory ///cgi-bin does not exist
+[Wed Sep  4 09:35:38 2024] [ERROR] [Validation]		 Directory ///cgi-bin does not exist
+[Wed Sep  4 09:35:59 2024] [ERROR] [validateErrorPages]		 File /var/www/html/Users/nmunir/Desktop/Webserv/error.html does not exist
+[Wed Sep  4 09:38:36 2024] [ERROR] [validateErrorPages]		 File /var/www/html/Users/nmunir/Desktop/Webserv/error.html does not exist
+[Wed Sep  4 09:44:01 2024] [INFO] [bindAndListen]		 Server is listening at http://0.0.0.0:8080
+[Wed Sep  4 09:44:14 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 52548
+[Wed Sep  4 09:44:14 2024] [ERROR] [addToQueue]		Error Adding Event File exists
+[Wed Sep  4 09:44:14 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 09:44:14 2024] [ERROR] [execute]		 Failed to execute Permission denied
+[Wed Sep  4 09:44:14 2024] [ERROR] [addToQueue]		Error Adding Event File exists
+[Wed Sep  4 09:44:14 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 52550
+[Wed Sep  4 09:44:14 2024] [ERROR] [addToQueue]		Error Adding Event File exists
+[Wed Sep  4 09:44:14 2024] [INFO] [acceptClient]		 New connection, socket fd is [8], IP is : 127.0.0.1, port : 52560
+[Wed Sep  4 09:44:14 2024] [ERROR] [addToQueue]		Error Adding Event File exists
+[Wed Sep  4 09:44:19 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
+[Wed Sep  4 09:44:19 2024] [ERROR] [recvHeader]		 Client disconnected 7
+[Wed Sep  4 09:44:19 2024] [DEBUG] [readFromSocket]		 Reading from client socket 8
+[Wed Sep  4 09:44:19 2024] [ERROR] [recvHeader]		 Client disconnected 8
+[Wed Sep  4 09:44:19 2024] [INFO] [handleWrite]		 Handling write for client 7
+[Wed Sep  4 09:44:19 2024] [INFO] [handleWrite]		 Connection closed for client [7] with IP 0.0.0.0 on port 8080
+[Wed Sep  4 09:44:19 2024] [ERROR] [removeFromQueue]		Error Removing Event No such file or directory
+[Wed Sep  4 09:44:19 2024] [ERROR] [removeFromQueue]		Error Removing Event No such file or directory
+[Wed Sep  4 09:44:19 2024] [INFO] [handleWrite]		 Handling write for client 8
+[Wed Sep  4 09:44:19 2024] [INFO] [handleWrite]		 Connection closed for client [8] with IP 0.0.0.0 on port 8080
+[Wed Sep  4 09:44:19 2024] [ERROR] [removeFromQueue]		Error Removing Event No such file or directory
+[Wed Sep  4 09:44:19 2024] [ERROR] [removeFromQueue]		Error Removing Event No such file or directory
+[Wed Sep  4 10:21:47 2024] [INFO] [bindAndListen]		 Server is listening at http://0.0.0.0:8080
+[Wed Sep  4 10:21:52 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 50650
+[Wed Sep  4 10:21:52 2024] [ERROR] [addToQueue]		Error Adding Event File exists
+[Wed Sep  4 10:21:52 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 50652
+[Wed Sep  4 10:21:52 2024] [ERROR] [addToQueue]		Error Adding Event File exists
+[Wed Sep  4 10:21:52 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Wed Sep  4 10:21:52 2024] [ERROR] [execute]		 Failed to execute Permission denied
+[Wed Sep  4 10:21:52 2024] [ERROR] [addToQueue]		Error Adding Event File exists
+[Wed Sep  4 10:21:52 2024] [INFO] [acceptClient]		 New connection, socket fd is [8], IP is : 127.0.0.1, port : 50664
+[Wed Sep  4 10:21:52 2024] [ERROR] [addToQueue]		Error Adding Event File exists
+[Wed Sep  4 10:21:53 2024] [DEBUG] [readFromSocket]		 Reading from client socket 8
+[Wed Sep  4 10:21:53 2024] [ERROR] [recvHeader]		 Client disconnected 8
+[Wed Sep  4 10:21:53 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
+[Wed Sep  4 10:21:53 2024] [ERROR] [recvHeader]		 Client disconnected 7
+[Wed Sep  4 10:21:53 2024] [INFO] [handleWrite]		 Handling write for client 8
+[Wed Sep  4 10:21:53 2024] [INFO] [handleWrite]		 Connection closed for client [8] with IP 0.0.0.0 on port 8080
+[Wed Sep  4 10:21:53 2024] [ERROR] [removeFromQueue]		Error Removing Event No such file or directory
+[Wed Sep  4 10:21:53 2024] [ERROR] [removeFromQueue]		Error Removing Event No such file or directory
+[Wed Sep  4 10:21:53 2024] [INFO] [handleWrite]		 Handling write for client 7
+[Wed Sep  4 10:21:53 2024] [INFO] [handleWrite]		 Connection closed for client [7] with IP 0.0.0.0 on port 8080
+[Wed Sep  4 10:21:53 2024] [ERROR] [removeFromQueue]		Error Removing Event No such file or directory
+[Wed Sep  4 10:21:53 2024] [ERROR] [removeFromQueue]		Error Removing Event No such file or directory

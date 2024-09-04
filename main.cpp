@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "events/EventPoller.hpp"
+
 #if defined(__APPLE__) || defined(__FreeBSD__)
     #include "events/KQueuePoller.hpp"
 #elif defined(__linux__)
@@ -21,6 +22,8 @@
 #include <csignal>
 #include <stdexcept>
 #include "utils/Logs.hpp"
+#include <unistd.h>
+#include <sys/wait.h>
 
 void handleSignal(int signal)
 {
