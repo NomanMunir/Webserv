@@ -11,6 +11,9 @@
 #include "cgi/Cgi.hpp"
 #include "events/EventPoller.hpp"
 #include "response/HttpResponse.hpp"
+#include <time.h>
+
+#define CLIENT_TIMEOUT 30
 
 class Client {
 private:
@@ -20,6 +23,7 @@ private:
     bool readPending;
     bool keepAlive;
     char **env;
+    time_t lastActivity;
 
     EventPoller *_poller;
     Request request;
@@ -49,6 +53,7 @@ public:
     bool isWritePending() const;
     bool isReadPending() const;
     bool isKeepAlive();
+    bool isTimeout();
 
     void setWritePending(bool pending);
     void setReadPending(bool pending);

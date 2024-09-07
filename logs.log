@@ -1,47 +1,165 @@
-[Sat Sep  7 14:01:04 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
-[Sat Sep  7 14:01:05 2024] [INFO] [addToQueue]		Added Event READ EVENT to 5
-[Sat Sep  7 14:01:10 2024] [DEBUG] [run]		 No events to process
-[Sat Sep  7 14:01:15 2024] [DEBUG] [run]		 No events to process
-[Sat Sep  7 14:01:20 2024] [DEBUG] [run]		 No events to process
-[Sat Sep  7 14:02:27 2024] [INFO] Initializing signal handling...
-[Sat Sep  7 14:02:27 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
-[Sat Sep  7 14:02:27 2024] [INFO] [addToQueue]		Added Event READ EVENT to 5
-[Sat Sep  7 14:02:51 2024] [INFO] Initializing signal handling...
-[Sat Sep  7 14:02:52 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
-[Sat Sep  7 14:02:52 2024] [INFO] [addToQueue]		Added Event READ EVENT to 5
-[Sat Sep  7 14:02:57 2024] [DEBUG] [run]		 No events to process
-[Sat Sep  7 14:03:02 2024] [DEBUG] [run]		 No events to process
-[Sat Sep  7 14:03:07 2024] [DEBUG] [run]		 No events to process
-[Sat Sep  7 14:03:12 2024] [DEBUG] [run]		 No events to process
-[Sat Sep  7 14:03:17 2024] [DEBUG] [run]		 No events to process
-[Sat Sep  7 14:03:22 2024] [DEBUG] [run]		 No events to process
-[Sat Sep  7 14:03:30 2024] [INFO] [initializeSignalHandling]		 Initializing signal handling
-[Sat Sep  7 14:03:30 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
-[Sat Sep  7 14:03:30 2024] [INFO] [addToQueue]		Added Event READ EVENT to 5
-[Sat Sep  7 14:03:32 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 39106
-[Sat Sep  7 14:03:32 2024] [INFO] [addToQueue]		Added Event READ EVENT to 6
-[Sat Sep  7 14:03:32 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 39118
-[Sat Sep  7 14:03:32 2024] [INFO] [addToQueue]		Added Event READ EVENT to 7
-[Sat Sep  7 14:03:32 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
-[Sat Sep  7 14:03:32 2024] [DEBUG] [recvHeader]		 Header received from client 6
-[Sat Sep  7 14:03:33 2024] [INFO] [addToQueue]		Added Event WRITE EVENT to 6
-[Sat Sep  7 14:03:33 2024] [INFO] [handleWrite]		 Handling write for client 6
-[Sat Sep  7 14:03:33 2024] [INFO] [removeFromQueue]		Removed Event WRITE EVENT from 6
-[Sat Sep  7 14:03:33 2024] [INFO] [handleWrite]		 Write completed for client 6
-[Sat Sep  7 14:27:57 2024] [INFO] [initializeSignalHandling]		 Initializing signal handling
-[Sat Sep  7 14:27:58 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
-[Sat Sep  7 14:27:58 2024] [INFO] [addToQueue]		Added Event READ EVENT to 5
-[Sat Sep  7 14:28:03 2024] [DEBUG] [run]		 No events to process
-[Sat Sep  7 14:28:08 2024] [DEBUG] [run]		 No events to process
-[Sat Sep  7 14:28:13 2024] [DEBUG] [run]		 No events to process
-[Sat Sep  7 14:28:18 2024] [DEBUG] [run]		 No events to process
-[Sat Sep  7 14:28:23 2024] [DEBUG] [run]		 No events to process
-[Sat Sep  7 14:28:28 2024] [DEBUG] [run]		 No events to process
-[Sat Sep  7 14:28:33 2024] [DEBUG] [run]		 No events to process
-[Sat Sep  7 14:28:38 2024] [DEBUG] [run]		 No events to process
-[Sat Sep  7 14:28:43 2024] [DEBUG] [run]		 No events to process
-[Sat Sep  7 14:28:48 2024] [DEBUG] [run]		 No events to process
-[Sat Sep  7 14:28:53 2024] [DEBUG] [run]		 No events to process
-[Sat Sep  7 14:28:58 2024] [DEBUG] [run]		 No events to process
-[Sat Sep  7 14:29:03 2024] [DEBUG] [run]		 No events to process
-[Sat Sep  7 14:29:08 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:29:38 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:29:43 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:29:48 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:29:53 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:31:31 2024] [INFO] [initializeSignalHandling]		 Initializing signal handling
+[Sat Sep  7 16:31:31 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
+[Sat Sep  7 16:31:31 2024] [INFO] [addToQueue]		Added Event READ EVENT to 5
+[Sat Sep  7 16:31:32 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 43704
+[Sat Sep  7 16:31:32 2024] [INFO] [addToQueue]		Added Event READ EVENT to 6
+[Sat Sep  7 16:31:32 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 43718
+[Sat Sep  7 16:31:32 2024] [INFO] [addToQueue]		Added Event READ EVENT to 7
+[Sat Sep  7 16:31:32 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
+[Sat Sep  7 16:31:32 2024] [DEBUG] [recvHeader]		 Header received from client 7
+[Sat Sep  7 16:31:32 2024] [INFO] [addToQueue]		Added Event WRITE EVENT to 7
+[Sat Sep  7 16:31:32 2024] [INFO] [handleWrite]		 Handling write for client 7
+[Sat Sep  7 16:31:32 2024] [INFO] [removeFromQueue]		Removed Event WRITE EVENT from 7
+[Sat Sep  7 16:31:32 2024] [INFO] [handleWrite]		 Write completed for client 7
+[Sat Sep  7 16:31:33 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Sat Sep  7 16:31:33 2024] [ERROR] [recvHeader]		 Client disconnected 6
+[Sat Sep  7 16:31:33 2024] [INFO] [removeFromQueue]		Removed Event READ EVENT from 6
+[Sat Sep  7 16:31:33 2024] [INFO] [addToQueue]		Added Event WRITE EVENT to 6
+[Sat Sep  7 16:31:33 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Sat Sep  7 16:31:33 2024] [INFO] [handleWrite]		 Connection closed for client [6] with IP 127.0.0.1 on port 8080
+[Sat Sep  7 16:31:33 2024] [INFO] [removeFromQueue]		Removed Event WRITE EVENT from 6
+[Sat Sep  7 16:31:33 2024] [INFO] [removeFromQueue]		Removed Event READ EVENT from 6
+[Sat Sep  7 16:31:33 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
+[Sat Sep  7 16:31:33 2024] [ERROR] [recvHeader]		 Client disconnected 7
+[Sat Sep  7 16:31:33 2024] [INFO] [removeFromQueue]		Removed Event READ EVENT from 7
+[Sat Sep  7 16:31:33 2024] [INFO] [addToQueue]		Added Event WRITE EVENT to 7
+[Sat Sep  7 16:31:33 2024] [INFO] [handleWrite]		 Handling write for client 7
+[Sat Sep  7 16:31:33 2024] [INFO] [handleWrite]		 Connection closed for client [7] with IP 127.0.0.1 on port 8080
+[Sat Sep  7 16:31:33 2024] [INFO] [removeFromQueue]		Removed Event WRITE EVENT from 7
+[Sat Sep  7 16:31:33 2024] [INFO] [removeFromQueue]		Removed Event READ EVENT from 7
+[Sat Sep  7 16:31:38 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:31:43 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:31:48 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:31:53 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:31:56 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 54350
+[Sat Sep  7 16:31:56 2024] [INFO] [addToQueue]		Added Event READ EVENT to 6
+[Sat Sep  7 16:31:56 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 54366
+[Sat Sep  7 16:31:56 2024] [INFO] [addToQueue]		Added Event READ EVENT to 7
+[Sat Sep  7 16:31:56 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
+[Sat Sep  7 16:31:56 2024] [DEBUG] [recvHeader]		 Header received from client 7
+[Sat Sep  7 16:31:56 2024] [INFO] [addToQueue]		Added Event WRITE EVENT to 7
+[Sat Sep  7 16:31:56 2024] [INFO] [handleWrite]		 Handling write for client 7
+[Sat Sep  7 16:31:56 2024] [INFO] [removeFromQueue]		Removed Event WRITE EVENT from 7
+[Sat Sep  7 16:31:56 2024] [INFO] [handleWrite]		 Write completed for client 7
+[Sat Sep  7 16:32:01 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:32:03 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Sat Sep  7 16:32:03 2024] [ERROR] [recvHeader]		 Client disconnected 6
+[Sat Sep  7 16:32:03 2024] [INFO] [removeFromQueue]		Removed Event READ EVENT from 6
+[Sat Sep  7 16:32:03 2024] [INFO] [addToQueue]		Added Event WRITE EVENT to 6
+[Sat Sep  7 16:32:03 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
+[Sat Sep  7 16:32:03 2024] [ERROR] [recvHeader]		 Client disconnected 7
+[Sat Sep  7 16:32:03 2024] [INFO] [removeFromQueue]		Removed Event READ EVENT from 7
+[Sat Sep  7 16:32:03 2024] [INFO] [addToQueue]		Added Event WRITE EVENT to 7
+[Sat Sep  7 16:32:03 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Sat Sep  7 16:32:03 2024] [INFO] [handleWrite]		 Connection closed for client [6] with IP 127.0.0.1 on port 8080
+[Sat Sep  7 16:32:03 2024] [INFO] [removeFromQueue]		Removed Event WRITE EVENT from 6
+[Sat Sep  7 16:32:03 2024] [INFO] [removeFromQueue]		Removed Event READ EVENT from 6
+[Sat Sep  7 16:32:03 2024] [INFO] [handleWrite]		 Handling write for client 7
+[Sat Sep  7 16:32:03 2024] [INFO] [handleWrite]		 Connection closed for client [7] with IP 127.0.0.1 on port 8080
+[Sat Sep  7 16:32:03 2024] [INFO] [removeFromQueue]		Removed Event WRITE EVENT from 7
+[Sat Sep  7 16:32:03 2024] [INFO] [removeFromQueue]		Removed Event READ EVENT from 7
+[Sat Sep  7 16:32:08 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:32:13 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:32:54 2024] [INFO] [initializeSignalHandling]		 Initializing signal handling
+[Sat Sep  7 16:32:54 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
+[Sat Sep  7 16:32:54 2024] [INFO] [addToQueue]		Added Event READ EVENT to 5
+[Sat Sep  7 16:32:56 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 56946
+[Sat Sep  7 16:32:56 2024] [INFO] [addToQueue]		Added Event READ EVENT to 6
+[Sat Sep  7 16:32:56 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Sat Sep  7 16:32:56 2024] [DEBUG] [recvHeader]		 Header received from client 6
+[Sat Sep  7 16:32:56 2024] [INFO] [addToQueue]		Added Event WRITE EVENT to 6
+[Sat Sep  7 16:32:56 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 56962
+[Sat Sep  7 16:32:56 2024] [INFO] [addToQueue]		Added Event READ EVENT to 7
+[Sat Sep  7 16:32:56 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Sat Sep  7 16:32:56 2024] [INFO] [removeFromQueue]		Removed Event WRITE EVENT from 6
+[Sat Sep  7 16:32:56 2024] [INFO] [handleWrite]		 Write completed for client 6
+[Sat Sep  7 16:33:01 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:33:03 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
+[Sat Sep  7 16:33:03 2024] [ERROR] [recvHeader]		 Client disconnected 7
+[Sat Sep  7 16:33:03 2024] [INFO] [removeFromQueue]		Removed Event READ EVENT from 7
+[Sat Sep  7 16:33:03 2024] [INFO] [addToQueue]		Added Event WRITE EVENT to 7
+[Sat Sep  7 16:33:03 2024] [INFO] [handleWrite]		 Handling write for client 7
+[Sat Sep  7 16:33:03 2024] [INFO] [handleWrite]		 Connection closed for client [7] with IP 127.0.0.1 on port 8080
+[Sat Sep  7 16:33:03 2024] [INFO] [removeFromQueue]		Removed Event WRITE EVENT from 7
+[Sat Sep  7 16:33:03 2024] [INFO] [removeFromQueue]		Removed Event READ EVENT from 7
+[Sat Sep  7 16:33:03 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Sat Sep  7 16:33:03 2024] [ERROR] [recvHeader]		 Client disconnected 6
+[Sat Sep  7 16:33:03 2024] [INFO] [removeFromQueue]		Removed Event READ EVENT from 6
+[Sat Sep  7 16:33:03 2024] [INFO] [addToQueue]		Added Event WRITE EVENT to 6
+[Sat Sep  7 16:33:03 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Sat Sep  7 16:33:03 2024] [INFO] [handleWrite]		 Connection closed for client [6] with IP 127.0.0.1 on port 8080
+[Sat Sep  7 16:33:03 2024] [INFO] [removeFromQueue]		Removed Event WRITE EVENT from 6
+[Sat Sep  7 16:33:03 2024] [INFO] [removeFromQueue]		Removed Event READ EVENT from 6
+[Sat Sep  7 16:33:08 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:33:13 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:33:18 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:33:23 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:33:28 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:33:33 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:33:38 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:33:43 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:33:48 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:33:53 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:33:58 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:34:03 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:34:08 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:34:13 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:34:18 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:34:23 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:34:28 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:34:33 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:34:38 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:34:43 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:34:48 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:34:53 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:34:58 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:35:03 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:35:08 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:35:13 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:35:18 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:35:23 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:35:28 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:35:33 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:35:38 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:35:43 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:35:48 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:35:53 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:35:58 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:36:03 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:36:08 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:36:13 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:36:18 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:36:23 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:36:28 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:36:33 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:36:38 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:36:43 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:36:48 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:36:53 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:36:58 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:37:03 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:37:08 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:37:13 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:37:18 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:37:23 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:37:28 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:37:33 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:37:38 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:37:43 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:37:48 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:37:53 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:37:58 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:38:03 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:38:08 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:38:13 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:38:18 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:38:23 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:38:28 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:38:33 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:38:38 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:38:43 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 16:38:48 2024] [DEBUG] [run]		 No events to process

@@ -4,9 +4,15 @@ Client::~Client() {}
 
 Client::Client() : fd(-1), writePending(false)
 {
+    lastActivity = time(NULL);
+    env = NULL;
 }
 
-Client::Client(int fd, EventPoller *poller) : _poller(poller), fd(fd), writePending(false), readPending(false) { }
+Client::Client(int fd, EventPoller *poller) : _poller(poller), fd(fd), writePending(false), readPending(false)
+{
+    lastActivity = time(NULL);
+    env = NULL;
+}
 
 int Client::getFd() const { return this->fd; }
 
@@ -36,6 +42,7 @@ void Client::reset()
 	request = Request();
 	response = Response();
     cgi = Cgi();
+    lastActivity = time(NULL);
 }
 
 bool Client::isKeepAlive()
@@ -232,4 +239,15 @@ void Client::readFromSocket(ServerConfig &serverConfig)
         Logs::appendLog("ERROR", e.what());
         handleNormalResponse(serverConfig);
     }
+}
+
+bool Client::isTimeout()
+{
+    time_t now = time(NULL);
+    if (now - lastActivity > CLIENT_TIMEOUT)
+    {
+        std::cout << "Client " << fd << " timed out" << std::endl;
+        return true;
+    }
+    return false;
 }

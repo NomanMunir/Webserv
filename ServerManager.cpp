@@ -84,10 +84,16 @@ void ServerManager::processTimeoutEvent(EventInfo eventInfo)
 	}
 }
 
+void ServerManager::checkTimeouts()
+{
+	for (size_t i = 0; i < this->servers.size(); i++)
+		this->servers[i]->checkTimeouts();
+}
 void ServerManager::run()
 {
 	while (ServerManager::running)
 	{
+		checkTimeouts();
 		int numOfEvents = this->_poller->getNumOfEvents();
 		if (running == false)
 			break;

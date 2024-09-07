@@ -70,7 +70,7 @@ int main(int ac, const char **av, char **env)
         if (ac > 2)
             throw std::runtime_error("[main]\t\t\t Usage: ./webserv <config_file>");
         if (ac == 1)
-            av[1] = "config1.conf";
+            av[1] = "config.conf";
         initializeSignalHandling();
 
         Parser parser(av[1]);

@@ -43,6 +43,7 @@ public:
     void handleWrite(int fd);
     void handleDisconnection(int fd);
 
+    void checkTimeouts();
 
     int serverError;
 
@@ -58,7 +59,6 @@ private:
     void bindAndListen();
     void socketInUse();
     void initSocket();
-
 };
 
 #endif // SERVER_HPP

@@ -27,6 +27,7 @@ class ServerManager
 		void processTimeoutEvent(EventInfo eventInfo);
 
 		void initServers(Parser &parser);
+		void checkTimeouts();
 };
 
 #endif // SERVERMANAGER_HPP

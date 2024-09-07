@@ -173,6 +173,26 @@ void Server::handleRead(int fd)
     }
 }
 
+void Server::checkTimeouts()
+{
+    time_t now = time(NULL);
+    std::unordered_map<int, Client>::iterator it = clients.begin();
+
+    while (it != clients.end())
+    {
+        if (it->second.isTimeout())
+        {
+            Logs::appendLog("INFO", "[checkTimeouts]\t\t Client " + std::to_string(it->first) + " timed out");
+            this->_poller->removeFromQueue(it->first, READ_EVENT);
+            close(it->first);
+            it = clients.erase(it);
+        }
+        else
+            ++it;
+    }
+}
+
+
 void Server::handleDisconnection(int fd)
 {
     Logs::appendLog("DEBUG", "[handleDisconnection]\t\t Handling disconnection for client " + std::to_string(fd));
