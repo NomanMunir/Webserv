@@ -28,3 +28,20 @@
 [Sat Sep  7 14:03:33 2024] [INFO] [handleWrite]		 Handling write for client 6
 [Sat Sep  7 14:03:33 2024] [INFO] [removeFromQueue]		Removed Event WRITE EVENT from 6
 [Sat Sep  7 14:03:33 2024] [INFO] [handleWrite]		 Write completed for client 6
+[Sat Sep  7 14:27:57 2024] [INFO] [initializeSignalHandling]		 Initializing signal handling
+[Sat Sep  7 14:27:58 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
+[Sat Sep  7 14:27:58 2024] [INFO] [addToQueue]		Added Event READ EVENT to 5
+[Sat Sep  7 14:28:03 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 14:28:08 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 14:28:13 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 14:28:18 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 14:28:23 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 14:28:28 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 14:28:33 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 14:28:38 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 14:28:43 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 14:28:48 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 14:28:53 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 14:28:58 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 14:29:03 2024] [DEBUG] [run]		 No events to process
+[Sat Sep  7 14:29:08 2024] [DEBUG] [run]		 No events to process
