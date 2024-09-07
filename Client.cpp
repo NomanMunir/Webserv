@@ -148,6 +148,7 @@ void Client::recvHeader()
         else
             buffer.append(c, bytesRead);
     }
+    Logs::appendLog("DEBUG", "[recvHeader]\t\t Header received from client " + std::to_string(this->fd));
 }
 
 void Client::recvBody()
@@ -167,6 +168,7 @@ void Client::recvBody()
         else
             buffer.append(c, bytesRead);
     }
+    Logs::appendLog("DEBUG", "[recvBody]\t\t Body received from client " + std::to_string(this->fd));
 }
 
 void Client::handleCGI(ServerConfig &serverConfig)

@@ -29,6 +29,7 @@ void handleSignal(int signal)
 {
     if (signal == SIGINT || signal == SIGTERM)
     {
+        std::cout << "Shutting down server..." << std::endl;
         ServerManager::running = false;
     }
     else if (signal == SIGCHLD)
@@ -43,15 +44,17 @@ void initializeSignalHandling()
 {
     struct sigaction sa;
 
+    Logs::appendLog("INFO", "[initializeSignalHandling]\t\t Initializing signal handling");
     // Clear the sigaction struct
     std::memset(&sa, 0, sizeof(sa));
     signal(SIGPIPE, SIG_IGN);
 	signal(SIGINT, handleSignal);
 	signal(SIGTERM, handleSignal);
-    // Set the signal handler function for SIGINT and SIGTERM
+    signal(SIGCHLD, handleSignal);
+
     sa.sa_handler = handleSignal;
     sigemptyset(&sa.sa_mask);
-    sa.sa_flags = SA_RESTART | SA_NOCLDSTOP; // Ensure that interrupted system calls are restarted
+    sa.sa_flags = SA_RESTART | SA_NOCLDSTOP;
 
     sigaction(SIGINT, &sa, NULL);
     sigaction(SIGTERM, &sa, NULL);
@@ -69,6 +72,7 @@ int main(int ac, const char **av, char **env)
         if (ac == 1)
             av[1] = "config1.conf";
         initializeSignalHandling();
+
         Parser parser(av[1]);
 
         Validation validation(parser);

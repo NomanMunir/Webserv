@@ -26,8 +26,6 @@ class ServerManager
 		void processWriteEvent(EventInfo eventInfo);
 		void processTimeoutEvent(EventInfo eventInfo);
 
-		void stop();
-
 		void initServers(Parser &parser);
 };
 

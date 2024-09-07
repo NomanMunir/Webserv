@@ -34,6 +34,8 @@ void setNoneBlocking(int fd)
 
 void EpollPoller::addToQueue(int fd, EventType event)
 {
+    if (event == TIMEOUT_EVENT)
+        return;
 	struct epoll_event	epollEvent;
 	memset(&epollEvent, 0, sizeof(epollEvent));
 
@@ -81,6 +83,7 @@ void EpollPoller::addToQueue(int fd, EventType event)
         Logs::appendLog("ERROR", "[addToQueue]\t\tError Adding Event " + std::string(strerror(errno)));
     else
         Logs::appendLog("INFO", "[addToQueue]\t\tAdded Event " + filterType + " to " + std::to_string(fd));
+    lastActivity[fd] = time(NULL);
 }
 
 void EpollPoller::removeFromQueue(int fd, EventType event)
@@ -119,7 +122,6 @@ void EpollPoller::removeFromQueue(int fd, EventType event)
         Logs::appendLog("ERROR", "[removeFromQueue]\t\tError Removing Event " + std::string(strerror(errno)));
 	else
         Logs::appendLog("INFO", "[removeFromQueue]\t\tRemoved Event " + filterType + " from " + std::to_string(fd));
-	
 }
 
 int EpollPoller::getNumOfEvents()
@@ -135,15 +137,12 @@ EventInfo EpollPoller::getEventInfo(int i)
 
     info.fd = this->events[i].data.fd;
 
-    // time_t now = time(NULL);
+    time_t now = time(NULL);
 
-    // if (now - lastActivity[info.fd] > CLIENT_TIMEOUT) {
-    //     info.isTimeout = true;
-    //     return info;
-    // }
-
-    // lastActivity[info.fd] = now;
-    
+    if (now - lastActivity[info.fd] > CLIENT_TIMEOUT) {
+        info.isTimeout = true;
+        return info;
+    }    
 
     if (this->events[i].events & EPOLLERR)
     {

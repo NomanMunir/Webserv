@@ -8,6 +8,7 @@ ServerManager::~ServerManager()
 	{
 		delete *it;
 	}
+	delete this->_poller;
 }
 
 void ServerManager::initServers(Parser &parser)
@@ -120,11 +121,11 @@ void ServerManager::run()
 				processWriteEvent(eventInfo);
 		}
 
-		// for (size_t i = 0; i < numOfEvents; i++)
-		// {
-		// 	EventInfo eventInfo = this->_poller->getEventInfo(i);
-		// 	if (eventInfo.isTimeout)
-		// 		processTimeoutEvent(eventInfo);
-		// }
+		for (size_t i = 0; i < numOfEvents; i++)
+		{
+			EventInfo eventInfo = this->_poller->getEventInfo(i);
+			if (eventInfo.isTimeout)
+				processTimeoutEvent(eventInfo);
+		}
 	}
 }
