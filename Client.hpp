@@ -13,7 +13,7 @@
 #include "response/HttpResponse.hpp"
 #include <time.h>
 
-#define CLIENT_TIMEOUT 30
+#define CLIENT_TIMEOUT 10
 
 class Client {
 private:
@@ -53,7 +53,7 @@ public:
     bool isWritePending() const;
     bool isReadPending() const;
     bool isKeepAlive();
-    bool isTimeout();
+    bool isTimeOut();
 
     void setWritePending(bool pending);
     void setReadPending(bool pending);
