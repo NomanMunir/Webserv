@@ -98,7 +98,7 @@ bool Server::acceptClient()
     Logs::appendLog("INFO", "[acceptClient]\t\t New connection, socket fd is [" + std::to_string(clientSocket) + "], IP is : " + inet_ntoa(clientAddr.sin_addr) + ", port : " + std::to_string(ntohs(clientAddr.sin_port)));
     clients[clientSocket] = Client(clientSocket, this->_poller);
     this->_poller->addToQueue(clientSocket, READ_EVENT);
-    this->_poller->addToQueue(clientSocket, TIMEOUT_EVENT);
+    // this->_poller->addToQueue(clientSocket, TIMEOUT_EVENT);
     return true;
 }
 
@@ -119,7 +119,7 @@ void Server::handleWrite(int fd)
             ssize_t bytesSent = send(fd, clients[fd].getWriteBuffer().c_str(), clients[fd].getWriteBuffer().size(), 0);
             Logs::appendLog("INFO", "[handleWrite]\t\t Connection closed for client [" + std::to_string(fd) + "] with IP " + inet_ntoa(this->addr.sin_addr) + " on port " + std::to_string(this->port));
             this->_poller->removeFromQueue(fd, WRITE_EVENT);
-            this->_poller->removeFromQueue(fd, TIMEOUT_EVENT);
+            // this->_poller->removeFromQueue(fd, TIMEOUT_EVENT);
             this->_poller->removeFromQueue(fd, READ_EVENT);
             close(fd);
             clients.erase(fd);
@@ -140,13 +140,13 @@ void Server::handleWrite(int fd)
         clients[fd].setWritePending(false);
 
         clients[fd].reset();
-        this->_poller->addToQueue(fd, TIMEOUT_EVENT);
+        // this->_poller->addToQueue(fd, TIMEOUT_EVENT);
         Logs::appendLog("INFO", "[handleWrite]\t\t Write completed for client " + std::to_string(fd));
     }
     catch(const std::exception& e)
     {
         std::cerr << e.what() << '\n';
-        this->_poller->removeFromQueue(fd, TIMEOUT_EVENT);
+        // this->_poller->removeFromQueue(fd, TIMEOUT_EVENT);
         close(fd);
         clients.erase(fd);
     }
@@ -167,7 +167,7 @@ void Server::handleRead(int fd)
     {
         std::cerr << e.what() << '\n';
         this->_poller->removeFromQueue(fd, READ_EVENT);
-        this->_poller->removeFromQueue(fd, TIMEOUT_EVENT);
+        // this->_poller->removeFromQueue(fd, TIMEOUT_EVENT);
         close(fd);
         clients.erase(fd);
     }
@@ -177,7 +177,7 @@ void Server::handleDisconnection(int fd)
 {
     Logs::appendLog("DEBUG", "[handleDisconnection]\t\t Handling disconnection for client " + std::to_string(fd));
     this->_poller->removeFromQueue(fd, READ_EVENT);
-    this->_poller->removeFromQueue(fd, TIMEOUT_EVENT);
+    // this->_poller->removeFromQueue(fd, TIMEOUT_EVENT);
     close(fd);
     clients.erase(fd);
 }

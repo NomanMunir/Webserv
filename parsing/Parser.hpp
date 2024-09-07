@@ -27,7 +27,7 @@
 #include <algorithm>
 #include "../utils/utils.hpp"
 
-#define DEFAULT_ROOT "/Users/nmunir/Desktop/Webserv/"
+#define DEFAULT_ROOT "./"
 struct RouteConfig
 {
 	std::vector<std::string> methods;
@@ -87,7 +87,6 @@ class Parser
 		std::map<std::string, std::string> directives;
 		std::vector<ServerConfig> servers;
 		ServerConfig serverConfig;
-		// std::vector<ServerBlock> serverBlock;
 		RouteConfig routeConfig;
 };
 

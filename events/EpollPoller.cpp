@@ -32,50 +32,94 @@ void setNoneBlocking(int fd)
     }
 }
 
-void EpollPoller::addToQueue(int fd, EventType ev)
+void EpollPoller::addToQueue(int fd, EventType event)
 {
-    struct epoll_event event;
-    std::memset(&event, 0, sizeof(event));
+	struct epoll_event	epollEvent;
+	memset(&epollEvent, 0, sizeof(epollEvent));
+
     setNoneBlocking(fd);
+	epollEvent.data.fd = fd;
+	epollEvent.events = 0;
+	int op = 0;
 
-    event.data.fd = fd;
-    event.events = EPOLL_CTL_MOD;
-    if (ev == READ_EVENT)
-    {
-        event.events = EPOLLIN | EPOLLOUT | EPOLLRDHUP | EPOLLHUP;
-        fdState[fd].isRead = true;
-    }
-    else if (ev == WRITE_EVENT)
-    {
-        event.events = EPOLLIN | EPOLLOUT | EPOLLRDHUP | EPOLLHUP;
-        fdState[fd].isWrite = true;
-    }
-    else if (ev == TIMEOUT_EVENT)
-    {
-        lastActivity[fd] = time(NULL);
-        fdState[fd].isTimeout = true;
-        return ;
-    }
-    else
-    {
-        throw std::runtime_error("[addToQueue]\t\t Invalid Event Type");
-    }
+	std::string		filterType = "UNKNOWN EVENT";
 
-    if (epoll_ctl(this->epollFd, EPOLL_CTL_ADD, fd, &event) == -1)
-    {
+	if (this->fdState.find(fd) == this->fdState.end())
+	{
+		op = EPOLL_CTL_ADD;
+
+		if (event == READ_EVENT)
+		{
+			epollEvent.events = EPOLLIN | EPOLLHUP | EPOLLRDHUP;
+		    this->fdState[fd].isRead = true;
+			filterType = "READ EVENT";
+		}
+		else if (event == WRITE_EVENT)
+		{
+			epollEvent.events = EPOLLOUT | EPOLLHUP | EPOLLRDHUP;
+		    this->fdState[fd].isWrite = true;
+			filterType = "WRITE EVENT";
+		}
+	}
+	else
+	{
+		op = EPOLL_CTL_MOD;
+		if (event == READ_EVENT)
+		{
+			epollEvent.events = EPOLLIN | EPOLLOUT | EPOLLHUP | EPOLLRDHUP;
+            this->fdState[fd].isRead = true;
+			filterType = "READ EVENT";
+		}
+		else if (event == WRITE_EVENT)
+		{
+			epollEvent.events = EPOLLIN | EPOLLOUT | EPOLLHUP | EPOLLRDHUP;
+            this->fdState[fd].isWrite = true;
+			filterType = "WRITE EVENT";
+		}
+	}
+	if (epoll_ctl(this->epollFd, op, fd, &epollEvent) < 0)
         Logs::appendLog("ERROR", "[addToQueue]\t\tError Adding Event " + std::string(strerror(errno)));
-    }
-    lastActivity[fd] = time(NULL);
+    else
+        Logs::appendLog("INFO", "[addToQueue]\t\tAdded Event " + filterType + " to " + std::to_string(fd));
 }
 
-void EpollPoller::removeFromQueue(int fd, EventType ev)
+void EpollPoller::removeFromQueue(int fd, EventType event)
 {
-    if (epoll_ctl(this->epollFd, EPOLL_CTL_DEL, fd, NULL) == -1)
-    {
+	struct epoll_event	epollEvent;
+	memset(&epollEvent, 0, sizeof(epollEvent));
+
+	epollEvent.events = 0;
+	epollEvent.data.fd = fd;
+	int op = 0;
+
+	std::string		filterType = "UNKNOWN EVENT";
+	
+	if (this->fdState.find(fd) == this->fdState.end())
+	{
+        Logs::appendLog("ERROR", "[removeFromQueue]\t\tEvent not found for fd " + std::to_string(fd));
+	}
+	else
+	{
+		if (event == READ_EVENT)
+		{
+			op = EPOLL_CTL_DEL;
+			epollEvent.events = EPOLLIN | EPOLLHUP | EPOLLRDHUP;
+			filterType = "READ EVENT";
+			this->fdState.erase(fd);
+		}
+		else if (event == WRITE_EVENT)
+		{
+			op = EPOLL_CTL_MOD;
+			epollEvent.events = EPOLLIN | EPOLLHUP | EPOLLRDHUP;
+			filterType = "WRITE EVENT";
+		}
+	}
+
+	if (epoll_ctl(this->epollFd, op, fd, &epollEvent) < 0)
         Logs::appendLog("ERROR", "[removeFromQueue]\t\tError Removing Event " + std::string(strerror(errno)));
-    }
-    fdState.erase(fd);
-    lastActivity.erase(fd);
+	else
+        Logs::appendLog("INFO", "[removeFromQueue]\t\tRemoved Event " + filterType + " from " + std::to_string(fd));
+	
 }
 
 int EpollPoller::getNumOfEvents()
@@ -91,14 +135,14 @@ EventInfo EpollPoller::getEventInfo(int i)
 
     info.fd = this->events[i].data.fd;
 
-    time_t now = time(NULL);
+    // time_t now = time(NULL);
 
-    if (now - lastActivity[info.fd] > CLIENT_TIMEOUT) {
-        info.isTimeout = true;
-        return info;
-    }
+    // if (now - lastActivity[info.fd] > CLIENT_TIMEOUT) {
+    //     info.isTimeout = true;
+    //     return info;
+    // }
 
-    lastActivity[info.fd] = now;
+    // lastActivity[info.fd] = now;
     
 
     if (this->events[i].events & EPOLLERR)
@@ -107,7 +151,7 @@ EventInfo EpollPoller::getEventInfo(int i)
     }
     else if (this->events[i].events & EPOLLHUP)
     {
-        info.isEOF = true;
+        info.isError = true;
     }
     else if (this->events[i].events & EPOLLIN)
     {

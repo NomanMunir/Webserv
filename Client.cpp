@@ -215,7 +215,6 @@ void Client::readFromSocket(ServerConfig &serverConfig)
             else
                 recvBody();
         }
-
         this->request.handleRequest(serverConfig, this->response);
         if (this->request.isComplete())
         {

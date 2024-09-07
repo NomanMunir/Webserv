@@ -160,7 +160,7 @@ void  Request::handleRequest(ServerConfig &serverConfig, Response &structRespons
 	this->complete = true;
 }
 
-Request::Request() : complete(false) {}
+Request::Request() : complete(false), isCGI(false) {}
 
 bool Request::isComplete() const {
     return complete;
@@ -200,7 +200,7 @@ bool Request::isChunked()
 	return false;
 }
 
-Request::Request(const Request &c) : rawData(c.rawData), headers(c.headers), body(c.body), complete(c.complete) {}
+Request::Request(const Request &c) : rawData(c.rawData), headers(c.headers), body(c.body), complete(c.complete), isCGI(c.isCGI) {}
 
 Request& Request::operator=(const Request &c) 
 {

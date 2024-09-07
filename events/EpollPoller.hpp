@@ -22,8 +22,8 @@ public:
     EpollPoller();
     ~EpollPoller();
 
-    void addToQueue(int fd, EventType type);
-    void removeFromQueue(int fd, EventType type);
+    void addToQueue(int fd, EventType event);
+    void removeFromQueue(int fd, EventType event);
     int getNumOfEvents();
     EventInfo getEventInfo(int i);
 };

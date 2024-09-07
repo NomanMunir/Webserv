@@ -96,7 +96,10 @@ void ServerManager::run()
 			continue;
 		}
 		if (numOfEvents == 0)
+		{
+			Logs::appendLog("DEBUG", "[run]\t\t No events to process");
             continue;
+		}
 
 		for (int i = 0; i < numOfEvents; i++)
 		{
@@ -117,11 +120,11 @@ void ServerManager::run()
 				processWriteEvent(eventInfo);
 		}
 
-		for (size_t i = 0; i < numOfEvents; i++)
-		{
-			EventInfo eventInfo = this->_poller->getEventInfo(i);
-			if (eventInfo.isTimeout)
-				processTimeoutEvent(eventInfo);
-		}
+		// for (size_t i = 0; i < numOfEvents; i++)
+		// {
+		// 	EventInfo eventInfo = this->_poller->getEventInfo(i);
+		// 	if (eventInfo.isTimeout)
+		// 		processTimeoutEvent(eventInfo);
+		// }
 	}
 }
