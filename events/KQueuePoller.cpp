@@ -19,23 +19,6 @@ KQueuePoller::KQueuePoller()
 
 KQueuePoller::~KQueuePoller() { close(this->kqueueFd); }
 
-void setNoneBlocking(int fd)
-{
-    int flags = fcntl(fd, F_GETFL, 0);
-    if (flags == -1)
-    {
-        Logs::appendLog("ERROR", "[setNoneBlocking]\t\t " + std::string(strerror(errno)));
-        close(fd);
-        throw std::exception();
-    }
-    if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
-    {
-        Logs::appendLog("ERROR", "[setNoneBlocking]\t\t " + std::string(strerror(errno)));
-        close(fd);
-        throw std::exception();
-    }
-}
-
 void KQueuePoller::addToQueue(int fd, EventType ev)
 {
     struct kevent evSet;

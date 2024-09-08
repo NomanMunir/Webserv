@@ -22,6 +22,23 @@ std::string generateFullPath(std::string rootPath, std::string path)
 	return fullPath;
 }
 
+void setNoneBlocking(int fd)
+{
+    int flags = fcntl(fd, F_GETFL, 0);
+    if (flags == -1)
+    {
+        Logs::appendLog("ERROR", "[setNoneBlocking]\t\t " + std::string(strerror(errno)));
+        close(fd);
+        throw std::exception();
+    }
+    if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
+    {
+        Logs::appendLog("ERROR", "[setNoneBlocking]\t\t " + std::string(strerror(errno)));
+        close(fd);
+        throw std::exception();
+    }
+}
+
 std::string getCurrentTimestamp() 
 {
     std::time_t now = std::time(nullptr);

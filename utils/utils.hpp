@@ -21,6 +21,7 @@
 #include <ctime>
 #include <iomanip>
 #include "Logs.hpp"
+#include <fcntl.h>
 
 struct ServerConfig;
 
@@ -41,5 +42,5 @@ std::string getMimeType(std::string extention);
 std::string getCurrentTimestamp();
 std::string toUpperCase(const std::string &str);
 std::string generateFullPath(std::string rootPath, std::string path);
-
+void setNoneBlocking(int fd);
 #endif // UTILS_HPP	

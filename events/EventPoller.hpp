@@ -2,6 +2,7 @@
 #define EVENT_POLLER_HPP
 
 #include "../utils/Logs.hpp"
+#include "../utils/utils.hpp"
 
 enum EventType
 {

@@ -23,6 +23,9 @@ public:
 
     void execute(EventPoller *poller, Request &_request, Response &_response, std::string fullPath);
     std::string output;
+    
+    int getReadFd() const;
+    int getPid() const;
 
 private:
     int                                                 fd_in[2];

@@ -56,6 +56,8 @@ void ServerManager::processReadEvent(EventInfo eventInfo)
 				this->servers[j]->handleRead(eventInfo.fd);
 				break;
 			}
+			else if(this->servers[j]->isMyCGI(eventInfo.fd))
+				break;
 		}
 	}
 }

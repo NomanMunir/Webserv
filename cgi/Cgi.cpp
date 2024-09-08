@@ -57,6 +57,8 @@ void Cgi::checkCGITimeout(pid_t pid, Request &_request, Response &_response)
     }
 }
 
+
+
 void Cgi::execute(EventPoller *poller, Request &_request, Response &_response, std::string fullPath)
 {
     this->_fullPath = fullPath;
@@ -106,7 +108,7 @@ void Cgi::execute(EventPoller *poller, Request &_request, Response &_response, s
         // Parent process
         close(fd_in[0]);
         close(fd_out[1]);
-
+        setNoneBlocking(fd_in[1]);
         if (_request.getHeaders().getValue("method") == "POST") 
         {
             std::string body = _request.getBody().getContent();
@@ -117,16 +119,18 @@ void Cgi::execute(EventPoller *poller, Request &_request, Response &_response, s
             }
         }
         close(fd_in[1]);
-        int status;
-        waitpid(pid, &status, WNOHANG);
+
+        poller->addToQueue(fd_out[0], READ_EVENT);
+        // int status;
+        // waitpid(pid, &status, WNOHANG);
         // checkCGITimeout(pid, _request, _response);
 
-        char buffer[1024];
-        ssize_t count;
+        // char buffer[1024];
+        // ssize_t count;
 
-        while ((count = read(fd_out[0], buffer, sizeof(buffer))) > 0)
-            output.append(buffer, count);
-        close(fd_out[0]);
+        // while ((count = read(fd_out[0], buffer, sizeof(buffer))) > 0)
+        //     output.append(buffer, count);
+        // close(fd_out[0]);
     }
 }
 
@@ -217,4 +221,14 @@ Cgi& Cgi::operator=(const Cgi &c)
         this->fd_out[1] = c.fd_out[1];
     }
     return *this;
+}
+
+int Cgi::getReadFd() const
+{
+    return fd_out[0];
+}
+
+int Cgi::getPid() const
+{
+    return getpid();
 }

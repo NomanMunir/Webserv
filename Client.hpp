@@ -13,7 +13,7 @@
 #include "response/HttpResponse.hpp"
 #include <time.h>
 
-#define CLIENT_TIMEOUT 10
+#define CLIENT_TIMEOUT 60
 
 class Client {
 private:
@@ -48,6 +48,7 @@ public:
     std::string& getWriteBuffer();
     Request& getRequest();
     Response& getResponse();
+    Cgi& getCgi();
 
 
     bool isWritePending() const;

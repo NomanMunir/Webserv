@@ -38,7 +38,9 @@ public:
     ServerConfig getServerConfig() const;
     bool acceptClient();
     bool isMyClient(int fd);
+    bool isMyCGI(int fd);
 
+    void handleCgiRead(int clientFd);
     void handleRead(int fd);
     void handleWrite(int fd);
     void handleDisconnection(int fd);

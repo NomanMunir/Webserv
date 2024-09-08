@@ -153,11 +153,73 @@ void Server::handleWrite(int fd)
     }
 }
 
+bool Server::isMyCGI(int fd)
+{
+    std::unordered_map<int, Client>::iterator it = clients.begin();
+    while (it != this->clients.end())
+    {
+        if (!it->second.getRequest().getIsCGI())
+            continue;
+        if (it->second.getCgi().getReadFd() == fd)
+            return (handleCgiRead(it->first), true);
+        ++it;
+    }
+    return false;
+}
+
+void Server::handleCgiRead(int clientFd)
+{
+    try
+    {
+        ssize_t count;
+        char buffer[1024];
+        std::string output;
+        Client &client = clients[clientFd];
+        while ((count = read(client.getCgi().getReadFd(), buffer, sizeof(buffer))) > 0)
+            output.append(buffer, count);
+        if (count < 0)
+        {
+            Logs::appendLog("ERROR", "[handleCgiRead]\t\t Error reading from CGI " + std::string(strerror(errno)));
+            if (kill(client.getCgi().getPid(), SIGKILL) < 0)
+                Logs::appendLog("ERROR", "[handleCgiRead]\t\t Error killing CGI process " + std::string(strerror(errno)));
+            this->_poller->removeFromQueue(client.getCgi().getReadFd(), READ_EVENT);
+            close(client.getCgi().getReadFd());
+            clients.erase(clientFd);
+            return;
+        }
+        HttpResponse httpResponse;
+        httpResponse.setVersion("HTTP/1.1");
+        httpResponse.setStatusCode(200);
+        httpResponse.setHeader("Content-Type", "text/html");
+        httpResponse.setHeader("Content-Length", std::to_string(output.size()));
+        httpResponse.setHeader("Connection", "keep-alive");
+        std::string cookies = client.getRequest().getHeaders().getValue("Cookie");
+        if (cookies != "")
+            httpResponse.setHeader("Set-Cookie", cookies);
+        httpResponse.setHeader("Server", "LULUGINX");
+        httpResponse.setBody(output);
+        client.getWriteBuffer() = httpResponse.generateResponse();
+        client.setWritePending(true);
+        client.setReadPending(false);
+        this->_poller->addToQueue(clientFd, WRITE_EVENT);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        // this->_poller->removeFromQueue(clients[clientFd].getCgi().getReadFd(), READ_EVENT);
+        // this->_poller->removeFromQueue(clients[clientFd].getCgi().getWriteFd(), WRITE_EVENT);
+        // close(clients[clientFd].getCgi().getReadFd());
+        // close(clients[clientFd].getCgi().getWriteFd());
+        // clients.erase(clientFd);
+    }
+}
+
 void Server::handleRead(int fd)
 {
     try
     {
         clients[fd].readFromSocket(this->serverConfig);
+
         if (clients[fd].getResponse().getIsConnectionClosed() || !clients[fd].isKeepAlive())
             this->_poller->removeFromQueue(fd, READ_EVENT);
 
@@ -173,6 +235,7 @@ void Server::handleRead(int fd)
         clients.erase(fd);
     }
 }
+
 
 void Server::checkTimeouts()
 {

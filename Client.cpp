@@ -22,6 +22,8 @@ bool Client::isWritePending() const { return writePending; }
 
 bool Client::isReadPending() const { return readPending; }
 
+Cgi& Client::getCgi() { return cgi; }
+
 
 void Client::setWritePending(bool pending) { writePending = pending; }
 
@@ -184,21 +186,21 @@ void Client::handleCGI(ServerConfig &serverConfig)
 	std::string fullPath = generateFullPath(serverConfig.root, uri);
     std::cout << "fullPath in CGI: " << fullPath << std::endl;
 	this->cgi.execute(this->_poller, this->request, this->response, fullPath);
-	std::string body = cgi.output;
-	HttpResponse httpResponse;
-	httpResponse.setVersion("HTTP/1.1");
-	httpResponse.setStatusCode(200);
-	httpResponse.setHeader("Content-Type", "text/html");
-	httpResponse.setHeader("Content-Length", std::to_string(body.size()));
-	httpResponse.setHeader("Connection", "keep-alive");
-    std::string cookies = this->request.getHeaders().getValue("Cookie");
-	if (cookies != "")
-		httpResponse.setHeader("Set-Cookie", cookies);
-	httpResponse.setHeader("Server", "LULUGINX");
-	httpResponse.setBody(body);
-    this->writeBuffer = httpResponse.generateResponse();
-    this->writePending = true;
-    this->readPending = false;
+	// std::string body = cgi.output;
+	// HttpResponse httpResponse;
+	// httpResponse.setVersion("HTTP/1.1");
+	// httpResponse.setStatusCode(200);
+	// httpResponse.setHeader("Content-Type", "text/html");
+	// httpResponse.setHeader("Content-Length", std::to_string(body.size()));
+	// httpResponse.setHeader("Connection", "keep-alive");
+    // std::string cookies = this->request.getHeaders().getValue("Cookie");
+	// if (cookies != "")
+	// 	httpResponse.setHeader("Set-Cookie", cookies);
+	// httpResponse.setHeader("Server", "LULUGINX");
+	// httpResponse.setBody(body);
+    // this->writeBuffer = httpResponse.generateResponse();
+    // this->writePending = true;
+    // this->readPending = false;
 }
 
 void Client::handleNormalResponse(ServerConfig &serverConfig)
@@ -244,7 +246,7 @@ void Client::readFromSocket(ServerConfig &serverConfig)
 bool Client::isTimeOut()
 {
     time_t now = time(NULL);
-    if (now - lastActivity > 10)
+    if (now - lastActivity > CLIENT_TIMEOUT)
     {
         std::cout << "Client " << fd << " timed out" << std::endl;
         return true;
