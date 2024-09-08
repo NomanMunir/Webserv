@@ -29,7 +29,7 @@ void handleSignal(int signal)
 {
     if (signal == SIGINT || signal == SIGTERM)
     {
-        std::cout << "Shutting down server..." << std::endl;
+        std::cout << "\nShutting down server..." << std::endl;
         ServerManager::running = false;
     }
     else if (signal == SIGCHLD)
