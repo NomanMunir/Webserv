@@ -244,10 +244,15 @@ void Client::readFromSocket(ServerConfig &serverConfig)
 bool Client::isTimeout()
 {
     time_t now = time(NULL);
-    if (now - lastActivity > CLIENT_TIMEOUT)
+    if (now - lastActivity > 10)
     {
         std::cout << "Client " << fd << " timed out" << std::endl;
         return true;
     }
     return false;
+}
+
+void Client::updateLastActivity()
+{
+    this->lastActivity = time(NULL);
 }

@@ -140,6 +140,7 @@ void Server::handleWrite(int fd)
         clients[fd].setWritePending(false);
 
         clients[fd].reset();
+        clients[fd].updateLastActivity();
         // this->_poller->addToQueue(fd, TIMEOUT_EVENT);
         Logs::appendLog("INFO", "[handleWrite]\t\t Write completed for client " + std::to_string(fd));
     }
@@ -175,7 +176,6 @@ void Server::handleRead(int fd)
 
 void Server::checkTimeouts()
 {
-    time_t now = time(NULL);
     std::unordered_map<int, Client>::iterator it = clients.begin();
 
     while (it != clients.end())

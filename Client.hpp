@@ -13,7 +13,7 @@
 #include "response/HttpResponse.hpp"
 #include <time.h>
 
-#define CLIENT_TIMEOUT 30
+#define CLIENT_TIMEOUT 10
 
 class Client {
 private:
@@ -60,7 +60,7 @@ public:
     void setKeepAlive(bool keepAlive);
 
 
-
+    void updateLastActivity();
     void readFromSocket(ServerConfig &serverConfig);
     void reset();
 
