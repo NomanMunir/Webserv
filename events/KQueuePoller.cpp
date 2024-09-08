@@ -51,11 +51,11 @@ void KQueuePoller::addToQueue(int fd, EventType ev)
         EV_SET(&evSet, fd, EVFILT_WRITE, EV_ADD, 0, 0, NULL);
         fdState[fd].isWrite = true;
     }
-    else if (ev == TIMEOUT_EVENT)
-    {
-        EV_SET(&evSet, fd, EVFILT_TIMER, EV_ADD, 0, SET_TIMEOUT, NULL);
-        fdState[fd].isTimeout = true;
-    }
+    // else if (ev == TIMEOUT_EVENT)
+    // {
+    //     EV_SET(&evSet, fd, EVFILT_TIMER, EV_ADD, 0, SET_TIMEOUT, NULL);
+    //     fdState[fd].isTimeout = true;
+    // }
     else
     {
         throw std::runtime_error("[addToQueue]\t\t Invalid Event Type");
@@ -89,17 +89,17 @@ void KQueuePoller::removeFromQueue(int fd, EventType ev)
         }
         fdState[fd].isWrite = false;
     }
-    else if (ev == TIMEOUT_EVENT && fdState[fd].isTimeout)
-    {
-        EV_SET(&evSet, fd, EVFILT_TIMER, EV_DELETE, 0, 0, NULL);
-        if (kevent(this->kqueueFd, &evSet, 1, NULL, 0, NULL) == -1)
-        {
-            Logs::appendLog("ERROR", "[removeFromQueue]\t\tError Removing Event " + std::string(strerror(errno)));
-        }
-        fdState[fd].isTimeout = false;
-    }
+    // else if (ev == TIMEOUT_EVENT && fdState[fd].isTimeout)
+    // {
+    //     EV_SET(&evSet, fd, EVFILT_TIMER, EV_DELETE, 0, 0, NULL);
+    //     if (kevent(this->kqueueFd, &evSet, 1, NULL, 0, NULL) == -1)
+    //     {
+    //         Logs::appendLog("ERROR", "[removeFromQueue]\t\tError Removing Event " + std::string(strerror(errno)));
+    //     }
+    //     fdState[fd].isTimeout = false;
+    // }
 
-    if (!fdState[fd].isRead && !fdState[fd].isWrite && !fdState[fd].isTimeout)
+    if (!fdState[fd].isRead && !fdState[fd].isWrite)
     {
         fdState.erase(fd);
     }
@@ -108,9 +108,8 @@ void KQueuePoller::removeFromQueue(int fd, EventType ev)
 int KQueuePoller::getNumOfEvents()
 {
     struct timespec timeout;
-    timeout.tv_sec = KEVENT_TIMEOUT_SEC;
+    timeout.tv_sec = 1;
     timeout.tv_nsec = 0;
-
     int nev = kevent(this->kqueueFd, NULL, 0, this->events, MAX_EVENTS, &timeout);
     return nev;
 }
@@ -123,29 +122,15 @@ EventInfo KQueuePoller::getEventInfo(int i)
     info.fd = this->events[i].ident;
 
     if (this->events[i].flags & EV_ERROR)
-    {
         info.isError = true;
-    }
     else if (this->events[i].flags & EV_EOF)
-    {
         info.isEOF = true;
-    }
     else if (this->events[i].filter == EVFILT_READ)
-    {
         info.isRead = true;
-    }
     else if (this->events[i].filter == EVFILT_WRITE)
-    {
         info.isWrite = true;
-    }
-    else if (this->events[i].filter == EVFILT_TIMER)
-    {
-        info.isTimeout = true;
-    }
     else
-    {
         info.isError = true;
-    }
     return info;
 }
 

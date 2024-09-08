@@ -1,0 +1,64 @@
+[Sun Sep  8 16:46:37 2024] [INFO] [initializeSignalHandling]		 Initializing signal handling
+[Sun Sep  8 16:46:37 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
+[Sun Sep  8 16:46:38 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:46:39 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:46:40 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:46:41 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:46:42 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:46:43 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:46:44 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:46:45 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 62916
+[Sun Sep  8 16:46:45 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Sun Sep  8 16:46:45 2024] [DEBUG] [recvHeader]		 Header received from client 6
+[Sun Sep  8 16:46:45 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Sun Sep  8 16:46:45 2024] [INFO] [handleWrite]		 Write completed for client 6
+[Sun Sep  8 16:46:45 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 62918
+[Sun Sep  8 16:46:46 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:46:47 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:46:48 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:46:49 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:46:50 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:46:51 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:46:52 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:46:53 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:46:54 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:46:55 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:46:56 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:46:56 2024] [INFO] [checkTimeouts]		 Client 7 timed out
+[Sun Sep  8 16:46:56 2024] [INFO] [checkTimeouts]		 Client 6 timed out
+[Sun Sep  8 16:46:57 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:46:58 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:46:59 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:00 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:01 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:02 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:03 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:04 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:05 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:06 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:07 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:08 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:09 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:10 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:11 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:12 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:13 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:14 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:15 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:16 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:17 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:18 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:19 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:20 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:21 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:22 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:23 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:24 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:25 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:26 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:27 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:28 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:29 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:30 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:31 2024] [DEBUG] [run]		 No events to process
+[Sun Sep  8 16:47:32 2024] [DEBUG] [run]		 No events to process
