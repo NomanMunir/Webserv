@@ -178,9 +178,9 @@ void Server::checkTimeouts()
 {
     std::unordered_map<int, Client>::iterator it = clients.begin();
 
-    while (it != clients.end())
+    while (it != this->clients.end())
     {
-        if (it->second.isTimeout())
+        if (it->second.isTimeOut())
         {
             Logs::appendLog("INFO", "[checkTimeouts]\t\t Client " + std::to_string(it->first) + " timed out");
             this->_poller->removeFromQueue(it->first, READ_EVENT);

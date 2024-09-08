@@ -53,7 +53,7 @@ public:
     bool isWritePending() const;
     bool isReadPending() const;
     bool isKeepAlive();
-    bool isTimeout();
+    bool isTimeOut();
 
     void setWritePending(bool pending);
     void setReadPending(bool pending);

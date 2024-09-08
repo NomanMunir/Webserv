@@ -241,7 +241,7 @@ void Client::readFromSocket(ServerConfig &serverConfig)
     }
 }
 
-bool Client::isTimeout()
+bool Client::isTimeOut()
 {
     time_t now = time(NULL);
     if (now - lastActivity > 10)
