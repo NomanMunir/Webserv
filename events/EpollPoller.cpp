@@ -126,7 +126,9 @@ void EpollPoller::removeFromQueue(int fd, EventType event)
 
 int EpollPoller::getNumOfEvents()
 {
+	std::cout << "Getting events" << std::endl;
     int nev = epoll_wait(this->epollFd, this->events, MAX_EVENTS, EPOLLEVENT_TIMEOUT_SEC);
+	std::cout << "Got " << nev << " events" << std::endl;
     return nev;
 }
 
@@ -137,12 +139,6 @@ EventInfo EpollPoller::getEventInfo(int i)
 
     info.fd = this->events[i].data.fd;
 
-    time_t now = time(NULL);
-
-    if (now - lastActivity[info.fd] > CLIENT_TIMEOUT) {
-        info.isTimeout = true;
-        return info;
-    }    
 
     if (this->events[i].events & EPOLLERR)
     {

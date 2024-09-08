@@ -8,7 +8,7 @@ void Logs::init()
 {
     if (!file.is_open()) 
 	{
-        file.open("logs.log", std::ios::app);
+        file.open("logs.log", std::ios::trunc);
         if (!file.is_open())
             std::cerr << "Error: Could not open log file" << std::endl;
     }
