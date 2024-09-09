@@ -20,6 +20,7 @@ public:
 	std::string generateResponse();
 
 
+
 private:
 	int statusCode;
 	std::string version;

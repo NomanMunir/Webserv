@@ -34,14 +34,10 @@ void KQueuePoller::addToQueue(int fd, EventType ev)
         EV_SET(&evSet, fd, EVFILT_WRITE, EV_ADD, 0, 0, NULL);
         fdState[fd].isWrite = true;
     }
-    // else if (ev == TIMEOUT_EVENT)
-    // {
-    //     EV_SET(&evSet, fd, EVFILT_TIMER, EV_ADD, 0, SET_TIMEOUT, NULL);
-    //     fdState[fd].isTimeout = true;
-    // }
     else
     {
-        throw std::runtime_error("[addToQueue]\t\t Invalid Event Type");
+        Logs::appendLog("ERROR", "[addToQueue]\t\tInvalid Event Type");
+        return;
     }
 
     if (kevent(this->kqueueFd, &evSet, 1, NULL, 0, NULL) == -1)
@@ -59,7 +55,7 @@ void KQueuePoller::removeFromQueue(int fd, EventType ev)
         EV_SET(&evSet, fd, EVFILT_READ, EV_DELETE, 0, 0, NULL);
         if (kevent(this->kqueueFd, &evSet, 1, NULL, 0, NULL) == -1)
         {
-            Logs::appendLog("ERROR", "[removeFromQueue]\t\tError Removing Event " + std::string(strerror(errno)));
+            Logs::appendLog("ERROR", "[removeFromQueue]\t\tError Removing READ Event " + std::to_string(fd) + " " + std::string(strerror(errno)));
         }
         fdState[fd].isRead = false;
     }
@@ -68,19 +64,10 @@ void KQueuePoller::removeFromQueue(int fd, EventType ev)
         EV_SET(&evSet, fd, EVFILT_WRITE, EV_DELETE, 0, 0, NULL);
         if (kevent(this->kqueueFd, &evSet, 1, NULL, 0, NULL) == -1)
         {
-            Logs::appendLog("ERROR", "[removeFromQueue]\t\tError Removing Event " + std::string(strerror(errno)));
+            Logs::appendLog("ERROR", "[removeFromQueue]\t\tError Removing WRITE Event " + std::to_string(fd) + " " + std::string(strerror(errno)));
         }
         fdState[fd].isWrite = false;
     }
-    // else if (ev == TIMEOUT_EVENT && fdState[fd].isTimeout)
-    // {
-    //     EV_SET(&evSet, fd, EVFILT_TIMER, EV_DELETE, 0, 0, NULL);
-    //     if (kevent(this->kqueueFd, &evSet, 1, NULL, 0, NULL) == -1)
-    //     {
-    //         Logs::appendLog("ERROR", "[removeFromQueue]\t\tError Removing Event " + std::string(strerror(errno)));
-    //     }
-    //     fdState[fd].isTimeout = false;
-    // }
 
     if (!fdState[fd].isRead && !fdState[fd].isWrite)
     {

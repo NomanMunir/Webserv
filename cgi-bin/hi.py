@@ -1,2 +1,3 @@
-# hello_world.py
+#!/usr/bin/env python3
+
 print("Hello, World!")

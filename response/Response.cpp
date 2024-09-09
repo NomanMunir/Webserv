@@ -480,3 +480,8 @@ void Response::setErrorCode(int errorStatus, std::string errorMsg)
 	this->errorCode = errorStatus;
 	throw std::runtime_error(errorMsg);
 }
+
+void Response::setIsConnectionClosed(bool isClosed)
+{
+	isConnectionClosed = isClosed;
+}

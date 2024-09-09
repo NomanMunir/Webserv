@@ -126,8 +126,6 @@ void Client::recvChunk()
             throw std::runtime_error("[recvChunk]\t\t Error reading chunk data");
         bodyContent += chunkData;
 
-        std::cout << "bodyContent: " << bodyContent << std::endl;
-
         // Read the trailing CRLF after the chunk data
         if (recv(this->fd, &buffer, 1, 0) <= 0 || buffer != '\r')
             throw std::runtime_error("[recvChunk]\t\t Malformed chunk data");
@@ -183,24 +181,9 @@ void Client::recvBody()
 void Client::handleCGI(ServerConfig &serverConfig)
 {
 	std::string uri = request.getHeaders().getValue("uri");
+    std::cout << "CGI URI: " << uri << std::endl;
 	std::string fullPath = generateFullPath(serverConfig.root, uri);
-    std::cout << "fullPath in CGI: " << fullPath << std::endl;
 	this->cgi.execute(this->_poller, this->request, this->response, fullPath);
-	// std::string body = cgi.output;
-	// HttpResponse httpResponse;
-	// httpResponse.setVersion("HTTP/1.1");
-	// httpResponse.setStatusCode(200);
-	// httpResponse.setHeader("Content-Type", "text/html");
-	// httpResponse.setHeader("Content-Length", std::to_string(body.size()));
-	// httpResponse.setHeader("Connection", "keep-alive");
-    // std::string cookies = this->request.getHeaders().getValue("Cookie");
-	// if (cookies != "")
-	// 	httpResponse.setHeader("Set-Cookie", cookies);
-	// httpResponse.setHeader("Server", "LULUGINX");
-	// httpResponse.setBody(body);
-    // this->writeBuffer = httpResponse.generateResponse();
-    // this->writePending = true;
-    // this->readPending = false;
 }
 
 void Client::handleNormalResponse(ServerConfig &serverConfig)

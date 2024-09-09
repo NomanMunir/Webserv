@@ -68,6 +68,7 @@ void ServerManager::processWriteEvent(EventInfo eventInfo)
 	{
 		if (servers[j]->isMyClient(eventInfo.fd))
 		{
+			std::cout << "we are in processWriteEvent\n";
 			servers[j]->handleWrite(eventInfo.fd);
 			break;
 		}
@@ -121,19 +122,11 @@ void ServerManager::run()
 			if (eventInfo.isRead || eventInfo.isEOF)
 				processReadEvent(eventInfo);
 		}
-
 		for (size_t i = 0; i < numOfEvents; i++)
 		{
 			EventInfo eventInfo = this->_poller->getEventInfo(i);
 			if (eventInfo.isWrite)
 				processWriteEvent(eventInfo);
 		}
-
-		// for (size_t i = 0; i < numOfEvents; i++)
-		// {
-		// 	EventInfo eventInfo = this->_poller->getEventInfo(i);
-		// 	if (eventInfo.isTimeout)
-		// 		processTimeoutEvent(eventInfo);
-		// }
 	}
 }

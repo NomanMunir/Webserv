@@ -39,6 +39,7 @@ class Response
 		void printResponse();
 		void setTargetServer(ServerConfig server);
 		void setTargetRoute(RouteConfig route);
+		void setIsConnectionClosed(bool isClosed);
 		ServerConfig getTargetServer();
 		RouteConfig getTargetRoute();
 		void sendError(std::string errorCode);

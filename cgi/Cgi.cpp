@@ -66,15 +66,14 @@ void Cgi::execute(EventPoller *poller, Request &_request, Response &_response, s
     if (!checkFilePermission(this->_fullPath.c_str()))
         _response.setErrorCode(500, "[execute]\t\t CGI script is not executable");
 
-    int fd_in[2], fd_out[2];  // read fd[0]  write fd[1]
     if (pipe(fd_in) < 0)
         _response.setErrorCode(500, "[execute]\t\t Failed to create pipe");
     if (pipe(fd_out) < 0)
         _response.setErrorCode(500, "[execute]\t\t Failed to create pipe");
     setCGIEnv(_request, _response);
-    pid_t pid = fork();
+    this->_pid = fork();
 
-    if (pid < 0)
+    if (_pid < 0)
      {
         // Fork failed
         close(fd_in[0]); close(fd_in[1]);
@@ -82,7 +81,7 @@ void Cgi::execute(EventPoller *poller, Request &_request, Response &_response, s
         _response.setErrorCode(500, "[execute]\t\t Failed to fork process");
     }
 
-    if (pid == 0) 
+    if (_pid == 0) 
     {
         // Child process
         close(fd_in[1]); // Close the write end of fd_in
@@ -130,6 +129,7 @@ void Cgi::execute(EventPoller *poller, Request &_request, Response &_response, s
 
         // while ((count = read(fd_out[0], buffer, sizeof(buffer))) > 0)
         //     output.append(buffer, count);
+        // std::cout << "Output from CGI: " << output << std::endl;
         // close(fd_out[0]);
     }
 }
@@ -230,5 +230,5 @@ int Cgi::getReadFd() const
 
 int Cgi::getPid() const
 {
-    return getpid();
+    return _pid;
 }

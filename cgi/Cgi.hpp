@@ -31,6 +31,7 @@ private:
     int                                                 fd_in[2];
     int                                                 fd_out[2];
     std::string											_fullPath;
+    pid_t                                               _pid;
 
     bool checkFilePermission(const char* path);
     void freeEnv(char** envp);

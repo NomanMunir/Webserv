@@ -61,6 +61,7 @@ private:
     void bindAndListen();
     void socketInUse();
     void initSocket();
+    void generateCGIError(Client &client);
 };
 
 #endif // SERVER_HPP
