@@ -24,6 +24,7 @@
 #include "utils/Logs.hpp"
 #include <unistd.h>
 #include <sys/wait.h>
+#include "utils/MimeTypes.hpp"
 
 void handleSignal(int signal)
 {
@@ -67,12 +68,14 @@ int main(int ac, const char **av, char **env)
     try
     {
         Logs::init();
+        
         if (ac > 2)
             throw std::runtime_error("[main]\t\t\t Usage: ./webserv <config_file>");
         if (ac == 1)
-            av[1] = "config.conf";
-        initializeSignalHandling();
+            av[1] = "config/config.conf";
 
+        initializeSignalHandling();
+        MimeTypes::load("config/mime.types");
         Parser parser(av[1]);
 
         Validation validation(parser);

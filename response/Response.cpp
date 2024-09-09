@@ -12,6 +12,7 @@
 
 #include "Response.hpp"
 #include "../cgi/Cgi.hpp"
+#include "../utils/MimeTypes.hpp"
 
 int Response::checkType(std::string path)
 {
@@ -142,7 +143,7 @@ void Response::generateResponseFromFile(std::string &path, bool isHEAD)
 	buffer << file.rdbuf();
 	std::string body = buffer.str();
 	std::string extention = path.substr(path.find_last_of(".") + 1);
-	std::string mimeType = getMimeType(extention);
+	std::string mimeType = MimeTypes::getType(extention);
 	HttpResponse httpResponse;
 	httpResponse.setVersion("HTTP/1.1");
 	httpResponse.setStatusCode(200);
