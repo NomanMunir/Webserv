@@ -38,9 +38,7 @@ bool myFind(std::vector<std::string> &v, std::string &s);
 void initializeVector(std::vector<std::string> &v, const std::string s[], size_t size);
 void initializeVector(std::vector<std::string> &v, std::string s[], size_t size);
 std::string getStatusMsg(std::string errorCode);
-std::string getMimeType(std::string extention);
 std::string getCurrentTimestamp();
 std::string toUpperCase(const std::string &str);
 std::string generateFullPath(std::string rootPath, std::string path);
-void setNoneBlocking(int fd);
 #endif // UTILS_HPP	

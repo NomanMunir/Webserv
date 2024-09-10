@@ -22,7 +22,6 @@ KQueuePoller::~KQueuePoller() { close(this->kqueueFd); }
 void KQueuePoller::addToQueue(int fd, EventType ev)
 {
     struct kevent evSet;
-    setNoneBlocking(fd);
 
     if (ev == READ_EVENT)
     {

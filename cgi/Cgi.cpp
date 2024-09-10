@@ -9,14 +9,6 @@
 #include <vector>
 #include "../response/Response.hpp"
 
-Cgi::~Cgi()
-{
-    if (fd_out[0] != -1) close(fd_out[0]);
-    if (fd_out[1] != -1) close(fd_out[1]);
-    if (fd_in[0] != -1) close(fd_in[0]);
-    if (fd_in[1] != -1) close(fd_in[1]);
-}
-
 bool Cgi::checkFilePermission(const char* path) 
 {
     struct stat fileStat;
@@ -57,7 +49,22 @@ void Cgi::checkCGITimeout(pid_t pid, Request &_request, Response &_response)
     }
 }
 
-
+bool setNoneBlocking(int fd)
+{
+    int flags = fcntl(fd, F_GETFL, 0);
+    if (flags == -1)
+    {
+        Logs::appendLog("ERROR", "[Cgi setNoneBlocking]\t\t " + std::string(strerror(errno)));
+        return false;
+    }
+    if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
+    {
+        Logs::appendLog("ERROR", "[Cgi setNoneBlocking]\t\t " + std::string(strerror(errno)));
+        close(fd);
+        return false;
+    }
+    return true;
+}
 
 void Cgi::execute(EventPoller *poller, Request &_request, Response &_response, std::string fullPath)
 {
@@ -71,6 +78,7 @@ void Cgi::execute(EventPoller *poller, Request &_request, Response &_response, s
     if (pipe(fd_out) < 0)
         _response.setErrorCode(500, "[execute]\t\t Failed to create pipe");
     setCGIEnv(_request, _response);
+    this->_isCGI = true;
     this->_pid = fork();
 
     if (_pid < 0)
@@ -107,7 +115,11 @@ void Cgi::execute(EventPoller *poller, Request &_request, Response &_response, s
         // Parent process
         close(fd_in[0]);
         close(fd_out[1]);
-        setNoneBlocking(fd_in[1]);
+        if (!setNoneBlocking(fd_in[1]) || !setNoneBlocking(fd_out[0]))
+        {
+            close(fd_in[1]); close(fd_out[0]); freeEnv(_envp);
+            _response.setErrorCode(500, "[execute]\t\t Failed to set non-blocking mode");
+        }
         if (_request.getHeaders().getValue("method") == "POST") 
         {
             std::string body = _request.getBody().getContent();
@@ -197,18 +209,15 @@ void Cgi::setCGIEnv(Request &_request, Response &_response)
     vecToChar(envMaker, _response);
 }
 
-Cgi::Cgi()
+Cgi::Cgi(): _pid(-1), _isCGI(false)
 {
     fd_out[0] = -1; fd_out[1] = -1;
     fd_in[0] = -1; fd_in[1] = -1;
 }
 
-Cgi::Cgi(const Cgi &c) 
-{
-    *this = c;
-}
+Cgi::Cgi(const Cgi &c) { *this = c; }
 
-Cgi& Cgi::operator=(const Cgi &c) 
+Cgi& Cgi::operator=(const Cgi &c)
 {
     if (this != &c) 
     {
@@ -219,16 +228,22 @@ Cgi& Cgi::operator=(const Cgi &c)
         this->fd_in[1] = c.fd_in[1];
         this->fd_out[0] = c.fd_out[0];
         this->fd_out[1] = c.fd_out[1];
+        this->_pid = c._pid;
+        this->_isCGI = c._isCGI;
     }
     return *this;
 }
 
-int Cgi::getReadFd() const
-{
-    return fd_out[0];
-}
+int Cgi::getReadFd() const { return fd_out[0]; }
 
-int Cgi::getPid() const
+int Cgi::getPid() const { return _pid; }
+
+bool Cgi::getIsCGI() const { return _isCGI; }
+
+Cgi::~Cgi()
 {
-    return _pid;
+    if (fd_out[0] != -1) close(fd_out[0]);
+    if (fd_out[1] != -1) close(fd_out[1]);
+    if (fd_in[0] != -1) close(fd_in[0]);
+    if (fd_in[1] != -1) close(fd_in[1]);
 }

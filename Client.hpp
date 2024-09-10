@@ -13,7 +13,7 @@
 #include "response/HttpResponse.hpp"
 #include <time.h>
 
-#define CLIENT_TIMEOUT 10
+#define CLIENT_TIMEOUT 60
 
 class Client {
 private:
@@ -33,6 +33,7 @@ private:
     void recvChunk();
     void recvHeader();
     void recvBody();
+
     void handleNormalResponse(ServerConfig &serverConfig);
     void handleCGI(ServerConfig &serverConfig);
     
@@ -49,7 +50,7 @@ public:
     Request& getRequest();
     Response& getResponse();
     Cgi& getCgi();
-
+    bool isCGI() const;
 
     bool isWritePending() const;
     bool isReadPending() const;
@@ -64,7 +65,6 @@ public:
     void updateLastActivity();
     void readFromSocket(ServerConfig &serverConfig);
     void reset();
-
 
 };
 

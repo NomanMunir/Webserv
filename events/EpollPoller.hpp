@@ -18,6 +18,9 @@ private:
     std::map<int, EventInfo> fdState;
     std::map<int, time_t> lastActivity;
 
+    void setNoneBlocking(int fd);
+
+
 public:
     EpollPoller();
     ~EpollPoller();

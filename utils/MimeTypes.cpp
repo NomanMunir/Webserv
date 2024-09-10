@@ -1,8 +1,8 @@
 #include "MimeTypes.hpp"
 #include <sstream>
 #include <algorithm>
+#include "Logs.hpp"
 
-// Initialize static member
 std::map<std::string, std::string> MimeTypes::mimeTypes;
 
 void MimeTypes::load(const std::string &filename)
@@ -15,13 +15,24 @@ void MimeTypes::parseMimeFile(const std::string &filename)
     std::ifstream file(filename.c_str());
     if (!file.is_open())
         throw std::runtime_error("Could not open mime.types file");
-
+    bool isClosingBrace = false;
     std::string line;
+
+    std::getline(file, line);
+    if (line != "types {")
+        throw std::runtime_error("Invalid mime.types file");
+    
     while (std::getline(file, line))
     {
         line = trim(line);
-
-        if (line.empty() || line[0] == '#' || line == "types" || line == "{" || line == "}")
+        if (line == "}")
+        {
+            isClosingBrace = true;
+            break;
+        }
+        if (line.back() != ';')
+            Logs::appendLog("ERROR", "Invalid line in mime.types file: " + line);
+        if (line.empty() || line[0] == '#')
             continue;
 
         std::istringstream iss(line);
@@ -39,16 +50,25 @@ void MimeTypes::parseMimeFile(const std::string &filename)
             }
         }
     }
+
+    if (!isClosingBrace)
+        throw std::runtime_error("Invalid mime.types file");
+
+    while (std::getline(file, line))
+    {
+        line = trim(line);
+        if (!line.empty() && line[0] != '#')
+            throw std::runtime_error("Invalid mime.types file");
+    }
+    
 }
 
 std::string MimeTypes::getType(const std::string &extension)
 {
     std::map<std::string, std::string>::const_iterator it = mimeTypes.find(extension);
     if (it != mimeTypes.end())
-    {
         return it->second;
-    }
-    return "application/octet-stream"; // Default MIME type if not found
+    return "application/octet-stream";
 }
 
 std::string MimeTypes::trim(const std::string &str)

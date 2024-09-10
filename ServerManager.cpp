@@ -51,6 +51,11 @@ void ServerManager::processReadEvent(EventInfo eventInfo)
 		}
 		else
 		{
+			if (eventInfo.isEOF)
+			{
+				this->servers[j]->handleDisconnection(eventInfo.fd);
+				break;
+			}
 			if (this->servers[j]->isMyClient(eventInfo.fd))
 			{
 				this->servers[j]->handleRead(eventInfo.fd);
@@ -68,7 +73,6 @@ void ServerManager::processWriteEvent(EventInfo eventInfo)
 	{
 		if (servers[j]->isMyClient(eventInfo.fd))
 		{
-			std::cout << "we are in processWriteEvent\n";
 			servers[j]->handleWrite(eventInfo.fd);
 			break;
 		}

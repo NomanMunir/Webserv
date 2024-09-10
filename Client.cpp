@@ -1,6 +1,6 @@
 #include "Client.hpp"
 
-Client::~Client() {}
+Client::~Client() { }
 
 Client::Client() : fd(-1), writePending(false)
 {
@@ -241,3 +241,5 @@ void Client::updateLastActivity()
 {
     this->lastActivity = time(NULL);
 }
+
+bool Client::isCGI() const { return this->cgi.getIsCGI(); }

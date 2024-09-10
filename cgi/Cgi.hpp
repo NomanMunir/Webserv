@@ -26,12 +26,14 @@ public:
     
     int getReadFd() const;
     int getPid() const;
+    bool getIsCGI() const;
 
 private:
     int                                                 fd_in[2];
     int                                                 fd_out[2];
     std::string											_fullPath;
     pid_t                                               _pid;
+    bool                                               _isCGI;
 
     bool checkFilePermission(const char* path);
     void freeEnv(char** envp);

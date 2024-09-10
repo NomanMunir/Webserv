@@ -1,7 +1,6 @@
 #if defined(__linux__)
 
 #include "EpollPoller.hpp"
-#define CLIENT_TIMEOUT 30  // 30 seconds timeout for clients
 
 EpollPoller::EpollPoller()
 {
@@ -22,7 +21,6 @@ void EpollPoller::addToQueue(int fd, EventType event)
 	struct epoll_event	epollEvent;
 	memset(&epollEvent, 0, sizeof(epollEvent));
 
-    setNoneBlocking(fd);
 	epollEvent.data.fd = fd;
 	epollEvent.events = 0;
 	int op = 0;
@@ -63,7 +61,7 @@ void EpollPoller::addToQueue(int fd, EventType event)
 		}
 	}
 	if (epoll_ctl(this->epollFd, op, fd, &epollEvent) < 0)
-        Logs::appendLog("ERROR", "[addToQueue]\t\tError Adding Event " + std::string(strerror(errno)));
+        Logs::appendLog("ERROR", "[addToQueue]\t\tError Adding Event " + filterType + " " + std::string(strerror(errno)));
     else
         Logs::appendLog("INFO", "[addToQueue]\t\tAdded Event " + filterType + " to " + std::to_string(fd));
     lastActivity[fd] = time(NULL);
@@ -91,13 +89,14 @@ void EpollPoller::removeFromQueue(int fd, EventType event)
 			op = EPOLL_CTL_DEL;
 			epollEvent.events = EPOLLIN | EPOLLHUP | EPOLLRDHUP;
 			filterType = "READ EVENT";
-			this->fdState.erase(fd);
+			this->fdState[fd].isRead = false;
 		}
 		else if (event == WRITE_EVENT)
 		{
 			op = EPOLL_CTL_MOD;
 			epollEvent.events = EPOLLIN | EPOLLHUP | EPOLLRDHUP;
 			filterType = "WRITE EVENT";
+			this->fdState[fd].isWrite = false;
 		}
 	}
 
@@ -105,13 +104,13 @@ void EpollPoller::removeFromQueue(int fd, EventType event)
         Logs::appendLog("ERROR", "[removeFromQueue]\t\tError Removing Event " + std::string(strerror(errno)));
 	else
         Logs::appendLog("INFO", "[removeFromQueue]\t\tRemoved Event " + filterType + " from " + std::to_string(fd));
+	if (this->fdState[fd].isRead == false && this->fdState[fd].isWrite == false)
+		this->fdState.erase(fd);
 }
 
 int EpollPoller::getNumOfEvents()
 {
-	std::cout << "Getting events" << std::endl;
     int nev = epoll_wait(this->epollFd, this->events, MAX_EVENTS, EPOLLEVENT_TIMEOUT_SEC);
-	std::cout << "Got " << nev << " events" << std::endl;
     return nev;
 }
 
@@ -122,23 +121,14 @@ EventInfo EpollPoller::getEventInfo(int i)
 
     info.fd = this->events[i].data.fd;
 
-
     if (this->events[i].events & EPOLLERR)
-    {
         info.isError = true;
-    }
     else if (this->events[i].events & EPOLLHUP)
-    {
-        info.isError = true;
-    }
+        info.isEOF = true;
     else if (this->events[i].events & EPOLLIN)
-    {
         info.isRead = true;
-    }
     else if (this->events[i].events & EPOLLOUT)
-    {
         info.isWrite = true;
-    }
     return info;
 }
 

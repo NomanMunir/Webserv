@@ -22,23 +22,6 @@ std::string generateFullPath(std::string rootPath, std::string path)
 	return fullPath;
 }
 
-void setNoneBlocking(int fd)
-{
-    int flags = fcntl(fd, F_GETFL, 0);
-    if (flags == -1)
-    {
-        Logs::appendLog("ERROR", "[setNoneBlocking]\t\t " + std::string(strerror(errno)));
-        close(fd);
-        throw std::exception();
-    }
-    if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
-    {
-        Logs::appendLog("ERROR", "[setNoneBlocking]\t\t " + std::string(strerror(errno)));
-        close(fd);
-        throw std::exception();
-    }
-}
-
 std::string getCurrentTimestamp() 
 {
     std::time_t now = std::time(nullptr);
@@ -317,83 +300,4 @@ std::string getStatusMsg(std::string errorCode)
     if (errorMsgs.empty())
         return "";
     return (errorMsgs[errorCode]);
-}
-
-std::string getMimeType(std::string extention)
-{
-    std::unordered_map<std::string, std::string> mime_types;
-
-    mime_types.insert(std::make_pair("epub", "application/epub+zip"));
-    mime_types.insert(std::make_pair("jar", "application/java-archive"));
-    mime_types.insert(std::make_pair("war", "application/java-archive"));
-    mime_types.insert(std::make_pair("ear", "application/java-archive"));
-    mime_types.insert(std::make_pair("js", "application/javascript"));
-    mime_types.insert(std::make_pair("json", "application/json"));
-    mime_types.insert(std::make_pair("doc", "application/msword"));
-    mime_types.insert(std::make_pair("bin", "application/octet-stream"));
-    mime_types.insert(std::make_pair("exe", "application/octet-stream"));
-    mime_types.insert(std::make_pair("dll", "application/octet-stream"));
-    mime_types.insert(std::make_pair("ogx", "application/ogg"));
-    mime_types.insert(std::make_pair("pdf", "application/pdf"));
-    mime_types.insert(std::make_pair("rtf", "application/rtf"));
-    mime_types.insert(std::make_pair("azw", "application/vnd.amazon.ebook"));
-    mime_types.insert(std::make_pair("mpkg", "application/vnd.apple.installer+xml"));
-    mime_types.insert(std::make_pair("xul", "application/vnd.mozilla.xul+xml"));
-    mime_types.insert(std::make_pair("xls", "application/vnd.ms-excel"));
-    mime_types.insert(std::make_pair("eot", "application/vnd.ms-fontobject"));
-    mime_types.insert(std::make_pair("ppt", "application/vnd.ms-powerpoint"));
-    mime_types.insert(std::make_pair("odp", "application/vnd.oasis.opendocument.presentation"));
-    mime_types.insert(std::make_pair("ods", "application/vnd.oasis.opendocument.spreadsheet"));
-    mime_types.insert(std::make_pair("odt", "application/vnd.oasis.opendocument.text"));
-    mime_types.insert(std::make_pair("pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation"));
-    mime_types.insert(std::make_pair("xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
-    mime_types.insert(std::make_pair("docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
-    mime_types.insert(std::make_pair("rar", "application/vnd.rar"));
-    mime_types.insert(std::make_pair("7z", "application/x-7z-compressed"));
-    mime_types.insert(std::make_pair("bz", "application/x-bzip"));
-    mime_types.insert(std::make_pair("bz2", "application/x-bzip2"));
-    mime_types.insert(std::make_pair("csh", "application/x-csh"));
-    mime_types.insert(std::make_pair("xhtml", "application/xhtml+xml"));
-    mime_types.insert(std::make_pair("xht", "application/xhtml+xml"));
-    mime_types.insert(std::make_pair("xml", "application/xml"));
-    mime_types.insert(std::make_pair("xsl", "application/xml"));
-    mime_types.insert(std::make_pair("dtd", "application/xml-dtd"));
-    mime_types.insert(std::make_pair("xslt", "application/xslt+xml"));
-    mime_types.insert(std::make_pair("yaml", "application/yaml"));
-    mime_types.insert(std::make_pair("yml", "application/yaml"));
-    mime_types.insert(std::make_pair("sh", "application/x-sh"));
-    mime_types.insert(std::make_pair("swf", "application/x-shockwave-flash"));
-    mime_types.insert(std::make_pair("tar", "application/x-tar"));
-    mime_types.insert(std::make_pair("xhtml", "application/xhtml+xml"));
-    mime_types.insert(std::make_pair("zip", "application/zip"));
-    mime_types.insert(std::make_pair("avi", "video/x-msvideo"));
-    mime_types.insert(std::make_pair("bmp", "image/bmp"));
-    mime_types.insert(std::make_pair("gif", "image/gif"));
-    mime_types.insert(std::make_pair("jpeg", "image/jpeg"));
-    mime_types.insert(std::make_pair("jpg", "image/jpeg"));
-    mime_types.insert(std::make_pair("png", "image/png"));
-    mime_types.insert(std::make_pair("svg", "image/svg+xml"));
-    mime_types.insert(std::make_pair("tif", "image/tiff"));
-    mime_types.insert(std::make_pair("tiff", "image/tiff"));
-    mime_types.insert(std::make_pair("webp", "image/webp"));
-    mime_types.insert(std::make_pair("ico", "image/vnd.microsoft.icon"));
-    mime_types.insert(std::make_pair("otf", "font/otf"));
-    mime_types.insert(std::make_pair("ttf", "font/ttf"));
-    mime_types.insert(std::make_pair("woff", "font/woff"));
-    mime_types.insert(std::make_pair("woff2", "font/woff2"));
-    mime_types.insert(std::make_pair("css", "text/css"));
-    mime_types.insert(std::make_pair("csv", "text/csv"));
-    mime_types.insert(std::make_pair("html", "text/html"));
-    mime_types.insert(std::make_pair("htm", "text/html"));
-    mime_types.insert(std::make_pair("txt", "text/plain"));
-    mime_types.insert(std::make_pair("php", "text/php"));
-    mime_types.insert(std::make_pair("py", "text/python"));
-    mime_types.insert(std::make_pair("js", "text/javascript"));
-    mime_types.insert(std::make_pair("xml", "text/xml"));
-    mime_types.insert(std::make_pair("md", "text/markdown"));
-    
-    std::unordered_map<std::string, std::string>::iterator it = mime_types.find(extention);
-    if (it != mime_types.end())
-        return it->second;
-    return "application/octet-stream";
 }
