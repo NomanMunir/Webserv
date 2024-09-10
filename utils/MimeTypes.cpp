@@ -14,14 +14,14 @@ void MimeTypes::parseMimeFile(const std::string &filename)
 {
     std::ifstream file(filename.c_str());
     if (!file.is_open())
-        throw std::runtime_error("Could not open mime.types file");
+        throw std::runtime_error("Could not open mime.types file " + filename);
     bool isClosingBrace = false;
     std::string line;
 
     std::getline(file, line);
     if (line != "types {")
-        throw std::runtime_error("Invalid mime.types file");
-    
+        throw std::runtime_error("Invalid mime.types file " + line);
+
     while (std::getline(file, line))
     {
         line = trim(line);
@@ -30,10 +30,10 @@ void MimeTypes::parseMimeFile(const std::string &filename)
             isClosingBrace = true;
             break;
         }
-        if (line.back() != ';')
-            Logs::appendLog("ERROR", "Invalid line in mime.types file: " + line);
         if (line.empty() || line[0] == '#')
             continue;
+        if (line.back() != ';')
+            Logs::appendLog("ERROR", "Invalid line in mime.types file: " + line);
 
         std::istringstream iss(line);
         std::string mimeType;

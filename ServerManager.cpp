@@ -51,13 +51,14 @@ void ServerManager::processReadEvent(EventInfo eventInfo)
 		}
 		else
 		{
-			if (eventInfo.isEOF)
-			{
-				this->servers[j]->handleDisconnection(eventInfo.fd);
-				break;
-			}
+			
 			if (this->servers[j]->isMyClient(eventInfo.fd))
 			{
+				if (eventInfo.isEOF)
+				{
+					this->servers[j]->handleDisconnection(eventInfo.fd);
+					break;
+				}
 				this->servers[j]->handleRead(eventInfo.fd);
 				break;
 			}

@@ -73,6 +73,6 @@
 [*] std::find(uri, "%20", " ");
 [*] signals
 [*] infinit loop when we distrupt the connection.
+[*] timeout for server
 
-[ ] timeout for server
 [ ] mime file.
