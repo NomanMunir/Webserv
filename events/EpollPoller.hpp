@@ -16,10 +16,6 @@ private:
     int epollFd;
     struct epoll_event events[MAX_EVENTS];
     std::map<int, EventInfo> fdState;
-    std::map<int, time_t> lastActivity;
-
-    void setNoneBlocking(int fd);
-
 
 public:
     EpollPoller();

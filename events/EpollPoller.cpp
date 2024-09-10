@@ -16,10 +16,8 @@ EpollPoller::~EpollPoller() { close(this->epollFd); }
 
 void EpollPoller::addToQueue(int fd, EventType event)
 {
-    if (event == TIMEOUT_EVENT)
-        return;
 	struct epoll_event	epollEvent;
-	memset(&epollEvent, 0, sizeof(epollEvent));
+	std::memset(&epollEvent, 0, sizeof(epollEvent));
 
 	epollEvent.data.fd = fd;
 	epollEvent.events = 0;
@@ -64,7 +62,6 @@ void EpollPoller::addToQueue(int fd, EventType event)
         Logs::appendLog("ERROR", "[addToQueue]\t\tError Adding Event " + filterType + " " + std::string(strerror(errno)));
     else
         Logs::appendLog("INFO", "[addToQueue]\t\tAdded Event " + filterType + " to " + std::to_string(fd));
-    lastActivity[fd] = time(NULL);
 }
 
 void EpollPoller::removeFromQueue(int fd, EventType event)
@@ -84,14 +81,14 @@ void EpollPoller::removeFromQueue(int fd, EventType event)
 	}
 	else
 	{
-		if (event == READ_EVENT)
+		if (event == READ_EVENT && this->fdState[fd].isRead)
 		{
 			op = EPOLL_CTL_DEL;
 			epollEvent.events = EPOLLIN | EPOLLHUP | EPOLLRDHUP;
 			filterType = "READ EVENT";
 			this->fdState[fd].isRead = false;
 		}
-		else if (event == WRITE_EVENT)
+		else if (event == WRITE_EVENT && this->fdState[fd].isWrite)
 		{
 			op = EPOLL_CTL_MOD;
 			epollEvent.events = EPOLLIN | EPOLLHUP | EPOLLRDHUP;
@@ -104,7 +101,8 @@ void EpollPoller::removeFromQueue(int fd, EventType event)
         Logs::appendLog("ERROR", "[removeFromQueue]\t\tError Removing Event " + std::string(strerror(errno)));
 	else
         Logs::appendLog("INFO", "[removeFromQueue]\t\tRemoved Event " + filterType + " from " + std::to_string(fd));
-	if (this->fdState[fd].isRead == false && this->fdState[fd].isWrite == false)
+
+	if (!this->fdState[fd].isRead && !this->fdState[fd].isWrite)
 		this->fdState.erase(fd);
 }
 
@@ -129,6 +127,8 @@ EventInfo EpollPoller::getEventInfo(int i)
         info.isRead = true;
     else if (this->events[i].events & EPOLLOUT)
         info.isWrite = true;
+	else
+        info.isError = true;
     return info;
 }
 

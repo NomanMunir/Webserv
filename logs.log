@@ -1,47 +1,158 @@
-[Tue Sep 10 11:59:23 2024] [INFO] [initializeSignalHandling]		 Initializing signal handling
-[Tue Sep 10 11:59:23 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
-[Tue Sep 10 11:59:24 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:25 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:26 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:27 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:28 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:29 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:30 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:31 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:32 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:33 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:34 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:35 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:36 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:37 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:38 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:39 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:40 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:41 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:42 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:43 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:44 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:45 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:46 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:47 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:48 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:49 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:50 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:51 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:52 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:53 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:54 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 50650
-[Tue Sep 10 11:59:54 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
-[Tue Sep 10 11:59:54 2024] [DEBUG] [recvHeader]		 Header received from client 6
-[Tue Sep 10 11:59:54 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 50652
-[Tue Sep 10 11:59:54 2024] [INFO] [handleCgiRead]		 Reading from CGI process 5650
-[Tue Sep 10 11:59:54 2024] [DEBUG] [handleCgiRead]		 CGI process 5650 is still running and waiting for more data
-[Tue Sep 10 11:59:54 2024] [INFO] [handleCgiRead]		 Reading from CGI process 5650
-[Tue Sep 10 11:59:54 2024] [INFO] [handleWrite]		 Handling write for client 6
-[Tue Sep 10 11:59:54 2024] [INFO] [handleWrite]		 Write completed for client 6
-[Tue Sep 10 11:59:55 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:56 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:57 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:58 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 11:59:59 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 12:00:00 2024] [DEBUG] [run]		 No events to process
+[Tue Sep 10 13:03:47 2024] [INFO] [initializeSignalHandling]		 Initializing signal handling
+[Tue Sep 10 13:03:47 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8080
+[Tue Sep 10 13:03:47 2024] [INFO] [addToQueue]		Added Event 5 0
+[Tue Sep 10 13:03:50 2024] [DEBUG] [run]		 No events to process
+[Tue Sep 10 13:03:53 2024] [DEBUG] [run]		 No events to process
+[Tue Sep 10 13:03:56 2024] [DEBUG] [run]		 No events to process
+[Tue Sep 10 13:03:57 2024] [INFO] [acceptClient]		 New connection, socket fd is [6], IP is : 127.0.0.1, port : 51314
+[Tue Sep 10 13:03:57 2024] [INFO] [addToQueue]		Added Event 6 0
+[Tue Sep 10 13:03:57 2024] [DEBUG] [readFromSocket]		 Reading from client socket 6
+[Tue Sep 10 13:03:57 2024] [DEBUG] [recvHeader]		 Header received from client 6
+[Tue Sep 10 13:03:57 2024] [INFO] [addToQueue]		Added Event 9 0
+[Tue Sep 10 13:03:57 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 51316
+[Tue Sep 10 13:03:57 2024] [INFO] [addToQueue]		Added Event 7 0
+[Tue Sep 10 13:03:57 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:03:57 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:03:58 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:03:58 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:03:59 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:03:59 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:00 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:00 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:01 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:01 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:02 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:02 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:03 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:03 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:04 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:04 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:05 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:05 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:06 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:06 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:07 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:07 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:08 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:08 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:09 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:09 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:10 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
+[Tue Sep 10 13:04:10 2024] [DEBUG] [recvHeader]		 Header received from client 7
+[Tue Sep 10 13:04:10 2024] [INFO] [addToQueue]		Added Event 11 0
+[Tue Sep 10 13:04:10 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8153
+[Tue Sep 10 13:04:10 2024] [DEBUG] [handleCgiRead]		 CGI process 8153 is still running and waiting for more data
+[Tue Sep 10 13:04:10 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8153
+[Tue Sep 10 13:04:10 2024] [INFO] [removeFromQueue]		Removed READ Event 11
+[Tue Sep 10 13:04:10 2024] [INFO] [addToQueue]		Added Event 7 1
+[Tue Sep 10 13:04:10 2024] [INFO] [handleWrite]		 Handling write for client 7
+[Tue Sep 10 13:04:10 2024] [INFO] [removeFromQueue]		Removed WRITE Event 7
+[Tue Sep 10 13:04:10 2024] [INFO] [handleWrite]		 Write completed for client 7
+[Tue Sep 10 13:04:10 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:10 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:11 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:11 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:12 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:12 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:13 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:13 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:14 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:14 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:15 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:15 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:16 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:16 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:17 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:17 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:18 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:18 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:19 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:19 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:20 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:20 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:21 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:21 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:22 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:22 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:23 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:23 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:24 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:24 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:25 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:25 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:26 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:26 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:27 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:27 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:28 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:28 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:29 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:29 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:30 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:30 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:31 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:31 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:32 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:32 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:33 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:33 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:34 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:34 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:35 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:35 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:36 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:36 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:37 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:37 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:38 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:38 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:39 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:39 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:40 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:40 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:41 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:41 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:42 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:42 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:43 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:43 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:44 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:44 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:45 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:45 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:46 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:46 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:47 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:47 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:48 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:48 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:49 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:49 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:50 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:50 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:51 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:51 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:52 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:52 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:53 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:53 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:54 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:54 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:55 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:55 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:56 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:56 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:57 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:57 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:58 2024] [INFO] [handleCgiRead]		 Reading from CGI process 8114
+[Tue Sep 10 13:04:58 2024] [DEBUG] [handleCgiRead]		 CGI process 8114 is still running and waiting for more data
+[Tue Sep 10 13:04:58 2024] [INFO] [checkTimeouts]		 CGI process for client 6 timed out
+[Tue Sep 10 13:04:58 2024] [INFO] [checkTimeouts]		 Killed CGI process 8114
+[Tue Sep 10 13:04:58 2024] [INFO] [removeFromQueue]		Removed READ Event 6
+[Tue Sep 10 13:04:58 2024] [INFO] [removeFromQueue]		Removed READ Event 9
+[Tue Sep 10 13:04:58 2024] [INFO] [addToQueue]		Added Event 6 1
+[Tue Sep 10 13:04:58 2024] [INFO] [handleWrite]		 Handling write for client 6
+[Tue Sep 10 13:04:58 2024] [INFO] [handleWrite]		 Connection closed for client [6] with IP 127.0.0.1 on port 8080
+[Tue Sep 10 13:04:58 2024] [INFO] [removeFromQueue]		Removed WRITE Event 6
+[Tue Sep 10 13:05:01 2024] [DEBUG] [run]		 No events to process
+[Tue Sep 10 13:05:04 2024] [DEBUG] [run]		 No events to process

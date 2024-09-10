@@ -22,6 +22,7 @@ KQueuePoller::~KQueuePoller() { close(this->kqueueFd); }
 void KQueuePoller::addToQueue(int fd, EventType ev)
 {
     struct kevent evSet;
+    std::memset(&evSet, 0, sizeof(evSet));
 
     if (ev == READ_EVENT)
     {
@@ -40,44 +41,43 @@ void KQueuePoller::addToQueue(int fd, EventType ev)
     }
 
     if (kevent(this->kqueueFd, &evSet, 1, NULL, 0, NULL) == -1)
-    {
         Logs::appendLog("ERROR", "[addToQueue]\t\tError Adding Event " + std::string(strerror(errno)));
-    }
+    else
+        Logs::appendLog("INFO", "[addToQueue]\t\tAdded Event " + std::to_string(fd) + " " + std::to_string(ev));
 }
 
 void KQueuePoller::removeFromQueue(int fd, EventType ev)
 {
     struct kevent evSet;
+    std::memset(&evSet, 0, sizeof(evSet));
 
     if (ev == READ_EVENT && fdState[fd].isRead)
     {
         EV_SET(&evSet, fd, EVFILT_READ, EV_DELETE, 0, 0, NULL);
         if (kevent(this->kqueueFd, &evSet, 1, NULL, 0, NULL) == -1)
-        {
             Logs::appendLog("ERROR", "[removeFromQueue]\t\tError Removing READ Event " + std::to_string(fd) + " " + std::string(strerror(errno)));
-        }
+        else
+            Logs::appendLog("INFO", "[removeFromQueue]\t\tRemoved READ Event " + std::to_string(fd));
         fdState[fd].isRead = false;
     }
     else if (ev == WRITE_EVENT && fdState[fd].isWrite)
     {
         EV_SET(&evSet, fd, EVFILT_WRITE, EV_DELETE, 0, 0, NULL);
         if (kevent(this->kqueueFd, &evSet, 1, NULL, 0, NULL) == -1)
-        {
             Logs::appendLog("ERROR", "[removeFromQueue]\t\tError Removing WRITE Event " + std::to_string(fd) + " " + std::string(strerror(errno)));
-        }
+        else
+            Logs::appendLog("INFO", "[removeFromQueue]\t\tRemoved WRITE Event " + std::to_string(fd));
         fdState[fd].isWrite = false;
     }
 
     if (!fdState[fd].isRead && !fdState[fd].isWrite)
-    {
         fdState.erase(fd);
-    }
 }
 
 int KQueuePoller::getNumOfEvents()
 {
     struct timespec timeout;
-    timeout.tv_sec = 1;
+    timeout.tv_sec = KEVENT_TIMEOUT_SEC;
     timeout.tv_nsec = 0;
     int nev = kevent(this->kqueueFd, NULL, 0, this->events, MAX_EVENTS, &timeout);
     return nev;
