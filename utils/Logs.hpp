@@ -6,6 +6,7 @@
 #include <string>
 #include <chrono>
 #include <ctime>
+#include "utils.hpp"
 
 class Logs
 {

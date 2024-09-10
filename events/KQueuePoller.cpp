@@ -23,16 +23,18 @@ void KQueuePoller::addToQueue(int fd, EventType ev)
 {
     struct kevent evSet;
     std::memset(&evSet, 0, sizeof(evSet));
-
+    std::string logMsg = "UNKNOWN EVENT";
     if (ev == READ_EVENT)
     {
         EV_SET(&evSet, fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
         fdState[fd].isRead = true;
+        logMsg = "READ EVENT";
     }
     else if (ev == WRITE_EVENT)
     {
         EV_SET(&evSet, fd, EVFILT_WRITE, EV_ADD, 0, 0, NULL);
         fdState[fd].isWrite = true;
+        logMsg = "WRITE EVENT";
     }
     else
     {
@@ -41,9 +43,9 @@ void KQueuePoller::addToQueue(int fd, EventType ev)
     }
 
     if (kevent(this->kqueueFd, &evSet, 1, NULL, 0, NULL) == -1)
-        Logs::appendLog("ERROR", "[addToQueue]\t\tError Adding Event " + std::string(strerror(errno)));
+        Logs::appendLog("ERROR", "[addToQueue]\t\tError Adding " + logMsg + " " + std::string(strerror(errno)));
     else
-        Logs::appendLog("INFO", "[addToQueue]\t\tAdded Event " + std::to_string(fd) + " " + std::to_string(ev));
+        Logs::appendLog("INFO", "[addToQueue]\t\tAdded Event " + logMsg + " " + std::to_string(fd));
 }
 
 void KQueuePoller::removeFromQueue(int fd, EventType ev)

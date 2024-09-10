@@ -1,36 +1,32 @@
-[Tue Sep 10 10:06:54 2024] [INFO] [initializeSignalHandling]		 Initializing signal handling
-[Tue Sep 10 10:06:55 2024] [INFO] [bindAndListen]		 Server is listening at http://127.0.0.1:8082
-[Tue Sep 10 10:06:55 2024] [INFO] [addToQueue]		Added Event READ EVENT to 5
-[Tue Sep 10 10:06:58 2024] [DEBUG] [run]		 No events to process
-[Tue Sep 10 10:06:59 2024] [INFO] [acceptClient]		 New connection, socket fd is [7], IP is : 127.0.0.1, port : 47844
-[Tue Sep 10 10:06:59 2024] [INFO] [addToQueue]		Added Event READ EVENT to 7
-[Tue Sep 10 10:06:59 2024] [DEBUG] [readFromSocket]		 Reading from client socket 7
-[Tue Sep 10 10:06:59 2024] [DEBUG] [recvHeader]		 Header received from client 7
-[Tue Sep 10 10:06:59 2024] [INFO] [addToQueue]		Added Event READ EVENT to 10
-[Tue Sep 10 10:06:59 2024] [INFO] [handleCgiRead]		 Reading from CGI process 7181
-[Tue Sep 10 10:06:59 2024] [DEBUG] [handleCgiRead]		 CGI process 7181 is still running and waiting for more data
-[Tue Sep 10 10:07:00 2024] [INFO] [handleCgiRead]		 Reading from CGI process 7181
-[Tue Sep 10 10:07:00 2024] [DEBUG] [handleCgiRead]		 CGI process 7181 is still running and waiting for more data
-[Tue Sep 10 10:07:01 2024] [INFO] [handleCgiRead]		 Reading from CGI process 7181
-[Tue Sep 10 10:07:01 2024] [DEBUG] [handleCgiRead]		 CGI process 7181 is still running and waiting for more data
-[Tue Sep 10 10:07:02 2024] [INFO] [handleCgiRead]		 Reading from CGI process 7181
-[Tue Sep 10 10:07:02 2024] [DEBUG] [handleCgiRead]		 CGI process 7181 is still running and waiting for more data
-[Tue Sep 10 10:07:03 2024] [INFO] [handleCgiRead]		 Reading from CGI process 7181
-[Tue Sep 10 10:07:03 2024] [DEBUG] [handleCgiRead]		 CGI process 7181 is still running and waiting for more data
-[Tue Sep 10 10:07:04 2024] [INFO] [handleCgiRead]		 Reading from CGI process 7181
-[Tue Sep 10 10:07:04 2024] [DEBUG] [handleCgiRead]		 CGI process 7181 is still running and waiting for more data
-[Tue Sep 10 10:07:05 2024] [INFO] [handleCgiRead]		 Reading from CGI process 7181
-[Tue Sep 10 10:07:05 2024] [DEBUG] [handleCgiRead]		 CGI process 7181 is still running and waiting for more data
-[Tue Sep 10 10:07:06 2024] [INFO] [handleCgiRead]		 Reading from CGI process 7181
-[Tue Sep 10 10:07:06 2024] [DEBUG] [handleCgiRead]		 CGI process 7181 is still running and waiting for more data
-[Tue Sep 10 10:07:06 2024] [INFO] [checkTimeouts]		 CGI process for client 7 timed out
-[Tue Sep 10 10:07:06 2024] [INFO] [checkTimeouts]		 Killed CGI process 7181
-[Tue Sep 10 10:07:06 2024] [INFO] [removeFromQueue]		Removed Event READ EVENT from 7
-[Tue Sep 10 10:07:06 2024] [INFO] [removeFromQueue]		Removed Event READ EVENT from 10
-[Tue Sep 10 10:07:06 2024] [INFO] [addToQueue]		Added Event WRITE EVENT to 7
-[Tue Sep 10 10:07:06 2024] [INFO] [handleWrite]		 Handling write for client 7
-[Tue Sep 10 10:07:06 2024] [INFO] [handleWrite]		 Connection closed for client [7] with IP 127.0.0.1 on port 8082
-[Tue Sep 10 10:07:06 2024] [INFO] [removeFromQueue]		Removed Event WRITE EVENT from 7
-[Tue Sep 10 10:07:06 2024] [ERROR] [removeFromQueue]		Event not found for fd 7
-[Tue Sep 10 10:07:06 2024] [ERROR] [removeFromQueue]		Error Removing Event Invalid argument
-[Tue Sep 10 10:07:10 2024] [DEBUG] [run]		 No events to process
+[Tue Sep 10 15:00:11 2024] [INFO]  [initializeSignalHandling]    Initializing signal handling
+[Tue Sep 10 15:00:11 2024] [INFO]  [bindAndListen]               Server is listening at http://127.0.0.1:8082
+[Tue Sep 10 15:00:11 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 5
+[Tue Sep 10 15:00:14 2024] [DEBUG] [run]                         No events to process
+[Tue Sep 10 15:00:17 2024] [DEBUG] [run]                         No events to process
+[Tue Sep 10 15:00:19 2024] [INFO]  [acceptClient]                New connection, socket fd is [6], IP is : 127.0.0.1, port : 53353
+[Tue Sep 10 15:00:19 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 6
+[Tue Sep 10 15:00:19 2024] [INFO]  [acceptClient]                New connection, socket fd is [7], IP is : 127.0.0.1, port : 53354
+[Tue Sep 10 15:00:19 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 7
+[Tue Sep 10 15:00:19 2024] [DEBUG] [readFromSocket]              Reading from client socket 6
+[Tue Sep 10 15:00:19 2024] [DEBUG] [recvHeader]                  Header received from client 6
+[Tue Sep 10 15:00:19 2024] [ERROR] [checkType]                   File not found ./favicon.ico
+[Tue Sep 10 15:00:19 2024] [INFO]  [removeFromQueue]             Removed READ Event 6
+[Tue Sep 10 15:00:19 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT 6
+[Tue Sep 10 15:00:19 2024] [INFO]  [handleWrite]                 Handling write for client 6
+[Tue Sep 10 15:00:19 2024] [INFO]  [handleWrite]                 Connection closed for client [6] with IP 127.0.0.1 on port 8082
+[Tue Sep 10 15:00:19 2024] [INFO]  [removeFromQueue]             Removed WRITE Event 6
+[Tue Sep 10 15:00:21 2024] [DEBUG] [handleDisconnection]         Handling disconnection for client 7
+[Tue Sep 10 15:00:21 2024] [INFO]  [removeFromQueue]             Removed READ Event 7
+[Tue Sep 10 15:00:24 2024] [DEBUG] [run]                         No events to process
+[Tue Sep 10 15:00:25 2024] [INFO]  [acceptClient]                New connection, socket fd is [6], IP is : 127.0.0.1, port : 53391
+[Tue Sep 10 15:00:25 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 6
+[Tue Sep 10 15:00:25 2024] [INFO]  [acceptClient]                New connection, socket fd is [8], IP is : 127.0.0.1, port : 53392
+[Tue Sep 10 15:00:25 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 8
+[Tue Sep 10 15:00:25 2024] [DEBUG] [readFromSocket]              Reading from client socket 6
+[Tue Sep 10 15:00:25 2024] [DEBUG] [recvHeader]                  Header received from client 6
+[Tue Sep 10 15:00:28 2024] [DEBUG] [run]                         No events to process
+[Tue Sep 10 15:00:31 2024] [DEBUG] [run]                         No events to process
+[Tue Sep 10 15:00:34 2024] [DEBUG] [run]                         No events to process
+[Tue Sep 10 15:00:34 2024] [INFO]  [checkTimeouts]               Client 8 timed out
+[Tue Sep 10 15:00:34 2024] [INFO]  [removeFromQueue]             Removed READ Event 8
+[Tue Sep 10 15:00:34 2024] [INFO]  [checkTimeouts]               CGI process for client 6 timed out

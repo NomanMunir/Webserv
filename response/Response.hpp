@@ -36,18 +36,23 @@ class Response
 		Response& operator=(const Response &c);
 
 		std::string getResponse();
-		void printResponse();
-		void setTargetServer(ServerConfig server);
-		void setTargetRoute(RouteConfig route);
-		void setIsConnectionClosed(bool isClosed);
+		void 		printResponse();
+		void 		setTargetServer(ServerConfig server);
+		void 		setTargetRoute(RouteConfig route);
+		void 		setIsConnectionClosed(bool isClosed);
 		ServerConfig getTargetServer();
 		RouteConfig getTargetRoute();
-		void sendError(std::string errorCode);
-		void handleResponse(Request &request);
+		void 		sendError(std::string errorCode);
+		void 		handleResponse(Request &request);
 
-		int getErrorCode() const;
-		void setErrorCode(int errorStatus, std::string errorMsg);
-		bool getIsConnectionClosed() const;
+		int 		getErrorCode() const;
+		void 		setErrorCode(int errorStatus, std::string errorMsg);
+		bool 		getIsConnectionClosed() const;
+
+		int 		checkType(std::string path);
+		std::string generateDirectoryListing(const std::string& dirPath, const std::string& uriPath);
+		bool 		checkDefaultFile(std::string &fullPath, bool isCGI);
+		void 		handleDirectory(std::string &fullPath, std::string &uri, bool isCGI);
 
 	private:
 		std::map<int, std::string> statusCodes;
@@ -64,17 +69,10 @@ class Response
 		void handleDELETE(bool isDelete, std::string &uri);
 		void handlePUT(bool isPut, std::string &uri, Body &body);
 
-
 		void defaultErrorPage(std::string errorCode);
 		void findErrorPage(std::string errorCode, std::map<std::string, std::string> errorPages);
 		bool isClosingCode(std::string errorCode);
 
-
-		int checkType(std::string path);
-
-		std::string generateDirectoryListing(const std::string& dirPath, const std::string& uriPath);
-		bool checkDefaultFile(std::string &fullPath);
-		void handleDirectory(std::string &fullPath, std::string &uri);
 		void generateResponseFromFile(std::string &path, bool isHEAD);
 		bool handleRedirect(bool isRedir, std::string redirect);
 

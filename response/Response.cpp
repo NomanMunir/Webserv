@@ -91,33 +91,45 @@ std::string resolvePath(std::string &fullPath, std::string &defaultFile)
     return (join(resolvedTokens, '/'));
 }
 
-bool Response::checkDefaultFile(std::string &fullPath)
+bool Response::checkDefaultFile(std::string &fullPath, bool isCGI)
 {
 	std::string newPath;
-	for (size_t i = 0; i < this->targetRoute.defaultFile.size(); i++)
+	std::vector <std::string> defaultFiles = targetRoute.defaultFile;
+	std::string root = targetRoute.root;
+	if (isCGI)
 	{
-		if (this->targetRoute.defaultFile[i][0] == '/')
-			newPath = this->targetRoute.defaultFile[i];
+		defaultFiles = targetServer.defaultFile;
+		root = targetServer.root;
+	}
+	for (size_t i = 0; i < defaultFiles.size(); i++)
+	{
+		if (defaultFiles[i][0] == '/')
+			newPath = defaultFiles[i];
 		else
-			newPath = resolvePath(fullPath, this->targetRoute.defaultFile[i]);
-		if (newPath.find(this->targetRoute.root) != 0)
+			newPath = resolvePath(fullPath, defaultFiles[i]);
+		if (newPath.find(root) != 0)
 		{
 			Logs::appendLog("Error", "What are you trying to access oui? " + newPath);
 			this->setErrorCode(403, "[checkDefaultFile]\t\t Access denied");
 		}
-		if (checkType(newPath) == IS_FILE)
+		if (isCGI)
+		{
+			fullPath = newPath;
+			return (true);
+		}
+		else if (checkType(newPath) == IS_FILE)
 			return (generateResponseFromFile(newPath, false), true);
 	}
 	return (false);
 }
 
-void Response::handleDirectory(std::string &fullPath, std::string &uri)
+void Response::handleDirectory(std::string &fullPath, std::string &uri, bool isCGI)
 {
 	if (fullPath.back() != '/')
 		this->setErrorCode(301, "[handleDirectory]\t\t Redirecting to directory with trailing slash");
-	if(checkDefaultFile(fullPath))
+	if(checkDefaultFile(fullPath, false))
 		return ;
-	if (this->targetRoute.directoryListing)
+	if (this->targetRoute.directoryListing || isCGI)
 	{
 		std::string body = generateDirectoryListing(fullPath, uri);
 		HttpResponse httpResponse;
@@ -214,7 +226,7 @@ void Response::handleGET(bool isGet, std::string &uri, bool isHEAD)
 		if (type == IS_FILE)
 			generateResponseFromFile(fullPath, isHEAD);
 		else if (type == IS_DIR)
-			handleDirectory(fullPath, uri);
+			handleDirectory(fullPath, uri, false);
 	}
 }
 
