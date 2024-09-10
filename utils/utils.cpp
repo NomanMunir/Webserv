@@ -12,6 +12,18 @@
 
 #include "utils.hpp"
 
+int isFileDir(const std::string &path)
+{
+    struct stat info;
+    if (stat(path.c_str(), &info) != 0)
+        return IS_ERR;
+    if (S_ISREG(info.st_mode))
+        return IS_FILE;
+    if (S_ISDIR(info.st_mode))
+        return IS_DIR;
+    return IS_ERR;
+}
+
 std::string generateFullPath(std::string rootPath, std::string path)
 {
 	if (rootPath.back() == '/')

@@ -23,6 +23,10 @@
 #include "Logs.hpp"
 #include <fcntl.h>
 
+#define IS_DIR 1
+#define IS_FILE 2
+#define IS_ERR 3
+
 struct ServerConfig;
 
 std::string trim(const std::string &s);
@@ -31,7 +35,7 @@ std::string trimChar(const std::string s, char c);
 void removeCharsFromString(std::string &str, std::string charsToRemove);
 std::vector<std::string> split(const std::string &s, char delimiter);
 void isFile(const std::string &path);
-// bool isFile(std::string &path);
+int isFileDir(const std::string &path);
 void printServers(std::vector<ServerConfig> servers);
 bool validateNumber(std::string key, std::string value);
 bool myFind(std::vector<std::string> &v, std::string &s);

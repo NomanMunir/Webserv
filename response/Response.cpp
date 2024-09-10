@@ -57,13 +57,12 @@ std::string Response::generateDirectoryListing(const std::string& dirPath, const
 
             if (filename == "." || filename == "..")
                 continue;
-			if (checkType(dirPath + filename) == IS_DIR)
+			if (isFileDir(dirPath + filename) == IS_DIR)
 				filename += "/";
             htmlContent += "<li><a href=\"" + newUriPath  + filename + "\">" + filename + "</a></li>";
         }
 
         htmlContent += "</ul><hr></body></html>";
-
         closedir(dir);
     }
 	else
@@ -112,22 +111,26 @@ bool Response::checkDefaultFile(std::string &fullPath, bool isCGI)
 			Logs::appendLog("Error", "What are you trying to access oui? " + newPath);
 			this->setErrorCode(403, "[checkDefaultFile]\t\t Access denied");
 		}
-		if (isCGI)
+		if (isFileDir(newPath) == IS_FILE && isCGI)
 		{
+			std::string fileExtension = newPath.substr(newPath.find_last_of("."));
+			if (std::find(targetServer.cgiExtensions.begin(), targetServer.cgiExtensions.end(), fileExtension) == targetServer.cgiExtensions.end())
+				continue;
+			std::cout << " [checkDefaultFile] newPath: " << newPath << std::endl;
 			fullPath = newPath;
 			return (true);
 		}
-		else if (checkType(newPath) == IS_FILE)
+		else if (isFileDir(newPath) == IS_FILE)
 			return (generateResponseFromFile(newPath, false), true);
 	}
 	return (false);
 }
 
-void Response::handleDirectory(std::string &fullPath, std::string &uri, bool isCGI)
+void Response::handleDirectory(std::string &fullPath, std::string &uri, bool &isCGI)
 {
 	if (fullPath.back() != '/')
 		this->setErrorCode(301, "[handleDirectory]\t\t Redirecting to directory with trailing slash");
-	if(checkDefaultFile(fullPath, false))
+	if(checkDefaultFile(fullPath, isCGI))
 		return ;
 	if (this->targetRoute.directoryListing || isCGI)
 	{
@@ -143,6 +146,7 @@ void Response::handleDirectory(std::string &fullPath, std::string &uri, bool isC
 		httpResponse.setHeader("Server", "LULUGINX");
 		httpResponse.setBody(body);
 		response = httpResponse.generateResponse();
+		isCGI = false;
 	}
 	else
 		this->setErrorCode(403, "[handleDirectory]\t\t Directory listing is disabled");
@@ -218,6 +222,7 @@ void Response::handleGET(bool isGet, std::string &uri, bool isHEAD)
 {
 	if (isGet)
 	{
+		bool flag = false;
 		std::string fullPath = generateFullPath(targetRoute.root, uri);
 
 		if(handleRedirect(this->targetRoute.redirect != "", targetRoute.redirect))
@@ -226,7 +231,7 @@ void Response::handleGET(bool isGet, std::string &uri, bool isHEAD)
 		if (type == IS_FILE)
 			generateResponseFromFile(fullPath, isHEAD);
 		else if (type == IS_DIR)
-			handleDirectory(fullPath, uri, false);
+			handleDirectory(fullPath, uri, flag);
 	}
 }
 

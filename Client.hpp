@@ -13,7 +13,7 @@
 #include "response/HttpResponse.hpp"
 #include <time.h>
 
-#define CLIENT_TIMEOUT 6
+#define CLIENT_TIMEOUT 60
 
 class Client {
 private:

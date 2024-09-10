@@ -52,7 +52,7 @@ class Response
 		int 		checkType(std::string path);
 		std::string generateDirectoryListing(const std::string& dirPath, const std::string& uriPath);
 		bool 		checkDefaultFile(std::string &fullPath, bool isCGI);
-		void 		handleDirectory(std::string &fullPath, std::string &uri, bool isCGI);
+		void 		handleDirectory(std::string &fullPath, std::string &uri, bool &isCGI);
 
 	private:
 		std::map<int, std::string> statusCodes;

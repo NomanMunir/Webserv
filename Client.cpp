@@ -183,12 +183,19 @@ void Client::handleCGI(ServerConfig &serverConfig)
 {
 	std::string uri = request.getHeaders().getValue("uri");
 	std::string fullPath = generateFullPath(serverConfig.root, uri);
-    std::cout << " [handleCGI] fullPath before : " << fullPath << std::endl;
+
     int type = response.checkType(fullPath);
+    bool isDirListing = true;
     if (type == IS_DIR)
-        response.handleDirectory(fullPath, uri, true);
-    std::cout << " [handleCGI] fullPath: " << fullPath << std::endl;
-	    // this->cgi.execute(this->_poller, this->request, this->response, fullPath);
+        response.handleDirectory(fullPath, uri, isDirListing);
+    if (isDirListing)
+        this->cgi.execute(this->_poller, this->request, this->response, fullPath);
+    else
+    {
+        this->writeBuffer = this->response.getResponse();
+        this->writePending = true;
+        this->readPending = false;
+    }
 }
 
 void Client::handleNormalResponse(ServerConfig &serverConfig)
