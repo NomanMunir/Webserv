@@ -291,7 +291,7 @@ void Server::checkTimeouts()
     {
         if (it->second.isTimeOut())
         {
-            if (it->second.isCGI())
+            if (it->second.getRequest().getIsCGI())
             {
                 Logs::appendLog("INFO", "[checkTimeouts]\t\t CGI process for client " + std::to_string(it->first) + " timed out");
                 kill(it->second.getCgi().getPid(), SIGKILL);

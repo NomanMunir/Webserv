@@ -5,11 +5,8 @@
 EpollPoller::EpollPoller()
 {
     this->epollFd = epoll_create1(0);
-    if (this->epollFd == -1)
-    {
-        Logs::appendLog("ERROR", "[EpollPoller]\t\t " + std::string(strerror(errno)));
-        throw std::exception();
-    }
+    if (this->epollFd < 0)
+		throw std::runtime_error("Failed to create epoll instance");
 }
 
 EpollPoller::~EpollPoller() { close(this->epollFd); }
@@ -78,6 +75,7 @@ void EpollPoller::removeFromQueue(int fd, EventType event)
 	if (this->fdState.find(fd) == this->fdState.end())
 	{
         Logs::appendLog("ERROR", "[removeFromQueue]\t\tEvent not found for fd " + std::to_string(fd));
+		// return ;
 	}
 	else
 	{

@@ -59,7 +59,7 @@ bool Client::isKeepAlive()
 Client::Client(const Client &c)
 : fd(c.fd), writeBuffer(c.writeBuffer),
 writePending(c.writePending), _poller(c._poller),
-request(c.request), response(c.response) {}
+request(c.request), response(c.response), lastActivity(c.lastActivity) {}
 
 Client& Client::operator=(const Client &c)
 {
@@ -70,6 +70,7 @@ Client& Client::operator=(const Client &c)
 	writePending = c.writePending;
 	request = c.request;
     _poller = c._poller;
+    lastActivity = c.lastActivity;
 	response = c.response;
 	return *this;
 }

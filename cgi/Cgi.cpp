@@ -132,6 +132,7 @@ void Cgi::execute(EventPoller *poller, Request &_request, Response &_response, s
         close(fd_in[1]);
 
         poller->addToQueue(fd_out[0], READ_EVENT);
+        freeEnv(_envp);
         // int status;
         // waitpid(pid, &status, WNOHANG);
         // checkCGITimeout(pid, _request, _response);
