@@ -1,72 +1,51 @@
-[Wed Sep 11 10:20:31 2024] [INFO]  [initializeSignalHandling]    Initializing signal handling
-[Wed Sep 11 10:20:31 2024] [INFO]  [bindAndListen]               Server is listening at http://127.0.0.1:8080
-[Wed Sep 11 10:20:31 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 5
-[Wed Sep 11 10:20:34 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:20:36 2024] [INFO]  [acceptClient]                New connection, socket fd is [6], IP is : 127.0.0.1, port : 60278
-[Wed Sep 11 10:20:36 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 6
-[Wed Sep 11 10:20:36 2024] [DEBUG] [readFromSocket]              Reading from client socket 6
-[Wed Sep 11 10:20:36 2024] [DEBUG] [recvHeader]                  Header received from client 6
-[Wed Sep 11 10:20:36 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT 6
-[Wed Sep 11 10:20:36 2024] [INFO]  [handleWrite]                 Handling write for client 6
-[Wed Sep 11 10:20:36 2024] [INFO]  [removeFromQueue]             Removed WRITE Event 6
-[Wed Sep 11 10:20:36 2024] [INFO]  [handleWrite]                 Write completed for client 6
-[Wed Sep 11 10:20:36 2024] [DEBUG] [handleDisconnection]         Handling disconnection for client 6
-[Wed Sep 11 10:20:36 2024] [INFO]  [removeFromQueue]             Removed READ Event 6
-[Wed Sep 11 10:20:39 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:20:42 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:20:45 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:20:48 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:20:51 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:20:54 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:20:57 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:21:00 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:21:03 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:21:06 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:21:09 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:21:12 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:21:15 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:21:18 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:21:21 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:21:24 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:21:27 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:21:30 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:21:33 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:21:36 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:21:39 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:21:42 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:21:45 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:21:48 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:21:51 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:21:54 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:21:57 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:22:00 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:22:03 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:22:06 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:22:09 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:22:12 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:22:15 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:22:18 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:22:21 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:22:24 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:22:27 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:22:30 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:22:33 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:22:36 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:22:39 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:22:41 2024] [INFO]  [acceptClient]                New connection, socket fd is [7], IP is : 127.0.0.1, port : 60291
-[Wed Sep 11 10:22:41 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 7
-[Wed Sep 11 10:22:41 2024] [DEBUG] [readFromSocket]              Reading from client socket 7
-[Wed Sep 11 10:22:41 2024] [DEBUG] [recvHeader]                  Header received from client 7
-[Wed Sep 11 10:22:41 2024] [ERROR] [parseHeaderBody]             Duplicate Header: Accept
-[Wed Sep 11 10:22:41 2024] [INFO]  [removeFromQueue]             Removed READ Event 7
-[Wed Sep 11 10:22:41 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT 7
-[Wed Sep 11 10:22:41 2024] [INFO]  [handleWrite]                 Handling write for client 7
-[Wed Sep 11 10:22:41 2024] [INFO]  [handleWrite]                 Connection closed for client [7] with IP 127.0.0.1 on port 8080
-[Wed Sep 11 10:22:41 2024] [INFO]  [removeFromQueue]             Removed WRITE Event 7
-[Wed Sep 11 10:22:44 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:22:47 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:22:50 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:22:53 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:22:56 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:22:59 2024] [DEBUG] [run]                         No events to process
-[Wed Sep 11 10:23:02 2024] [DEBUG] [run]                         No events to process
+[Wed Sep 11 16:48:28 2024] [INFO]  [initializeSignalHandling]    Initializing signal handling
+[Wed Sep 11 16:48:28 2024] [INFO]  [bindAndListen]               Server is listening at http://127.0.0.1:8080
+[Wed Sep 11 16:48:28 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 5
+[Wed Sep 11 16:48:30 2024] [INFO]  [acceptClient]                New connection, socket fd is [6], IP is : 127.0.0.1, port : 64530
+[Wed Sep 11 16:48:30 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 6
+[Wed Sep 11 16:48:30 2024] [DEBUG] [readFromSocket]              Reading from client socket 6
+[Wed Sep 11 16:48:30 2024] [DEBUG] [recvHeader]                  Header received from client 6
+[Wed Sep 11 16:48:30 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT 6
+[Wed Sep 11 16:48:30 2024] [INFO]  [acceptClient]                New connection, socket fd is [7], IP is : 127.0.0.1, port : 64532
+[Wed Sep 11 16:48:30 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 7
+[Wed Sep 11 16:48:30 2024] [INFO]  [handleWrite]                 Handling write for client 6
+[Wed Sep 11 16:48:30 2024] [INFO]  [removeFromQueue]             Removed WRITE Event 6
+[Wed Sep 11 16:48:30 2024] [INFO]  [handleWrite]                 Write completed for client 6
+[Wed Sep 11 16:48:53 2024] [INFO]  [acceptClient]                New connection, socket fd is [8], IP is : 127.0.0.1, port : 64537
+[Wed Sep 11 16:48:53 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 8
+[Wed Sep 11 16:48:53 2024] [DEBUG] [readFromSocket]              Reading from client socket 8
+[Wed Sep 11 16:48:53 2024] [DEBUG] [recvHeader]                  Header received from client 8
+[Wed Sep 11 16:48:53 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT 8
+[Wed Sep 11 16:48:53 2024] [INFO]  [handleWrite]                 Handling write for client 8
+[Wed Sep 11 16:48:53 2024] [INFO]  [removeFromQueue]             Removed WRITE Event 8
+[Wed Sep 11 16:48:53 2024] [INFO]  [handleWrite]                 Write completed for client 8
+[Wed Sep 11 16:48:53 2024] [DEBUG] [readFromSocket]              Reading from client socket 8
+[Wed Sep 11 16:48:53 2024] [DEBUG] [recvHeader]                  Header received from client 8
+[Wed Sep 11 16:48:53 2024] [DEBUG] [recvChunk]                   Chunked body received with size of 0
+[Wed Sep 11 16:48:53 2024] [ERROR] [handleRequest]               Method Not Allowed
+[Wed Sep 11 16:48:53 2024] [INFO]  [removeFromQueue]             Removed READ Event 8
+[Wed Sep 11 16:48:53 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT 8
+[Wed Sep 11 16:48:53 2024] [INFO]  [handleWrite]                 Handling write for client 8
+[Wed Sep 11 16:48:53 2024] [INFO]  [handleWrite]                 Connection closed for client [8] with IP 127.0.0.1 on port 8080
+[Wed Sep 11 16:48:53 2024] [INFO]  [removeFromQueue]             Removed WRITE Event 8
+[Wed Sep 11 16:48:53 2024] [INFO]  [acceptClient]                New connection, socket fd is [8], IP is : 127.0.0.1, port : 64538
+[Wed Sep 11 16:48:53 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 8
+[Wed Sep 11 16:48:53 2024] [DEBUG] [readFromSocket]              Reading from client socket 8
+[Wed Sep 11 16:48:53 2024] [DEBUG] [recvHeader]                  Header received from client 8
+[Wed Sep 11 16:48:53 2024] [ERROR] [handleRequest]               Method Not Allowed
+[Wed Sep 11 16:48:53 2024] [INFO]  [removeFromQueue]             Removed READ Event 8
+[Wed Sep 11 16:48:53 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT 8
+[Wed Sep 11 16:48:53 2024] [INFO]  [handleWrite]                 Handling write for client 8
+[Wed Sep 11 16:48:53 2024] [INFO]  [handleWrite]                 Connection closed for client [8] with IP 127.0.0.1 on port 8080
+[Wed Sep 11 16:48:53 2024] [INFO]  [removeFromQueue]             Removed WRITE Event 8
+[Wed Sep 11 16:48:53 2024] [INFO]  [acceptClient]                New connection, socket fd is [8], IP is : 127.0.0.1, port : 64539
+[Wed Sep 11 16:48:53 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 8
+[Wed Sep 11 16:48:53 2024] [DEBUG] [readFromSocket]              Reading from client socket 8
+[Wed Sep 11 16:48:53 2024] [DEBUG] [recvHeader]                  Header received from client 8
+[Wed Sep 11 16:48:53 2024] [ERROR] [handleDirectory]             Redirecting to directory with trailing slash
+[Wed Sep 11 16:48:53 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT 8
+[Wed Sep 11 16:48:53 2024] [INFO]  [handleWrite]                 Handling write for client 8
+[Wed Sep 11 16:48:53 2024] [INFO]  [removeFromQueue]             Removed WRITE Event 8
+[Wed Sep 11 16:48:53 2024] [INFO]  [handleWrite]                 Write completed for client 8
+[Wed Sep 11 16:48:53 2024] [DEBUG] [handleDisconnection]         Handling disconnection for client 8
+[Wed Sep 11 16:48:53 2024] [INFO]  [removeFromQueue]             Removed READ Event 8

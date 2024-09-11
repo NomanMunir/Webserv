@@ -150,12 +150,17 @@ void Client::recvHeader()
     {
         bytesRead = recv(this->fd, c, 1, 0);
         if (bytesRead < 0)
+        {
+            // std::cout << "[recvHeader]\t\t Error reading from client socket" << strerror(errno) << std::endl;
+            return ;
             response.setErrorCode(500, "[recvHeader]\t\t Error reading from client socket");
+        }
         else if (bytesRead == 0)
             response.setErrorCode(499, "[recvHeader]\t\t Client disconnected " + std::to_string(this->fd));
         else
             buffer.append(c, bytesRead);
     }
+    this->request.getHeaders().isComplete() = true;
     Logs::appendLog("DEBUG", "[recvHeader]\t\t Header received from client " + std::to_string(this->fd));
 }
 
@@ -182,7 +187,7 @@ void Client::recvBody()
 void Client::handleCGI(ServerConfig &serverConfig)
 {
 	std::string uri = request.getHeaders().getValue("uri");
-	std::string fullPath = generateFullPath(serverConfig.root, uri);
+	std::string fullPath = generateFullPath(serverConfig.root, uri, "/");
 
     int type = response.checkType(fullPath);
     bool isDirListing = true;
@@ -211,7 +216,8 @@ void Client::readFromSocket(ServerConfig &serverConfig)
     try
     {
         Logs::appendLog("DEBUG", "[readFromSocket]\t\t Reading from client socket " + std::to_string(this->fd));
-        recvHeader();
+        while(!this->request.getHeaders().isComplete())
+            recvHeader();
         this->request.getHeaders().parseHeader(this->response);
 
         if (this->request.isBodyExist(serverConfig, this->response, this->fd))
@@ -221,6 +227,7 @@ void Client::readFromSocket(ServerConfig &serverConfig)
             else
                 recvBody();
         }
+        // std::cout << "body content: " << this->request.getBody().getContent() << "\n";
         this->request.handleRequest(serverConfig, this->response);
         if (this->request.isComplete())
         {
@@ -234,6 +241,7 @@ void Client::readFromSocket(ServerConfig &serverConfig)
     {
         std::cout << e.what() << std::endl;
         Logs::appendLog("ERROR", e.what());
+        // this->_poller->removeFromQueue(this->fd, READ_EVENT);
         handleNormalResponse(serverConfig);
     }
 }

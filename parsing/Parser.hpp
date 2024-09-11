@@ -37,6 +37,7 @@ struct RouteConfig
 	std::vector<std::string> defaultFile;
 	std::string uploadDir;
 	std::vector<std::string> cgiExtensions;
+	std::string routeName;
 };
 
 struct ServerConfig

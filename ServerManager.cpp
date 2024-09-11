@@ -112,7 +112,7 @@ void ServerManager::run()
 		}
 		if (numOfEvents == 0)
 		{
-			Logs::appendLog("DEBUG", "[run]\t\t No events to process");
+			// Logs::appendLog("DEBUG", "[run]\t\t No events to process");
             continue;
 		}
 

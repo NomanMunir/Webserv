@@ -75,5 +75,4 @@
 [*] infinit loop when we distrupt the connection.
 [*] timeout for server
 [*] mime file.
-
-[ ] Duplicate Headers.
+[*] Duplicate Headers.

@@ -150,15 +150,16 @@ void Headers::isDuplicateHeader(const std::string &key, Response &structResponse
 void Headers::parseHeaderBody(std::istringstream &iss, Response &structResponse)
 {
 	std::string line;
+	std::cout << " rawHeaders: " << rawHeaders << std::endl;
 	while (std::getline(iss, line, '\n'))
 	{
 		if (line.empty() || isspace(line[0]))
-			structResponse.setErrorCode(400,"[parseHeaderBody]\t\t Invalid Header " + line);
+			structResponse.setErrorCode(400,"[parseHeaderBody]\t\t Invalid Header1 " + line);
 		if (line.find('\r') != line.size() - 1)
-			structResponse.setErrorCode(400, "[parseHeaderBody]\t\t Invalid Header " + line);
+			structResponse.setErrorCode(400, "[parseHeaderBody]\t\t Invalid Header2 " + line);
 		size_t pos = line.find(":");
 		if (pos == std::string::npos)
-			structResponse.setErrorCode(400, "[parseHeaderBody]\t\t Invalid Header " + line);
+			structResponse.setErrorCode(400, "[parseHeaderBody]\t\t Invalid Header3 " + line);
 		if (isspace(line[pos - 1]))
 			structResponse.setErrorCode(400, "[parseHeaderBody]\t\t Invalid Header space before : " + line);
 		std::string key = trim(line.substr(0, pos));
@@ -220,7 +221,7 @@ std::map<std::string, std::string> &Headers::getQuery()
 	return this->query;
 }
 
-bool Headers::isComplete() const
+bool& Headers::isComplete()
 {
 	return complete;
 }

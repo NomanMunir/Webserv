@@ -40,7 +40,7 @@ void Body::printBody()
 	std::cout << "Body: " << body << std::endl;
 }
 
-bool Body::isComplete() const
+bool& Body::isComplete()
 {
 	return complete;
 }

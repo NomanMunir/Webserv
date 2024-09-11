@@ -56,6 +56,7 @@ bool Request::chooseRoute(std::string uri, ServerConfig server, RouteConfig &tar
 		if (postRoute != "")
 		{
 			targetRoute = routes[postRoute];
+			targetRoute.routeName = postRoute;
 			return true;
 		}
 		return false;
@@ -68,6 +69,7 @@ bool Request::chooseRoute(std::string uri, ServerConfig server, RouteConfig &tar
 		if (route != "")
 		{
 			targetRoute = routes[route];
+			targetRoute.routeName = route;
 			return true;
 		}
 		uri = uri.substr(0, uri.find_last_of('/'));
@@ -75,6 +77,7 @@ bool Request::chooseRoute(std::string uri, ServerConfig server, RouteConfig &tar
 	if (routes.find("/") != routes.end())
 	{
 		targetRoute = routes["/"];
+		targetRoute.routeName = "/";
 		return true;
 	}
 	return false;

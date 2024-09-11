@@ -44,5 +44,5 @@ void initializeVector(std::vector<std::string> &v, std::string s[], size_t size)
 std::string getStatusMsg(std::string errorCode);
 std::string getCurrentTimestamp();
 std::string toUpperCase(const std::string &str);
-std::string generateFullPath(std::string rootPath, std::string path);
+std::string generateFullPath(std::string rootPath, std::string path, std::string routeName);
 #endif // UTILS_HPP	

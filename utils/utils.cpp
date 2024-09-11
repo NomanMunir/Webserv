@@ -24,13 +24,26 @@ int isFileDir(const std::string &path)
     return IS_ERR;
 }
 
-std::string generateFullPath(std::string rootPath, std::string path)
+std::string generateFullPath(std::string rootPath, std::string path, std::string routeName)
 {
+    bool flag = false;
+    if (path.back() == '/')
+        flag = true;
+    
+    if (routeName.front() == '/')
+        routeName.erase(0, 1);
+    if (path.front() == '/')
+        path.erase(0, 1);
+    std::string newUri = path.erase(0, routeName.size());
 	if (rootPath.back() == '/')
 		rootPath.pop_back();
-	if (path.front() == '/')
-		path.erase(0, 1);
-	std::string fullPath = rootPath + "/" + path;
+    std::string fullPath = rootPath;
+	// if (newUri.front() == '/')
+	// 	newUri.erase(0, 1);
+    if (!newUri.empty())
+        fullPath = rootPath + "/" + newUri;
+    if (fullPath.back() != '/' && flag)
+        fullPath += "/";
 	return fullPath;
 }
 

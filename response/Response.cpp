@@ -223,8 +223,8 @@ void Response::handleGET(bool isGet, std::string &uri, bool isHEAD)
 	if (isGet)
 	{
 		bool flag = false;
-		std::string fullPath = generateFullPath(targetRoute.root, uri);
-
+		std::string fullPath = generateFullPath(targetRoute.root, uri, targetRoute.routeName);
+		std::cout << "fullPath: " << fullPath << std::endl;
 		if(handleRedirect(this->targetRoute.redirect != "", targetRoute.redirect))
 			return;
 		int type = checkType(fullPath);
@@ -237,7 +237,6 @@ void Response::handleGET(bool isGet, std::string &uri, bool isHEAD)
 
 void Response::handlePOST(bool isPost, std::string &uri, Body &body)
 {
-
 	if (isPost)
 	{
 		HttpResponse httpResponse;
@@ -245,7 +244,7 @@ void Response::handlePOST(bool isPost, std::string &uri, Body &body)
 		if (body.getContent().empty())
 			return (setErrorCode(400, "[handlePOST]\t\t Empty body"));
 
-		std::string fullPath = generateFullPath(targetRoute.root, uri);
+		std::string fullPath = generateFullPath(targetRoute.root, uri, targetRoute.routeName);
 		std::ofstream file(fullPath + getCurrentTimestamp());
 		if (!file.is_open())
 			return (setErrorCode(500, "[handlePOST]\t\t Could not open file"));
@@ -273,7 +272,7 @@ void Response::handleDELETE(bool isDelete, std::string &uri)
 	if (isDelete)
 	{
 		HttpResponse httpResponse;
-		std::string fullPath = generateFullPath(targetRoute.root, uri);
+		std::string fullPath = generateFullPath(targetRoute.root, uri, targetRoute.routeName);
 
 		int type = checkType(fullPath);
 		if (type == IS_DIR)
@@ -299,7 +298,7 @@ void Response::handlePUT(bool isPut, std::string &uri, Body &body)
 	if (isPut)
 	{
 		HttpResponse httpResponse;
-		std::string fullPath = generateFullPath(targetRoute.root, uri);
+		std::string fullPath = generateFullPath(targetRoute.root, uri, targetRoute.routeName);
 
 		if (body.getContent().empty())
 			return (setErrorCode(400, "[handlePUT]\t\t Empty body"));

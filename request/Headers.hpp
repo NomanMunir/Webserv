@@ -40,7 +40,7 @@ class Headers
 		std::map<std::string, std::string> &getQuery();
 
 		void parseHeader(Response &structResponse);
-		bool isComplete() const;
+		bool& isComplete();
 
 	private:
 		std::map<std::string, std::string> headers;

@@ -32,7 +32,7 @@ class Body
 
 		void printBody();
 		std::string& getContent();
-		bool isComplete() const;
+		bool& isComplete();
 		void setIsChunked(bool isChunked);
 
 		std::string& getBody();

@@ -36,7 +36,7 @@ void Validation::validateRouteMap(std::map<std::string, RouteConfig> &routeMap)
 		try
 		{
 			isDirectory(it->second.root);
-			isDirectory(it->second.root + "/" + it->first);
+			// isDirectory(it->second.root + "/" + it->first);
 			isDirectory(it->second.uploadDir);
 		}
 		catch (const std::exception &e)
