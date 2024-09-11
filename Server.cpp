@@ -307,6 +307,7 @@ void Server::checkTimeouts()
             {
                 Logs::appendLog("INFO", "[checkTimeouts]\t\t Client " + std::to_string(it->first) + " timed out");
                 this->_poller->removeFromQueue(it->first, READ_EVENT);
+                close(it->first);
                 it = clients.erase(it);
             }
         }

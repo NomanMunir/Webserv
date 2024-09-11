@@ -74,5 +74,6 @@
 [*] signals
 [*] infinit loop when we distrupt the connection.
 [*] timeout for server
+[*] mime file.
 
-[ ] mime file.
+[ ] Duplicate Headers.

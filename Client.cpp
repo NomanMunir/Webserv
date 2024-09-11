@@ -242,10 +242,7 @@ bool Client::isTimeOut()
 {
     time_t now = time(NULL);
     if (now - lastActivity > CLIENT_TIMEOUT)
-    {
-        std::cout << "Client " << fd << " timed out" << std::endl;
         return true;
-    }
     return false;
 }
 

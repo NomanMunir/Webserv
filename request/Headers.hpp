@@ -50,6 +50,8 @@ class Headers
 		
 		void parseFirstLine(Response &structResponse, std::istringstream &iss);
 		void parseHeaderBody(std::istringstream &iss, Response &structResponse);
+		void isDuplicateHeader(const std::string &key, Response &structResponse);
+
 
 
 		void validateAscii(Response &structResponse);

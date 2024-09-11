@@ -127,10 +127,29 @@ void Headers::parseFirstLine(Response &structResponse, std::istringstream &iss)
     headers["Version"] = tokens[2];
 }
 
+void Headers::isDuplicateHeader(const std::string &key, Response &structResponse)
+{
+    std::string criticalHeaders[] = {
+        "Host", "Content-Length", "Transfer-Encoding",
+        "Connection", "Expect", "User-Agent", 
+        "Accept-Encoding", "Accept", "Date", 
+        "Authorization", "Referer"
+    };
+
+    for (int i = 0; i < sizeof(criticalHeaders) / sizeof(criticalHeaders[0]); ++i)
+    {
+        if (key == criticalHeaders[i])
+        {
+            if (this->headers.find(key) != this->headers.end())
+                structResponse.setErrorCode(400, "[parseHeaderBody]\t\t Duplicate Header: " + key);
+        }
+    }
+}
+
+
 void Headers::parseHeaderBody(std::istringstream &iss, Response &structResponse)
 {
 	std::string line;
-
 	while (std::getline(iss, line, '\n'))
 	{
 		if (line.empty() || isspace(line[0]))
@@ -144,6 +163,8 @@ void Headers::parseHeaderBody(std::istringstream &iss, Response &structResponse)
 			structResponse.setErrorCode(400, "[parseHeaderBody]\t\t Invalid Header space before : " + line);
 		std::string key = trim(line.substr(0, pos));
 		std::string value = trim(line.substr(pos + 1));
+
+		isDuplicateHeader(key, structResponse);
 		if (key == "Host")
 		{
 			std::vector<std::string> tokens = split(value, ':');
@@ -175,6 +196,7 @@ void Headers::validateAscii(Response &structResponse)
 			return (structResponse.setErrorCode(400, "[validateAscii]\t\t Invalid ASCII"));
 	}
 }
+
 void Headers::parseHeader(Response &structResponse)
 {
 	std::string requestHeader = rawHeaders.substr(0, rawHeaders.size() - 2); // -2 is removing the last \r\n
