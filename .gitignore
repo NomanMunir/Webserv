@@ -6,4 +6,3 @@ uploads
 */*/*/*.o
 webserv
 out
-logs.log

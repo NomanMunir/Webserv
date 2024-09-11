@@ -128,8 +128,8 @@ bool Response::checkDefaultFile(std::string &fullPath, bool isCGI)
 
 void Response::handleDirectory(std::string &fullPath, std::string &uri, bool &isCGI)
 {
-	if (fullPath.back() != '/')
-		this->setErrorCode(301, "[handleDirectory]\t\t Redirecting to directory with trailing slash");
+	// if (fullPath.back() != '/')
+	// 	this->setErrorCode(301, "[handleDirectory]\t\t Redirecting to directory with trailing slash");
 	if(checkDefaultFile(fullPath, isCGI))
 		return ;
 	if (this->targetRoute.directoryListing || isCGI)
@@ -149,13 +149,14 @@ void Response::handleDirectory(std::string &fullPath, std::string &uri, bool &is
 		isCGI = false;
 	}
 	else
-		this->setErrorCode(403, "[handleDirectory]\t\t Directory listing is disabled");
+		this->setErrorCode(404, "[handleDirectory]\t\t Directory listing is disabled");
 }
 
 void Response::generateResponseFromFile(std::string &path, bool isHEAD)
 {
 	std::ifstream file(path.c_str());
 	std::stringstream buffer;
+	std::cout << "path: " << path << std::endl;
 	buffer << file.rdbuf();
 	std::string body = buffer.str();
 	std::string extention = path.substr(path.find_last_of(".") + 1);

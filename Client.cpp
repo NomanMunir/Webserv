@@ -77,67 +77,90 @@ Client& Client::operator=(const Client &c)
 
 void Client::recvChunk()
 {
-    char buffer;
-    std::string chunkSizeStr;
-    int chunkSize = 0;
+    char buffer[1024];
+    int bytesRead;
     std::string &bodyContent = this->request.getBody().getContent();
-
     while (true)
     {
-        while (true)
-        {
-            if (recv(this->fd, &buffer, 1, 0) <= 0)
-                throw std::runtime_error("[recvChunk]\t\t Error reading from client socket " + std::to_string(this->fd) + " " + strerror(errno));
-
-            if (buffer == '\r')
-            {
-                // Expecting '\n' after '\r'
-                if (recv(this->fd, &buffer, 1, 0) <= 0)
-                    throw std::runtime_error("[recvChunk]\t\t Error reading from client socket " + std::to_string(this->fd) + " " + strerror(errno));
-                if (buffer == '\n')
-                    break;
-                else
-                    throw std::runtime_error("[recvChunk]\t\t Malformed chunk size");
-            }
-            chunkSizeStr.append(1, buffer);
-        }
-
-        // Convert chunk size from hex to integer
-        try
-        {
-            chunkSize = std::stoi(chunkSizeStr, 0, 16);
-        }
-        catch (const std::exception &e)
-        {
-            throw std::runtime_error("[recvChunk]\t\t Error converting chunk size to integer");
-        }
-
-        if (chunkSize == 0)
-        {
-            if (recv(this->fd, &buffer, 1, 0) <= 0 || buffer != '\r')
-                throw std::runtime_error("[recvChunk]\t\t Malformed final chunk");
-            if (recv(this->fd, &buffer, 1, 0) <= 0 || buffer != '\n')
-                throw std::runtime_error("[recvChunk]\t\t Malformed final chunk");
+        bytesRead = recv(this->fd, buffer, 1024, 0);
+        if (bytesRead < 0)
+            return ;
+            // throw std::runtime_error("[recvChunk]\t\t Error reading from client socket " + std::to_string(this->fd) + " " + strerror(errno));
+        else if (bytesRead == 0)
+            throw std::runtime_error("[recvChunk]\t\t Client disconnected " + std::to_string(this->fd));
+        bodyContent.append(buffer, bytesRead);
+        std::cout << "body content: " << bodyContent << std::endl;
+        if (bodyContent.find("\r\n\r\n") != std::string::npos)
             break;
-        }
-
-        std::string chunkData(chunkSize, 0);
-        int bytesRead = recv(this->fd, &chunkData[0], chunkSize, 0);
-        if (bytesRead != chunkSize)
-            throw std::runtime_error("[recvChunk]\t\t Error reading chunk data");
-        bodyContent += chunkData;
-
-        // Read the trailing CRLF after the chunk data
-        if (recv(this->fd, &buffer, 1, 0) <= 0 || buffer != '\r')
-            throw std::runtime_error("[recvChunk]\t\t Malformed chunk data");
-        if (recv(this->fd, &buffer, 1, 0) <= 0 || buffer != '\n')
-            throw std::runtime_error("[recvChunk]\t\t Malformed chunk data");
-
-        chunkSizeStr.clear();
     }
-
     Logs::appendLog("DEBUG", "[recvChunk]\t\t Chunked body received with size of " + std::to_string(bodyContent.size()));
+    this->request.getBody().isComplete() = true;
 }
+
+// void Client::recvChunk()
+// {
+//     char buffer;
+//     std::string chunkSizeStr;
+//     int chunkSize = 0;
+//     std::string &bodyContent = this->request.getBody().getContent();
+
+//     while (true)
+//     {
+//         while (true)
+//         {
+//             if (recv(this->fd, &buffer, 1, 0) < 0)
+                
+//                 // throw std::runtime_error("[recvChunk]\t\t Error reading from client socket " + std::to_string(this->fd) + " " + strerror(errno));
+
+//             if (buffer == '\r')
+//             {
+//                 // Expecting '\n' after '\r'
+//                 if (recv(this->fd, &buffer, 1, 0) <= 0)
+//                     throw std::runtime_error("[recvChunk]\t\t Error reading from client socket " + std::to_string(this->fd) + " " + strerror(errno));
+//                 if (buffer == '\n')
+//                     break;
+//                 else
+//                     throw std::runtime_error("[recvChunk]\t\t Malformed chunk size");
+//             }
+//             chunkSizeStr.append(1, buffer);
+//         }
+
+//         // Convert chunk size from hex to integer
+//         try
+//         {
+//             chunkSize = std::stoi(chunkSizeStr, 0, 16);
+//         }
+//         catch (const std::exception &e)
+//         {
+//             throw std::runtime_error("[recvChunk]\t\t Error converting chunk size to integer");
+//         }
+
+//         if (chunkSize == 0)
+//         {
+//             if (recv(this->fd, &buffer, 1, 0) <= 0 || buffer != '\r')
+//                 throw std::runtime_error("[recvChunk]\t\t Malformed final chunk");
+//             if (recv(this->fd, &buffer, 1, 0) <= 0 || buffer != '\n')
+//                 throw std::runtime_error("[recvChunk]\t\t Malformed final chunk");
+//             break;
+//         }
+
+//         std::string chunkData(chunkSize, 0);
+//         int bytesRead = recv(this->fd, &chunkData[0], chunkSize, 0);
+//         if (bytesRead != chunkSize)
+//             throw std::runtime_error("[recvChunk]\t\t Error reading chunk data");
+//         bodyContent += chunkData;
+
+//         // Read the trailing CRLF after the chunk data
+//         if (recv(this->fd, &buffer, 1, 0) <= 0 || buffer != '\r')
+//             throw std::runtime_error("[recvChunk]\t\t Malformed chunk data");
+//         if (recv(this->fd, &buffer, 1, 0) <= 0 || buffer != '\n')
+//             throw std::runtime_error("[recvChunk]\t\t Malformed chunk data");
+
+//         chunkSizeStr.clear();
+//     }
+
+//     Logs::appendLog("DEBUG", "[recvChunk]\t\t Chunked body received with size of " + std::to_string(bodyContent.size()));
+// }
 
 
 void Client::recvHeader()
@@ -175,13 +198,15 @@ void Client::recvBody()
     {
         bytesRead = recv(this->fd, c, 1, 0);
         if (bytesRead < 0)
-            response.setErrorCode(500, "[recvBody]\t\t Error reading from client socket");
+            return ;
+            // response.setErrorCode(500, "[recvBody]\t\t Error reading from client socket");
         else if (bytesRead == 0)
             response.setErrorCode(499, "[recvBody]\t\t Client disconnected " + std::to_string(this->fd));
         else
             buffer.append(c, bytesRead);
     }
     Logs::appendLog("DEBUG", "[recvBody]\t\t Body received from client " + std::to_string(this->fd));
+    this->request.getBody().isComplete() = true;
 }
 
 void Client::handleCGI(ServerConfig &serverConfig)
@@ -222,10 +247,13 @@ void Client::readFromSocket(ServerConfig &serverConfig)
 
         if (this->request.isBodyExist(serverConfig, this->response, this->fd))
         {
-            if (this->request.isChunked())
-                recvChunk();
-            else
-                recvBody();
+            while(!this->request.getBody().isComplete())
+            {
+                if (this->request.isChunked())
+                    recvChunk();
+                else
+                    recvBody();
+            }
         }
         // std::cout << "body content: " << this->request.getBody().getContent() << "\n";
         this->request.handleRequest(serverConfig, this->response);

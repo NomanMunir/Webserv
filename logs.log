@@ -1,51 +1,106 @@
-[Wed Sep 11 16:48:28 2024] [INFO]  [initializeSignalHandling]    Initializing signal handling
-[Wed Sep 11 16:48:28 2024] [INFO]  [bindAndListen]               Server is listening at http://127.0.0.1:8080
-[Wed Sep 11 16:48:28 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 5
-[Wed Sep 11 16:48:30 2024] [INFO]  [acceptClient]                New connection, socket fd is [6], IP is : 127.0.0.1, port : 64530
-[Wed Sep 11 16:48:30 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 6
-[Wed Sep 11 16:48:30 2024] [DEBUG] [readFromSocket]              Reading from client socket 6
-[Wed Sep 11 16:48:30 2024] [DEBUG] [recvHeader]                  Header received from client 6
-[Wed Sep 11 16:48:30 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT 6
-[Wed Sep 11 16:48:30 2024] [INFO]  [acceptClient]                New connection, socket fd is [7], IP is : 127.0.0.1, port : 64532
-[Wed Sep 11 16:48:30 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 7
-[Wed Sep 11 16:48:30 2024] [INFO]  [handleWrite]                 Handling write for client 6
-[Wed Sep 11 16:48:30 2024] [INFO]  [removeFromQueue]             Removed WRITE Event 6
-[Wed Sep 11 16:48:30 2024] [INFO]  [handleWrite]                 Write completed for client 6
-[Wed Sep 11 16:48:53 2024] [INFO]  [acceptClient]                New connection, socket fd is [8], IP is : 127.0.0.1, port : 64537
-[Wed Sep 11 16:48:53 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 8
-[Wed Sep 11 16:48:53 2024] [DEBUG] [readFromSocket]              Reading from client socket 8
-[Wed Sep 11 16:48:53 2024] [DEBUG] [recvHeader]                  Header received from client 8
-[Wed Sep 11 16:48:53 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT 8
-[Wed Sep 11 16:48:53 2024] [INFO]  [handleWrite]                 Handling write for client 8
-[Wed Sep 11 16:48:53 2024] [INFO]  [removeFromQueue]             Removed WRITE Event 8
-[Wed Sep 11 16:48:53 2024] [INFO]  [handleWrite]                 Write completed for client 8
-[Wed Sep 11 16:48:53 2024] [DEBUG] [readFromSocket]              Reading from client socket 8
-[Wed Sep 11 16:48:53 2024] [DEBUG] [recvHeader]                  Header received from client 8
-[Wed Sep 11 16:48:53 2024] [DEBUG] [recvChunk]                   Chunked body received with size of 0
-[Wed Sep 11 16:48:53 2024] [ERROR] [handleRequest]               Method Not Allowed
-[Wed Sep 11 16:48:53 2024] [INFO]  [removeFromQueue]             Removed READ Event 8
-[Wed Sep 11 16:48:53 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT 8
-[Wed Sep 11 16:48:53 2024] [INFO]  [handleWrite]                 Handling write for client 8
-[Wed Sep 11 16:48:53 2024] [INFO]  [handleWrite]                 Connection closed for client [8] with IP 127.0.0.1 on port 8080
-[Wed Sep 11 16:48:53 2024] [INFO]  [removeFromQueue]             Removed WRITE Event 8
-[Wed Sep 11 16:48:53 2024] [INFO]  [acceptClient]                New connection, socket fd is [8], IP is : 127.0.0.1, port : 64538
-[Wed Sep 11 16:48:53 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 8
-[Wed Sep 11 16:48:53 2024] [DEBUG] [readFromSocket]              Reading from client socket 8
-[Wed Sep 11 16:48:53 2024] [DEBUG] [recvHeader]                  Header received from client 8
-[Wed Sep 11 16:48:53 2024] [ERROR] [handleRequest]               Method Not Allowed
-[Wed Sep 11 16:48:53 2024] [INFO]  [removeFromQueue]             Removed READ Event 8
-[Wed Sep 11 16:48:53 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT 8
-[Wed Sep 11 16:48:53 2024] [INFO]  [handleWrite]                 Handling write for client 8
-[Wed Sep 11 16:48:53 2024] [INFO]  [handleWrite]                 Connection closed for client [8] with IP 127.0.0.1 on port 8080
-[Wed Sep 11 16:48:53 2024] [INFO]  [removeFromQueue]             Removed WRITE Event 8
-[Wed Sep 11 16:48:53 2024] [INFO]  [acceptClient]                New connection, socket fd is [8], IP is : 127.0.0.1, port : 64539
-[Wed Sep 11 16:48:53 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 8
-[Wed Sep 11 16:48:53 2024] [DEBUG] [readFromSocket]              Reading from client socket 8
-[Wed Sep 11 16:48:53 2024] [DEBUG] [recvHeader]                  Header received from client 8
-[Wed Sep 11 16:48:53 2024] [ERROR] [handleDirectory]             Redirecting to directory with trailing slash
-[Wed Sep 11 16:48:53 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT 8
-[Wed Sep 11 16:48:53 2024] [INFO]  [handleWrite]                 Handling write for client 8
-[Wed Sep 11 16:48:53 2024] [INFO]  [removeFromQueue]             Removed WRITE Event 8
-[Wed Sep 11 16:48:53 2024] [INFO]  [handleWrite]                 Write completed for client 8
-[Wed Sep 11 16:48:53 2024] [DEBUG] [handleDisconnection]         Handling disconnection for client 8
-[Wed Sep 11 16:48:53 2024] [INFO]  [removeFromQueue]             Removed READ Event 8
+[Wed Sep 11 17:48:09 2024] [INFO]  [initializeSignalHandling]    Initializing signal handling
+[Wed Sep 11 17:48:09 2024] [INFO]  [bindAndListen]               Server is listening at http://127.0.0.1:8080
+[Wed Sep 11 17:48:09 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 5
+[Wed Sep 11 17:48:14 2024] [INFO]  [acceptClient]                New connection, socket fd is [6], IP is : 127.0.0.1, port : 49186
+[Wed Sep 11 17:48:14 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [readFromSocket]              Reading from client socket 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [recvHeader]                  Header received from client 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [handleWrite]                 Handling write for client 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [removeFromQueue]             Removed WRITE Event 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [handleWrite]                 Write completed for client 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [readFromSocket]              Reading from client socket 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [recvHeader]                  Header received from client 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [recvChunk]                   Chunked body received with size of 5
+[Wed Sep 11 17:48:14 2024] [ERROR] [handleRequest]               Method Not Allowed
+[Wed Sep 11 17:48:14 2024] [INFO]  [removeFromQueue]             Removed READ Event 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [handleWrite]                 Handling write for client 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [handleWrite]                 Connection closed for client [6] with IP 127.0.0.1 on port 8080
+[Wed Sep 11 17:48:14 2024] [INFO]  [removeFromQueue]             Removed WRITE Event 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [acceptClient]                New connection, socket fd is [6], IP is : 127.0.0.1, port : 49187
+[Wed Sep 11 17:48:14 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [readFromSocket]              Reading from client socket 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [recvHeader]                  Header received from client 6
+[Wed Sep 11 17:48:14 2024] [ERROR] [handleRequest]               Method Not Allowed
+[Wed Sep 11 17:48:14 2024] [INFO]  [removeFromQueue]             Removed READ Event 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [handleWrite]                 Handling write for client 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [handleWrite]                 Connection closed for client [6] with IP 127.0.0.1 on port 8080
+[Wed Sep 11 17:48:14 2024] [INFO]  [removeFromQueue]             Removed WRITE Event 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [acceptClient]                New connection, socket fd is [6], IP is : 127.0.0.1, port : 49188
+[Wed Sep 11 17:48:14 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [readFromSocket]              Reading from client socket 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [recvHeader]                  Header received from client 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [handleWrite]                 Handling write for client 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [removeFromQueue]             Removed WRITE Event 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [handleWrite]                 Write completed for client 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [readFromSocket]              Reading from client socket 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [recvHeader]                  Header received from client 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [handleWrite]                 Handling write for client 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [removeFromQueue]             Removed WRITE Event 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [handleWrite]                 Write completed for client 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [readFromSocket]              Reading from client socket 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [recvHeader]                  Header received from client 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [handleWrite]                 Handling write for client 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [removeFromQueue]             Removed WRITE Event 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [handleWrite]                 Write completed for client 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [readFromSocket]              Reading from client socket 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [recvHeader]                  Header received from client 6
+[Wed Sep 11 17:48:14 2024] [ERROR] [checkType]                   File not found /Users/nmunir/Desktop/Webserv/YoupiBanane//oulalala
+[Wed Sep 11 17:48:14 2024] [INFO]  [removeFromQueue]             Removed READ Event 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [handleWrite]                 Handling write for client 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [handleWrite]                 Connection closed for client [6] with IP 127.0.0.1 on port 8080
+[Wed Sep 11 17:48:14 2024] [INFO]  [removeFromQueue]             Removed WRITE Event 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [acceptClient]                New connection, socket fd is [6], IP is : 127.0.0.1, port : 49189
+[Wed Sep 11 17:48:14 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [readFromSocket]              Reading from client socket 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [recvHeader]                  Header received from client 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [handleWrite]                 Handling write for client 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [removeFromQueue]             Removed WRITE Event 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [handleWrite]                 Write completed for client 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [readFromSocket]              Reading from client socket 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [recvHeader]                  Header received from client 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [handleWrite]                 Handling write for client 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [removeFromQueue]             Removed WRITE Event 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [handleWrite]                 Write completed for client 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [readFromSocket]              Reading from client socket 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [recvHeader]                  Header received from client 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [handleWrite]                 Handling write for client 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [removeFromQueue]             Removed WRITE Event 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [handleWrite]                 Write completed for client 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [readFromSocket]              Reading from client socket 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [recvHeader]                  Header received from client 6
+[Wed Sep 11 17:48:14 2024] [ERROR] [checkType]                   File not found /Users/nmunir/Desktop/Webserv/YoupiBanane//nop/other.pouac
+[Wed Sep 11 17:48:14 2024] [INFO]  [removeFromQueue]             Removed READ Event 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [handleWrite]                 Handling write for client 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [handleWrite]                 Connection closed for client [6] with IP 127.0.0.1 on port 8080
+[Wed Sep 11 17:48:14 2024] [INFO]  [removeFromQueue]             Removed WRITE Event 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [acceptClient]                New connection, socket fd is [6], IP is : 127.0.0.1, port : 49190
+[Wed Sep 11 17:48:14 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [readFromSocket]              Reading from client socket 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [recvHeader]                  Header received from client 6
+[Wed Sep 11 17:48:14 2024] [ERROR] [handleDirectory]             Directory listing is disabled
+[Wed Sep 11 17:48:14 2024] [INFO]  [removeFromQueue]             Removed READ Event 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [handleWrite]                 Handling write for client 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [handleWrite]                 Connection closed for client [6] with IP 127.0.0.1 on port 8080
+[Wed Sep 11 17:48:14 2024] [INFO]  [removeFromQueue]             Removed WRITE Event 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [acceptClient]                New connection, socket fd is [6], IP is : 127.0.0.1, port : 49191
+[Wed Sep 11 17:48:14 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [readFromSocket]              Reading from client socket 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [recvHeader]                  Header received from client 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [handleWrite]                 Handling write for client 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [removeFromQueue]             Removed WRITE Event 6
+[Wed Sep 11 17:48:14 2024] [INFO]  [handleWrite]                 Write completed for client 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [readFromSocket]              Reading from client socket 6
+[Wed Sep 11 17:48:14 2024] [DEBUG] [recvHeader]                  Header received from client 6
