@@ -10,10 +10,9 @@ def handle_get_request():
     query_string = os.getenv('QUERY_STRING', '')
 
     # Parse the query string into a dictionary
-    params = urllib.parse.parse_qs(query_string)
+    params = urllib.parse.parse_qs(query_string
 
     # Generate HTML response
-    print("Content-Type: text/html")
     print()
     print("<html><body>")
     print("<h1>GET Request Received</h1>")
@@ -28,7 +27,6 @@ def handle_post_request():
     form = cgi.FieldStorage()
 
     # Generate HTML response
-    print("Content-Type: text/html")
     print()
     print("<html><body>")
     print("<h1>POST Request Received</h1>")

@@ -128,8 +128,8 @@ bool Response::checkDefaultFile(std::string &fullPath, bool isCGI)
 
 void Response::handleDirectory(std::string &fullPath, std::string &uri, bool &isCGI)
 {
-	// if (fullPath.back() != '/')
-	// 	this->setErrorCode(301, "[handleDirectory]\t\t Redirecting to directory with trailing slash");
+	if (fullPath.back() != '/')
+		this->setErrorCode(301, "[handleDirectory]\t\t Redirecting to directory with trailing slash");
 	if(checkDefaultFile(fullPath, isCGI))
 		return ;
 	if (this->targetRoute.directoryListing || isCGI)
@@ -149,7 +149,7 @@ void Response::handleDirectory(std::string &fullPath, std::string &uri, bool &is
 		isCGI = false;
 	}
 	else
-		this->setErrorCode(404, "[handleDirectory]\t\t Directory listing is disabled");
+		this->setErrorCode(403, "[handleDirectory]\t\t Directory listing is disabled");
 }
 
 void Response::generateResponseFromFile(std::string &path, bool isHEAD)
@@ -246,6 +246,9 @@ void Response::handlePOST(bool isPost, std::string &uri, Body &body)
 			return (setErrorCode(400, "[handlePOST]\t\t Empty body"));
 
 		std::string fullPath = generateFullPath(targetRoute.root, uri, targetRoute.routeName);
+		std::cout << "fullPath: " << fullPath << std::endl;
+		if (fullPath.back() != '/')
+			fullPath += "/";
 		std::ofstream file(fullPath + getCurrentTimestamp());
 		if (!file.is_open())
 			return (setErrorCode(500, "[handlePOST]\t\t Could not open file"));
@@ -365,7 +368,6 @@ void Response::defaultErrorPage(std::string errorCode)
 	httpResponse.setBody(body);
 	response = httpResponse.generateResponse();
 }
-
 
 void Response::findErrorPage(std::string errorCode, std::map<std::string, std::string> errorPages)
 {

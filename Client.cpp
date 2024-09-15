@@ -77,24 +77,25 @@ Client& Client::operator=(const Client &c)
 
 void Client::recvChunk()
 {
-    char buffer[1024];
+    char buffer[10250];
     int bytesRead;
     std::string &bodyContent = this->request.getBody().getContent();
     while (true)
     {
-        bytesRead = recv(this->fd, buffer, 1024, 0);
+        bytesRead = recv(this->fd, buffer, 10250, 0);
         if (bytesRead < 0)
-            return ;
-            // throw std::runtime_error("[recvChunk]\t\t Error reading from client socket " + std::to_string(this->fd) + " " + strerror(errno));
+            throw std::runtime_error("[recvChunk]\t\t Error reading from client socket " + std::to_string(this->fd) + " " + strerror(errno));
         else if (bytesRead == 0)
             throw std::runtime_error("[recvChunk]\t\t Client disconnected " + std::to_string(this->fd));
         bodyContent.append(buffer, bytesRead);
-        std::cout << "body content: " << bodyContent << std::endl;
-        if (bodyContent.find("\r\n\r\n") != std::string::npos)
+        // buffer[bytesRead] = '\0';
+        // std::cout << "body content: " << buffer << std::endl;
+        if (bodyContent.find("0\r\n\r\n") != std::string::npos)
             break;
     }
     Logs::appendLog("DEBUG", "[recvChunk]\t\t Chunked body received with size of " + std::to_string(bodyContent.size()));
     this->request.getBody().isComplete() = true;
+       
 }
 
 // void Client::recvChunk()
@@ -173,11 +174,7 @@ void Client::recvHeader()
     {
         bytesRead = recv(this->fd, c, 1, 0);
         if (bytesRead < 0)
-        {
-            // std::cout << "[recvHeader]\t\t Error reading from client socket" << strerror(errno) << std::endl;
-            return ;
             response.setErrorCode(500, "[recvHeader]\t\t Error reading from client socket");
-        }
         else if (bytesRead == 0)
             response.setErrorCode(499, "[recvHeader]\t\t Client disconnected " + std::to_string(this->fd));
         else
@@ -198,8 +195,7 @@ void Client::recvBody()
     {
         bytesRead = recv(this->fd, c, 1, 0);
         if (bytesRead < 0)
-            return ;
-            // response.setErrorCode(500, "[recvBody]\t\t Error reading from client socket");
+            response.setErrorCode(500, "[recvBody]\t\t Error reading from client socket");
         else if (bytesRead == 0)
             response.setErrorCode(499, "[recvBody]\t\t Client disconnected " + std::to_string(this->fd));
         else

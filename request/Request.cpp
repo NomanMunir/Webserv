@@ -33,6 +33,7 @@ ServerConfig chooseServer(Parser &configFile, std::string requestHost, std::stri
 std::string findMatch(std::string &path, std::map<std::string, RouteConfig> routes)
 {
 	std::map<std::string, RouteConfig>::iterator it = routes.begin();
+
 	for (; it != routes.end(); it++)
 	{
 		std::string route =  trimChar(it->first, '/');

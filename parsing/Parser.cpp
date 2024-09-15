@@ -98,6 +98,7 @@ void Parser::setServerBlock(std::string &key, std::string &value)
         std::vector<std::string> errorPages = split(value, ' ');
         for (size_t i = 0; i < errorPages.size() - 1; i++)
             serverConfig.errorPages[errorPages[i]] = errorPages.back();
+        
     }
     else if (key == "root")
         serverConfig.root = value;

@@ -53,6 +53,7 @@ class Response
 		std::string generateDirectoryListing(const std::string& dirPath, const std::string& uriPath);
 		bool 		checkDefaultFile(std::string &fullPath, bool isCGI);
 		void 		handleDirectory(std::string &fullPath, std::string &uri, bool &isCGI);
+		void 		defaultErrorPage(std::string errorCode);
 
 	private:
 		std::map<int, std::string> statusCodes;
@@ -69,7 +70,6 @@ class Response
 		void handleDELETE(bool isDelete, std::string &uri);
 		void handlePUT(bool isPut, std::string &uri, Body &body);
 
-		void defaultErrorPage(std::string errorCode);
 		void findErrorPage(std::string errorCode, std::map<std::string, std::string> errorPages);
 		bool isClosingCode(std::string errorCode);
 

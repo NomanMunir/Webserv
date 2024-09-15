@@ -227,6 +227,17 @@ void Server::handleCgiRead(int clientFd)
         this->_poller->removeFromQueue(client.getCgi().getReadFd(), READ_EVENT);
         close(client.getCgi().getReadFd());
 
+        if (client.getCgi().output.empty())
+        {
+            Logs::appendLog("ERROR", "[handleCgiRead]\t\t CGI process " + std::to_string(client.getCgi().getPid()) + " returned no data");
+            kill(client.getCgi().getPid(), SIGKILL);
+            Logs::appendLog("INFO", "[checkTimeouts]\t\t Killed CGI process " + std::to_string(client.getCgi().getPid()));
+            generateCGIError(client, "502");
+            this->_poller->addToQueue(clientFd, WRITE_EVENT);
+            client.getResponse().setIsConnectionClosed(true);
+            return;
+        }
+
         HttpResponse httpResponse;
         httpResponse.setVersion("HTTP/1.1");
         httpResponse.setStatusCode(200);
@@ -249,37 +260,40 @@ void Server::handleCgiRead(int clientFd)
     }
     else if (count < 0)
     {
-        if (errno == EAGAIN || errno == EWOULDBLOCK)
+        int status;
+        pid_t result = waitpid(client.getCgi().getPid(), &status, WNOHANG);
+
+        if (result == 0)
         {
             Logs::appendLog("DEBUG", "[handleCgiRead]\t\t CGI process " + std::to_string(client.getCgi().getPid()) + " is still running and waiting for more data");
             return;
         }
-        else
+        else if (result > 0)
         {
             Logs::appendLog("ERROR", "[handleCgiRead]\t\t Error reading from CGI " + std::string(strerror(errno)));
             kill(client.getCgi().getPid(), SIGKILL);
             Logs::appendLog("INFO", "[checkTimeouts]\t\t Killed CGI process " + std::to_string(client.getCgi().getPid()));
             this->_poller->removeFromQueue(clientFd, READ_EVENT);
             this->_poller->removeFromQueue(client.getCgi().getReadFd(), READ_EVENT);
-            generateCGIError(client);
+            generateCGIError(client, "502");
             this->_poller->addToQueue(clientFd, WRITE_EVENT);
             client.getResponse().setIsConnectionClosed(true);
+        }
+        else
+        {
+            Logs::appendLog("ERROR", "[handleCgiRead]\t\t Error reading from CGI " + std::string(strerror(errno)));
+            this->_poller->removeFromQueue(clientFd, READ_EVENT);
+            close(clientFd);
+            clients.erase(clientFd);
         }
     }
 }
 
-void Server::generateCGIError(Client &client)
+void Server::generateCGIError(Client &client, std::string errorCode)
 {
-    HttpResponse httpResponse;
-    httpResponse.setVersion("HTTP/1.1");
-    httpResponse.setStatusCode(504);
-    httpResponse.setHeader("Content-Type", "text/html");
-    httpResponse.setHeader("Connection", "close");
-    httpResponse.setHeader("Server", "LULUGINX");
-    std::string body = "<html><body><h1>504 Gateway Timeout</h1></body></html>";
-    httpResponse.setBody(body);
-    httpResponse.setHeader("Content-Length", std::to_string(body.size()));
-    client.getWriteBuffer() = httpResponse.generateResponse();
+    client.getResponse().defaultErrorPage(errorCode);
+
+    client.getWriteBuffer() = client.getResponse().getResponse();
     client.setWritePending(true);
 }
 
@@ -298,7 +312,7 @@ void Server::checkTimeouts()
                 Logs::appendLog("INFO", "[checkTimeouts]\t\t Killed CGI process " + std::to_string(it->second.getCgi().getPid()));
                 this->_poller->removeFromQueue(it->first, READ_EVENT);
                 this->_poller->removeFromQueue(it->second.getCgi().getReadFd(), READ_EVENT);
-                generateCGIError(it->second);
+                generateCGIError(it->second, "504");
                 this->_poller->addToQueue(it->first, WRITE_EVENT);
                 it->second.getResponse().setIsConnectionClosed(true);
                 ++it;
@@ -320,6 +334,22 @@ void Server::handleDisconnection(int fd)
 {
     Logs::appendLog("DEBUG", "[handleDisconnection]\t\t Handling disconnection for client " + std::to_string(fd));
     this->_poller->removeFromQueue(fd, READ_EVENT);
+    if (clients[fd].isCGI())
+    {
+        Logs::appendLog("INFO", "[handleDisconnection]\t\t CGI process for client " + std::to_string(fd) + " is killed");
+        kill(clients[fd].getCgi().getPid(), SIGKILL);
+        Logs::appendLog("INFO", "[handleDisconnection]\t\t Killed CGI process " + std::to_string(clients[fd].getCgi().getPid()));
+        this->_poller->removeFromQueue(fd, READ_EVENT);
+        this->_poller->removeFromQueue(clients[fd].getCgi().getReadFd(), READ_EVENT);
+        generateCGIError(clients[fd], "504");
+        this->_poller->addToQueue(fd, WRITE_EVENT);
+        clients[fd].getResponse().setIsConnectionClosed(true);
+    }
+    else
+    {
+        close(fd);
+        clients.erase(fd);
+    }
     clients.erase(fd);
 }
 

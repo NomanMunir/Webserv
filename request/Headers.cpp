@@ -110,7 +110,7 @@ void Headers::parseFirstLine(Response &structResponse, std::istringstream &iss)
 	if (tokens.size() != 3)
 		structResponse.setErrorCode(400, "[parseFirstLine]\t\t Invalid First Line");
 	if (!validateMethod(tokens[0]))
-		structResponse.setErrorCode(405, "[parseFirstLine]\t\t Method Not Allowed");
+		structResponse.setErrorCode(501, "[parseFirstLine]\t\t Method Not Implemented");
 	if (!validateUri(tokens[1]))
 		structResponse.setErrorCode(400,"[parseFirstLine]\t\t Invalid URI");
 	if (tokens[1].size() > URI_LIMIT)
@@ -150,7 +150,6 @@ void Headers::isDuplicateHeader(const std::string &key, Response &structResponse
 void Headers::parseHeaderBody(std::istringstream &iss, Response &structResponse)
 {
 	std::string line;
-	std::cout << " rawHeaders: " << rawHeaders << std::endl;
 	while (std::getline(iss, line, '\n'))
 	{
 		if (line.empty() || isspace(line[0]))

@@ -76,3 +76,9 @@
 [*] timeout for server
 [*] mime file.
 [*] Duplicate Headers.
+
+
+[ ] Setup multiple servers with different hostnames (use something like: curl --resolve example.com:80:127.0.0.1 http://example.com/).
+[ ] flags
+[ ] cgi killing pc
+[ ] cgi extension

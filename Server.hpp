@@ -61,7 +61,7 @@ private:
     void bindAndListen();
     void socketInUse();
     void initSocket();
-    void generateCGIError(Client &client);
+    void generateCGIError(Client &client, std::string errorCode);
 };
 
 #endif // SERVER_HPP
