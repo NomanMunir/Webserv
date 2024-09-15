@@ -1,8 +1,18 @@
-[Sun Sep 15 14:40:25 2024] [INFO]  [initializeSignalHandling]    Initializing signal handling
-[Sun Sep 15 14:40:25 2024] [INFO]  [bindAndListen]               Server is listening at http://127.0.0.1:8080
-[Sun Sep 15 14:40:25 2024] [ERROR] [bindAndListen]               Error binding socket Address already in use
-[Sun Sep 15 14:40:25 2024] [INFO]  [bindAndListen]               Server is listening at http://127.0.0.1:8001
-[Sun Sep 15 14:40:25 2024] [INFO]  [bindAndListen]               Server is listening at http://127.0.0.1:8002
-[Sun Sep 15 14:40:25 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 5
-[Sun Sep 15 14:40:25 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 6
-[Sun Sep 15 14:40:25 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 7
+[Sun Sep 15 13:21:57 2024] [INFO]  [initializeSignalHandling]    Initializing signal handling
+[Sun Sep 15 13:21:57 2024] [INFO]  [bindAndListen]               Server is listening at http://127.0.0.1:8080
+[Sun Sep 15 13:21:57 2024] [INFO]  [addToQueue]                  Added Event READ EVENT to 5
+[Sun Sep 15 13:22:17 2024] [INFO]  [acceptClient]                New connection, socket fd is [7], IP is : 127.0.0.1, port : 57800
+[Sun Sep 15 13:22:17 2024] [INFO]  [addToQueue]                  Added Event READ EVENT to 7
+[Sun Sep 15 13:22:17 2024] [DEBUG] [readFromSocket]              Reading from client socket 7
+[Sun Sep 15 13:22:17 2024] [DEBUG] [recvHeader]                  Header received from client 7
+[Sun Sep 15 13:22:17 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT to 7
+[Sun Sep 15 13:22:17 2024] [INFO]  [handleWrite]                 Handling write for client 7
+[Sun Sep 15 13:22:17 2024] [INFO]  [removeFromQueue]             Removed Event WRITE EVENT from 7
+[Sun Sep 15 13:22:17 2024] [INFO]  [handleWrite]                 Write completed for client 7
+[Sun Sep 15 13:22:17 2024] [DEBUG] [readFromSocket]              Reading from client socket 7
+[Sun Sep 15 13:22:17 2024] [ERROR] [recvHeader]                  Client disconnected 7
+[Sun Sep 15 13:22:17 2024] [INFO]  [removeFromQueue]             Removed Event READ EVENT from 7
+[Sun Sep 15 13:22:17 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT to 7
+[Sun Sep 15 13:22:17 2024] [INFO]  [handleWrite]                 Handling write for client 7
+[Sun Sep 15 13:22:17 2024] [INFO]  [handleWrite]                 Connection closed for client [7] with IP 127.0.0.1 on port 8080
+[Sun Sep 15 13:22:17 2024] [INFO]  [removeFromQueue]             Removed Event WRITE EVENT from 7

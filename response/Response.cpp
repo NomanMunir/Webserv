@@ -156,7 +156,6 @@ void Response::generateResponseFromFile(std::string &path, bool isHEAD)
 {
 	std::ifstream file(path.c_str());
 	std::stringstream buffer;
-	std::cout << "path: " << path << std::endl;
 	buffer << file.rdbuf();
 	std::string body = buffer.str();
 	std::string extention = path.substr(path.find_last_of(".") + 1);
@@ -225,7 +224,6 @@ void Response::handleGET(bool isGet, std::string &uri, bool isHEAD)
 	{
 		bool flag = false;
 		std::string fullPath = generateFullPath(targetRoute.root, uri, targetRoute.routeName);
-		std::cout << "fullPath: " << fullPath << std::endl;
 		if(handleRedirect(this->targetRoute.redirect != "", targetRoute.redirect))
 			return;
 		int type = checkType(fullPath);
@@ -246,7 +244,6 @@ void Response::handlePOST(bool isPost, std::string &uri, Body &body)
 			return (setErrorCode(400, "[handlePOST]\t\t Empty body"));
 
 		std::string fullPath = generateFullPath(targetRoute.root, uri, targetRoute.routeName);
-		std::cout << "fullPath: " << fullPath << std::endl;
 		if (fullPath.back() != '/')
 			fullPath += "/";
 		std::ofstream file(fullPath + getCurrentTimestamp());
@@ -360,9 +357,9 @@ void Response::defaultErrorPage(std::string errorCode)
 		httpResponse.setHeader("Connection", "close");
 	else
 	{
+		httpResponse.setHeader("Connection", "keep-alive");
 		if (this->cookies != "")
 			httpResponse.setHeader("Set-Cookie", this->cookies);
-		httpResponse.setHeader("Connection", "keep-alive");
 	}
 	httpResponse.setHeader("Server", "LULUGINX");
 	httpResponse.setBody(body);

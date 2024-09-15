@@ -1,6 +1,10 @@
 #include "HttpResponse.hpp"
 
-HttpResponse::HttpResponse() { }
+HttpResponse::HttpResponse()
+{
+	this->setHeader("Server", "LULUGINX");
+	this->setHeader("Connection", "keep-alive");
+}
 
 HttpResponse::~HttpResponse() { }
 

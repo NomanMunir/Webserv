@@ -72,11 +72,7 @@ void EpollPoller::removeFromQueue(int fd, EventType event)
 
 	std::string		filterType = "UNKNOWN EVENT";
 	
-	if (this->fdState.find(fd) == this->fdState.end())
-	{
-        Logs::appendLog("ERROR", "[removeFromQueue]\t\tEvent not found for fd " + std::to_string(fd));
-		// return ;
-	}
+	if (this->fdState.find(fd) == this->fdState.end())	return ;
 	else
 	{
 		if (event == READ_EVENT && this->fdState[fd].isRead)
@@ -93,6 +89,13 @@ void EpollPoller::removeFromQueue(int fd, EventType event)
 			filterType = "WRITE EVENT";
 			this->fdState[fd].isWrite = false;
 		}
+		// else
+		// {
+		// 	Logs::appendLog("ERROR", "[removeFromQueue]\t\tInvalid Event Type");
+		// 	if (!this->fdState[fd].isRead && !this->fdState[fd].isWrite)
+		// 		this->fdState.erase(fd);		
+		// 	return ;
+		// }
 	}
 
 	if (epoll_ctl(this->epollFd, op, fd, &epollEvent) < 0)

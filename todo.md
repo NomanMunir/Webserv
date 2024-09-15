@@ -82,3 +82,6 @@
 [ ] flags
 [ ] cgi killing pc
 [ ] cgi extension
+
+[ ] [ERROR] [removeFromQueue]             Event not found for fd 7
+[ ] [ERROR] [removeFromQueue]             Error Removing Event Invalid argument

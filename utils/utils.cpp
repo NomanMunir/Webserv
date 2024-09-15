@@ -26,7 +26,6 @@ int isFileDir(const std::string &path)
 
 std::string generateFullPath(std::string rootPath, std::string path, std::string routeName)
 {
-    std::cout << "uri : " << path << std::endl;
     bool flag = false;
     if (path.back() == '/')
         flag = true;

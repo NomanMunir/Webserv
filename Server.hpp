@@ -21,6 +21,7 @@
 #include "Client.hpp"
 #include "events/EventPoller.hpp"
 #include "utils/Logs.hpp"
+#include <sys/wait.h>
 
 class Server
 {
