@@ -205,6 +205,22 @@ void Client::recvBody()
     this->request.getBody().isComplete() = true;
 }
 
+void Client::validateCgiExtensions(std::vector<std::string> cgiExtensions, std::string fullPath)
+{
+    int pos = fullPath.find_last_of('.');
+    if (pos == std::string::npos)
+        this->response.setErrorCode(403, "[validateCgiExtensions]\t\t CGI extension not allowed");
+    std::string extensions = fullPath.substr(pos);
+	if (cgiExtensions.size() == 1 && cgiExtensions[0] == "")
+        this->response.setErrorCode(403, "[validateCgiExtensions]\t\t CGI extension not allowed");
+    for (size_t i = 0; i < cgiExtensions.size(); i++)
+    {
+        if (extensions == cgiExtensions[i])
+            return;
+    }
+    this->response.setErrorCode(403, "[validateCgiExtensions]\t\t CGI extension not allowed");
+}
+
 void Client::handleCGI(ServerConfig &serverConfig)
 {
 	std::string uri = request.getHeaders().getValue("uri");
@@ -215,7 +231,10 @@ void Client::handleCGI(ServerConfig &serverConfig)
     if (type == IS_DIR)
         response.handleDirectory(fullPath, uri, isDirListing);
     if (isDirListing)
+    {
+        validateCgiExtensions(serverConfig.cgiExtensions, fullPath);
         this->cgi.execute(this->_poller, this->request, this->response, fullPath);
+    }
     else
     {
         this->writeBuffer = this->response.getResponse();
