@@ -57,9 +57,11 @@ bool Client::isKeepAlive()
 }
 
 Client::Client(const Client &c)
-: fd(c.fd), writeBuffer(c.writeBuffer),
-writePending(c.writePending), _poller(c._poller),
-request(c.request), response(c.response), lastActivity(c.lastActivity) {}
+: _poller(c._poller), request(c.request), response(c.response), cgi(c.cgi), 
+fd(c.fd), lastActivity(c.lastActivity), writeBuffer(c.writeBuffer),
+writePending(c.writePending), readPending(c.readPending), keepAlive(c.keepAlive),
+env(c.env)
+  {}
 
 Client& Client::operator=(const Client &c)
 {
@@ -84,16 +86,16 @@ void Client::recvChunk()
     {
         bytesRead = recv(this->fd, buffer, 10250, 0);
         if (bytesRead < 0)
-            throw std::runtime_error("[recvChunk]\t\t Error reading from client socket " + std::to_string(this->fd) + " " + strerror(errno));
+            throw std::runtime_error("[recvChunk]\t\t Error reading from client socket " + intToString(this->fd) + " " + strerror(errno));
         else if (bytesRead == 0)
-            throw std::runtime_error("[recvChunk]\t\t Client disconnected " + std::to_string(this->fd));
+            throw std::runtime_error("[recvChunk]\t\t Client disconnected " + intToString(this->fd));
         bodyContent.append(buffer, bytesRead);
         // buffer[bytesRead] = '\0';
         // std::cout << "body content: " << buffer << std::endl;
         if (bodyContent.find("0\r\n\r\n") != std::string::npos)
             break;
     }
-    Logs::appendLog("DEBUG", "[recvChunk]\t\t Chunked body received with size of " + std::to_string(bodyContent.size()));
+    Logs::appendLog("DEBUG", "[recvChunk]\t\t Chunked body received with size of " + intToString(bodyContent.size()));
     this->request.getBody().isComplete() = true;
        
 }
@@ -111,13 +113,13 @@ void Client::recvChunk()
 //         {
 //             if (recv(this->fd, &buffer, 1, 0) < 0)
                 
-//                 // throw std::runtime_error("[recvChunk]\t\t Error reading from client socket " + std::to_string(this->fd) + " " + strerror(errno));
+//                 // throw std::runtime_error("[recvChunk]\t\t Error reading from client socket " + intToString(this->fd) + " " + strerror(errno));
 
 //             if (buffer == '\r')
 //             {
 //                 // Expecting '\n' after '\r'
 //                 if (recv(this->fd, &buffer, 1, 0) <= 0)
-//                     throw std::runtime_error("[recvChunk]\t\t Error reading from client socket " + std::to_string(this->fd) + " " + strerror(errno));
+//                     throw std::runtime_error("[recvChunk]\t\t Error reading from client socket " + intToString(this->fd) + " " + strerror(errno));
 //                 if (buffer == '\n')
 //                     break;
 //                 else
@@ -160,7 +162,7 @@ void Client::recvChunk()
 //         chunkSizeStr.clear();
 //     }
 
-//     Logs::appendLog("DEBUG", "[recvChunk]\t\t Chunked body received with size of " + std::to_string(bodyContent.size()));
+//     Logs::appendLog("DEBUG", "[recvChunk]\t\t Chunked body received with size of " + intToString(bodyContent.size()));
 // }
 
 
@@ -176,19 +178,19 @@ void Client::recvHeader()
         if (bytesRead < 0)
             response.setErrorCode(500, "[recvHeader]\t\t Error reading from client socket");
         else if (bytesRead == 0)
-            response.setErrorCode(499, "[recvHeader]\t\t Client disconnected " + std::to_string(this->fd));
+            response.setErrorCode(499, "[recvHeader]\t\t Client disconnected " + intToString(this->fd));
         else
             buffer.append(c, bytesRead);
     }
     this->request.getHeaders().isComplete() = true;
-    Logs::appendLog("DEBUG", "[recvHeader]\t\t Header received from client " + std::to_string(this->fd));
+    Logs::appendLog("DEBUG", "[recvHeader]\t\t Header received from client " + intToString(this->fd));
 }
 
 void Client::recvBody()
 {
     std::string &buffer = this->request.getBody().getContent();
-    int bytesRead;
-    int contentLength = atoi(this->request.getHeaders().getValue("Content-Length").c_str());
+    long int bytesRead;
+    long unsigned int contentLength = atoi(this->request.getHeaders().getValue("Content-Length").c_str());
     char c[1];
 
     while (buffer.size() < contentLength)
@@ -197,17 +199,17 @@ void Client::recvBody()
         if (bytesRead < 0)
             response.setErrorCode(500, "[recvBody]\t\t Error reading from client socket");
         else if (bytesRead == 0)
-            response.setErrorCode(499, "[recvBody]\t\t Client disconnected " + std::to_string(this->fd));
+            response.setErrorCode(499, "[recvBody]\t\t Client disconnected " + intToString(this->fd));
         else
             buffer.append(c, bytesRead);
     }
-    Logs::appendLog("DEBUG", "[recvBody]\t\t Body received from client " + std::to_string(this->fd));
+    Logs::appendLog("DEBUG", "[recvBody]\t\t Body received from client " + intToString(this->fd));
     this->request.getBody().isComplete() = true;
 }
 
 void Client::validateCgiExtensions(std::vector<std::string> cgiExtensions, std::string fullPath)
 {
-    int pos = fullPath.find_last_of('.');
+    const long unsigned int pos = fullPath.find_last_of('.');
     if (pos == std::string::npos)
         this->response.setErrorCode(403, "[validateCgiExtensions]\t\t CGI extension not allowed");
     std::string extensions = fullPath.substr(pos);
@@ -243,7 +245,7 @@ void Client::handleCGI(ServerConfig &serverConfig)
     }
 }
 
-void Client::handleNormalResponse(ServerConfig &serverConfig)
+void Client::handleNormalResponse()
 {
     this->response.handleResponse(this->request);
     this->writeBuffer = this->response.getResponse();
@@ -255,7 +257,7 @@ void Client::readFromSocket(ServerConfig &serverConfig)
 {
     try
     {
-        Logs::appendLog("DEBUG", "[readFromSocket]\t\t Reading from client socket " + std::to_string(this->fd));
+        Logs::appendLog("DEBUG", "[readFromSocket]\t\t Reading from client socket " + intToString(this->fd));
         while(!this->request.getHeaders().isComplete())
             recvHeader();
         this->request.getHeaders().parseHeader(this->response);
@@ -276,14 +278,14 @@ void Client::readFromSocket(ServerConfig &serverConfig)
             if (this->request.getIsCGI())
                 handleCGI(serverConfig);
             else
-                handleNormalResponse(serverConfig);
+                handleNormalResponse();
         }
     }
     catch(const std::exception& e)
     {
         std::cout << e.what() << std::endl;
         Logs::appendLog("ERROR", e.what());
-        handleNormalResponse(serverConfig);
+        handleNormalResponse();
     }
 }
 

@@ -39,7 +39,6 @@ private:
     void freeEnv(char** envp);
     void setCGIEnv(Request &_request, Response &_response);
     void vecToChar(std::vector<std::string> &envMaker, Response &_response);
-    void checkCGITimeout(pid_t pid, Request &_request, Response &_response);
 
     char** _envp;
 };

@@ -45,7 +45,7 @@ void KQueuePoller::addToQueue(int fd, EventType ev)
     if (kevent(this->kqueueFd, &evSet, 1, NULL, 0, NULL) == -1)
         Logs::appendLog("ERROR", "[addToQueue]\t\tError Adding " + logMsg + " " + std::string(strerror(errno)));
     else
-        Logs::appendLog("INFO", "[addToQueue]\t\tAdded Event " + logMsg + " " + std::to_string(fd));
+        Logs::appendLog("INFO", "[addToQueue]\t\tAdded Event " + logMsg + " " + intToString(fd));
 }
 
 void KQueuePoller::removeFromQueue(int fd, EventType ev)
@@ -57,18 +57,18 @@ void KQueuePoller::removeFromQueue(int fd, EventType ev)
     {
         EV_SET(&evSet, fd, EVFILT_READ, EV_DELETE, 0, 0, NULL);
         if (kevent(this->kqueueFd, &evSet, 1, NULL, 0, NULL) == -1)
-            Logs::appendLog("ERROR", "[removeFromQueue]\t\tError Removing READ Event " + std::to_string(fd) + " " + std::string(strerror(errno)));
+            Logs::appendLog("ERROR", "[removeFromQueue]\t\tError Removing READ Event " + intToString(fd) + " " + std::string(strerror(errno)));
         else
-            Logs::appendLog("INFO", "[removeFromQueue]\t\tRemoved READ Event " + std::to_string(fd));
+            Logs::appendLog("INFO", "[removeFromQueue]\t\tRemoved READ Event " + intToString(fd));
         fdState[fd].isRead = false;
     }
     else if (ev == WRITE_EVENT && fdState[fd].isWrite)
     {
         EV_SET(&evSet, fd, EVFILT_WRITE, EV_DELETE, 0, 0, NULL);
         if (kevent(this->kqueueFd, &evSet, 1, NULL, 0, NULL) == -1)
-            Logs::appendLog("ERROR", "[removeFromQueue]\t\tError Removing WRITE Event " + std::to_string(fd) + " " + std::string(strerror(errno)));
+            Logs::appendLog("ERROR", "[removeFromQueue]\t\tError Removing WRITE Event " + intToString(fd) + " " + std::string(strerror(errno)));
         else
-            Logs::appendLog("INFO", "[removeFromQueue]\t\tRemoved WRITE Event " + std::to_string(fd));
+            Logs::appendLog("INFO", "[removeFromQueue]\t\tRemoved WRITE Event " + intToString(fd));
         fdState[fd].isWrite = false;
     }
 

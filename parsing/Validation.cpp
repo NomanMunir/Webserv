@@ -50,7 +50,7 @@ bool Validation::validateErrorPages(std::string key, std::string value, std::str
 	if (!validateNumber("error_pages", key))
 		return false;
     if (value.find(root) == std::string::npos)
-    	value = root + value;
+		value = root + value;
 	try
 	{
 		const std::string path = value;
@@ -71,11 +71,18 @@ void Validation::validateServerNames(std::string &value)
 		throw std::runtime_error("[validateServerNames]\t\t invalid configuration file " + value);
 	if (value.find("*") != std::string::npos && value.find("*") != 0)
 		throw std::runtime_error("[validateServerNames]\t\t invalid configuration file " + value);
-	if (value.front() == '-' || value.back() == '-' || value.front() == '.' || value.back() == '.')
+	if (value[0] == '-' || value[value.size() - 1] == '-' || value[0] == '.' || value[value.size() - 1] == '.')
 		throw std::runtime_error("[validateServerNames]\t\t invalid configuration file " + value);
 	if (value.find("..") != std::string::npos || value.find("--") != std::string::npos)
 		throw std::runtime_error("[validateServerNames]\t\t invalid configuration file " + value);
-	if (std::all_of(value.begin(), value.end(), ::isdigit))
+	bool allDigits = true;
+	for (std::string::const_iterator it = value.begin(); it != value.end(); ++it) {
+		if (!std::isdigit(*it)) {
+			allDigits = false;
+			break;
+		}
+	}
+	if (allDigits)
 		throw std::runtime_error("[validateServerNames]\t\t invalid configuration file " + value);
 }
 
@@ -99,25 +106,47 @@ void Validation::validateListen(std::vector<std::vector<std::string> > &listenVe
 {
     for (size_t i = 0; i < listenVec.size(); i++)
     {
-        if (listenVec[i].size() != 2)
-            throw std::runtime_error("[validateListen]\t\t invalid configuration file " + listenVec[i][0]);
-	    validateIP(listenVec[i][0]);
+		if (listenVec[i].size() != 2)
+			throw std::runtime_error("[validateListen]\t\t invalid configuration file " + listenVec[i][0]);
+		validateIP(listenVec[i][0]);
         if (!validateNumber("listen", listenVec[i][1]))
             throw std::runtime_error("[validateListen]\t\t invalid configuration file " + listenVec[i][2]);
     }
 }
 
-void Validation::validateDirectives(std::map<std::string, std::string> directives)
-{
-	if (!validateNumber("Content-Length", directives["client_body_size_limit"]))
-		throw std::runtime_error("[validateDirectives]\t\t client_body_size_limit directive is invalid");
-	if (!validateNumber("keepalive_timeout", directives["keep_alive_timeout"]))
-		throw std::runtime_error("[validateDirectives]\t\t keep_alive_timeout directive is invalid");
-}
+// void Validation::validateDirectives(std::map<std::string, std::string> directives)
+// {
+// 	if (!validateNumber("Content-Length", directives["client_body_size_limit"]))
+// 		throw std::runtime_error("[validateDirectives]\t\t client_body_size_limit directive is invalid");
+// 	if (!validateNumber("keepalive_timeout", directives["keep_alive_timeout"]))
+// 		throw std::runtime_error("[validateDirectives]\t\t keep_alive_timeout directive is invalid");
+// }
 
+void Validation::validateCGIExtensions(std::vector<std::string> cgiExtensions)
+{
+	for (size_t i = 0; i < cgiExtensions.size(); i++)
+	{
+		if (cgiExtensions[i].empty())
+			throw std::runtime_error("[validateCGIExtensions]\t\t invalid configuration file " + cgiExtensions[i]);
+		if (cgiExtensions[i][0] != '.')
+			throw std::runtime_error("[validateCGIExtensions]\t\t invalid configuration file " + cgiExtensions[i]);
+		if (cgiExtensions[i].find("..") != std::string::npos)
+			throw std::runtime_error("[validateCGIExtensions]\t\t invalid configuration file " + cgiExtensions[i]);
+		if (cgiExtensions[i].find("/") != std::string::npos)
+			throw std::runtime_error("[validateCGIExtensions]\t\t invalid configuration file " + cgiExtensions[i]);
+		if (cgiExtensions[i].find(" ") != std::string::npos)
+			throw std::runtime_error("[validateCGIExtensions]\t\t invalid configuration file " + cgiExtensions[i]);
+		if (cgiExtensions[i].find("\t") != std::string::npos)
+			throw std::runtime_error("[validateCGIExtensions]\t\t invalid configuration file " + cgiExtensions[i]);
+		if (cgiExtensions[i].find("\n") != std::string::npos)
+			throw std::runtime_error("[validateCGIExtensions]\t\t invalid configuration file " + cgiExtensions[i]);
+		if (cgiExtensions[i].find("\r") != std::string::npos)
+			throw std::runtime_error("[validateCGIExtensions]\t\t invalid configuration file " + cgiExtensions[i]);
+	}
+}
 Validation::Validation(Parser &parser)
 {
-	validateDirectives(parser.getDirectives());
+	// validateDirectives(parser.getDirectives());
 	std::vector<ServerConfig> servers = parser.getServers();
 	for (size_t i = 0; i < servers.size(); i++)
 	{
@@ -126,6 +155,7 @@ Validation::Validation(Parser &parser)
 			isDirectory(servers[i].root);
 			const std::string cgiDir = servers[i].root + "/" + servers[i].cgi_directory;
 			isDirectory(cgiDir);
+			validateCGIExtensions(servers[i].cgiExtensions);
 		}
 		catch (const std::exception &e)
 		{

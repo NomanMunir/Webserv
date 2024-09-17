@@ -17,24 +17,26 @@
 
 class Client {
 private:
+    EventPoller *_poller;
+    Request request;
+    Response response;
+    Cgi cgi;
+
     int fd;
+    time_t lastActivity;
+
     std::string writeBuffer;
     bool writePending;
     bool readPending;
     bool keepAlive;
     char **env;
-    time_t lastActivity;
 
-    EventPoller *_poller;
-    Request request;
-    Response response;
-    Cgi cgi;
     
     void recvChunk();
     void recvHeader();
     void recvBody();
 
-    void handleNormalResponse(ServerConfig &serverConfig);
+    void handleNormalResponse();
     void handleCGI(ServerConfig &serverConfig);
     void validateCgiExtensions(std::vector<std::string> cgiExtensions, std::string fullPath);
 

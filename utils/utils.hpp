@@ -17,7 +17,6 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <cerrno>
-#include <unordered_map>
 #include <ctime>
 #include <iomanip>
 #include "Logs.hpp"
@@ -45,4 +44,5 @@ std::string getStatusMsg(std::string errorCode);
 std::string getCurrentTimestamp();
 std::string toUpperCase(const std::string &str);
 std::string generateFullPath(std::string rootPath, std::string path, std::string routeName);
+std::string intToString(int number);
 #endif // UTILS_HPP	

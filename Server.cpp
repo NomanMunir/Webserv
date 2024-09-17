@@ -4,12 +4,13 @@
 #define MAX_CONNECTIONS 10
 
 
-Server::Server(ServerConfig &serverConfig, EventPoller *poller) 
-    :serverConfig(serverConfig), _poller(poller), serverError(0)
+Server::Server(ServerConfig &serverConfig, EventPoller *poller)
+    : serverSocket(-1), addr(), port(0), serverConfig(serverConfig), _poller(poller)
 {
     std::string serverPort = serverConfig.listen.back().back();
     this->port =  std::atoi(serverPort.c_str());
     std::memset((char *)&addr, 0, sizeof(addr));
+    serverError = 0;
 }
 
 Server::~Server()
@@ -24,10 +25,10 @@ Server::~Server()
     }
 }
 
-Server::Server(const Server &other) 
-    : serverConfig(other.serverConfig),
-     _poller(other._poller), serverError(other.serverError),
-      port(other.port), addr(other.addr), serverSocket(other.serverSocket) {}
+Server::Server(const Server &other) : serverSocket(other.serverSocket), addr(other.addr), port(other.port), serverConfig(other.serverConfig), _poller(other._poller)
+{
+    this->serverError = other.serverError;
+}
 
 Server &Server::operator=(const Server &other)
 {
@@ -66,7 +67,7 @@ void Server::bindAndListen()
         throw std::runtime_error("[bindAndListen]\t\t Error listening on socket " + std::string(strerror(errno)));
 
     std::cout << "Server is listening at http://" << inet_ntoa(addr.sin_addr) << ":" << this->port << std::endl;
-    Logs::appendLog("INFO", "[bindAndListen]\t\t Server is listening at http://" + ipAddress + ":" + std::to_string(this->port));
+    Logs::appendLog("INFO", "[bindAndListen]\t\t Server is listening at http://" + ipAddress + ":" + intToString(this->port));
 }
 
 void Server::initSocket()
@@ -119,7 +120,7 @@ bool Server::acceptClient()
         return false;
     }
 
-    Logs::appendLog("INFO", "[acceptClient]\t\t New connection, socket fd is [" + std::to_string(clientSocket) + "], IP is : " + inet_ntoa(clientAddr.sin_addr) + ", port : " + std::to_string(ntohs(clientAddr.sin_port)));
+    Logs::appendLog("INFO", "[acceptClient]\t\t New connection, socket fd is [" + intToString(clientSocket) + "], IP is : " + inet_ntoa(clientAddr.sin_addr) + ", port : " + intToString(ntohs(clientAddr.sin_port)));
     clients[clientSocket] = Client(clientSocket, this->_poller);
     this->_poller->addToQueue(clientSocket, READ_EVENT);
     return true;
@@ -133,14 +134,14 @@ bool Server::isMyClient(int fd)
 
 void Server::handleWrite(int fd)
 {
-    Logs::appendLog("INFO", "[handleWrite]\t\t Handling write for client " + std::to_string(fd));
+    Logs::appendLog("INFO", "[handleWrite]\t\t Handling write for client " + intToString(fd));
     try
     {
         bool isClosed = !clients[fd].isKeepAlive() || clients[fd].getResponse().getIsConnectionClosed();
         if (isClosed)
         {
-            ssize_t bytesSent = send(fd, clients[fd].getWriteBuffer().c_str(), clients[fd].getWriteBuffer().size(), 0);
-            Logs::appendLog("INFO", "[handleWrite]\t\t Connection closed for client [" + std::to_string(fd) + "] with IP " + inet_ntoa(this->addr.sin_addr) + " on port " + std::to_string(this->port));
+            send(fd, clients[fd].getWriteBuffer().c_str(), clients[fd].getWriteBuffer().size(), 0);
+            Logs::appendLog("INFO", "[handleWrite]\t\t Connection closed for client [" + intToString(fd) + "] with IP " + inet_ntoa(this->addr.sin_addr) + " on port " + intToString(this->port));
             this->_poller->removeFromQueue(fd, WRITE_EVENT);
             this->_poller->removeFromQueue(fd, READ_EVENT);
             close(fd);
@@ -163,7 +164,7 @@ void Server::handleWrite(int fd)
 
         clients[fd].reset();
         clients[fd].updateLastActivity();
-        Logs::appendLog("INFO", "[handleWrite]\t\t Write completed for client " + std::to_string(fd));
+        Logs::appendLog("INFO", "[handleWrite]\t\t Write completed for client " + intToString(fd));
     }
     catch(const std::exception& e)
     {
@@ -198,7 +199,7 @@ void Server::handleRead(int fd)
 
 bool Server::isMyCGI(int fd)
 {
-    std::unordered_map<int, Client>::iterator it = clients.begin();
+    std::map<int, Client>::iterator it = clients.begin();
     while (it != this->clients.end())
     {
         if (it->second.getCgi().getReadFd() == fd)
@@ -218,7 +219,7 @@ void Server::handleCgiRead(int clientFd)
 
     Client &client = this->clients[clientFd];
     
-    Logs::appendLog("INFO", "[handleCgiRead]\t\t Reading from CGI process " + std::to_string(client.getCgi().getPid()));
+    Logs::appendLog("INFO", "[handleCgiRead]\t\t Reading from CGI process " + intToString(client.getCgi().getPid()));
     while ((count = read(client.getCgi().getReadFd(), buffer, sizeof(buffer))) > 0)
         client.getCgi().output.append(buffer, count);
 
@@ -229,9 +230,9 @@ void Server::handleCgiRead(int clientFd)
 
         if (client.getCgi().output.empty())
         {
-            Logs::appendLog("ERROR", "[handleCgiRead]\t\t CGI process " + std::to_string(client.getCgi().getPid()) + " returned no data");
+            Logs::appendLog("ERROR", "[handleCgiRead]\t\t CGI process " + intToString(client.getCgi().getPid()) + " returned no data");
             kill(client.getCgi().getPid(), SIGKILL);
-            Logs::appendLog("INFO", "[checkTimeouts]\t\t Killed CGI process " + std::to_string(client.getCgi().getPid()));
+            Logs::appendLog("INFO", "[checkTimeouts]\t\t Killed CGI process " + intToString(client.getCgi().getPid()));
             generateCGIError(client, "502");
             this->_poller->addToQueue(clientFd, WRITE_EVENT);
             client.getResponse().setIsConnectionClosed(true);
@@ -242,7 +243,7 @@ void Server::handleCgiRead(int clientFd)
         httpResponse.setVersion("HTTP/1.1");
         httpResponse.setStatusCode(200);
         httpResponse.setHeader("Content-Type", "text/html");
-        httpResponse.setHeader("Content-Length", std::to_string(client.getCgi().output.size()));
+        httpResponse.setHeader("Content-Length", intToString(client.getCgi().output.size()));
         httpResponse.setHeader("Connection", "keep-alive");
 
         std::string cookies = client.getRequest().getHeaders().getValue("Cookie");
@@ -265,14 +266,14 @@ void Server::handleCgiRead(int clientFd)
 
         if (result == 0)
         {
-            Logs::appendLog("DEBUG", "[handleCgiRead]\t\t CGI process " + std::to_string(client.getCgi().getPid()) + " is still running and waiting for more data");
+            Logs::appendLog("DEBUG", "[handleCgiRead]\t\t CGI process " + intToString(client.getCgi().getPid()) + " is still running and waiting for more data");
             return;
         }
         else if (result > 0)
         {
             Logs::appendLog("ERROR", "[handleCgiRead]\t\t Error reading from CGI " + std::string(strerror(errno)));
             kill(client.getCgi().getPid(), SIGKILL);
-            Logs::appendLog("INFO", "[checkTimeouts]\t\t Killed CGI process " + std::to_string(client.getCgi().getPid()));
+            Logs::appendLog("INFO", "[checkTimeouts]\t\t Killed CGI process " + intToString(client.getCgi().getPid()));
             this->_poller->removeFromQueue(clientFd, READ_EVENT);
             this->_poller->removeFromQueue(client.getCgi().getReadFd(), READ_EVENT);
             generateCGIError(client, "502");
@@ -299,7 +300,7 @@ void Server::generateCGIError(Client &client, std::string errorCode)
 
 void Server::checkTimeouts()
 {
-    std::unordered_map<int, Client>::iterator it = clients.begin();
+    std::map<int, Client>::iterator it = clients.begin();
 
     while (it != this->clients.end())
     {
@@ -307,9 +308,9 @@ void Server::checkTimeouts()
         {
             if (it->second.getRequest().getIsCGI())
             {
-                Logs::appendLog("INFO", "[checkTimeouts]\t\t CGI process for client " + std::to_string(it->first) + " timed out");
+                Logs::appendLog("INFO", "[checkTimeouts]\t\t CGI process for client " + intToString(it->first) + " timed out");
                 kill(it->second.getCgi().getPid(), SIGKILL);
-                Logs::appendLog("INFO", "[checkTimeouts]\t\t Killed CGI process " + std::to_string(it->second.getCgi().getPid()));
+                Logs::appendLog("INFO", "[checkTimeouts]\t\t Killed CGI process " + intToString(it->second.getCgi().getPid()));
                 this->_poller->removeFromQueue(it->first, READ_EVENT);
                 this->_poller->removeFromQueue(it->second.getCgi().getReadFd(), READ_EVENT);
                 generateCGIError(it->second, "504");
@@ -319,10 +320,10 @@ void Server::checkTimeouts()
             }
             else
             {
-                Logs::appendLog("INFO", "[checkTimeouts]\t\t Client " + std::to_string(it->first) + " timed out");
+                Logs::appendLog("INFO", "[checkTimeouts]\t\t Client " + intToString(it->first) + " timed out");
                 this->_poller->removeFromQueue(it->first, READ_EVENT);
                 close(it->first);
-                it = clients.erase(it);
+                clients.erase(it++);
             }
         }
         else
@@ -332,13 +333,13 @@ void Server::checkTimeouts()
 
 void Server::handleDisconnection(int fd)
 {
-    Logs::appendLog("DEBUG", "[handleDisconnection]\t\t Handling disconnection for client " + std::to_string(fd));
+    Logs::appendLog("DEBUG", "[handleDisconnection]\t\t Handling disconnection for client " + intToString(fd));
     this->_poller->removeFromQueue(fd, READ_EVENT);
     if (clients[fd].isCGI())
     {
-        Logs::appendLog("INFO", "[handleDisconnection]\t\t CGI process for client " + std::to_string(fd) + " is killed");
+        Logs::appendLog("INFO", "[handleDisconnection]\t\t CGI process for client " + intToString(fd) + " is killed");
         kill(clients[fd].getCgi().getPid(), SIGKILL);
-        Logs::appendLog("INFO", "[handleDisconnection]\t\t Killed CGI process " + std::to_string(clients[fd].getCgi().getPid()));
+        Logs::appendLog("INFO", "[handleDisconnection]\t\t Killed CGI process " + intToString(clients[fd].getCgi().getPid()));
         this->_poller->removeFromQueue(fd, READ_EVENT);
         this->_poller->removeFromQueue(clients[fd].getCgi().getReadFd(), READ_EVENT);
         generateCGIError(clients[fd], "504");
@@ -356,7 +357,7 @@ void Server::handleDisconnection(int fd)
 
 int Server::getPort() const { return this->port; }
 
-std::unordered_map<int, Client> &Server::getClients() { return this->clients; }
+std::map<int, Client> &Server::getClients() { return this->clients; }
 
 int Server::getServerSocket() const { return this->serverSocket; }
 

@@ -114,6 +114,8 @@ bool Response::checkDefaultFile(std::string &fullPath, bool isCGI)
 		if (isFileDir(newPath) == IS_FILE && isCGI)
 		{
 			std::string fileExtension = newPath.substr(newPath.find_last_of("."));
+			if (targetServer.cgiExtensions.size() == 1 && targetServer.cgiExtensions[0] == "")
+				continue;
 			if (std::find(targetServer.cgiExtensions.begin(), targetServer.cgiExtensions.end(), fileExtension) == targetServer.cgiExtensions.end())
 				continue;
 			fullPath = newPath;
@@ -127,18 +129,20 @@ bool Response::checkDefaultFile(std::string &fullPath, bool isCGI)
 
 void Response::handleDirectory(std::string &fullPath, std::string &uri, bool &isCGI)
 {
-	if (fullPath.back() != '/')
+	if (fullPath.empty())
+		this->setErrorCode(404, "[handleDirectory]\t\t Directory not found");
+	if (fullPath[fullPath.size() - 1] != '/')
 		this->setErrorCode(301, "[handleDirectory]\t\t Redirecting to directory with trailing slash");
 	if(checkDefaultFile(fullPath, isCGI))
 		return ;
-	if (this->targetRoute.directoryListing || isCGI)
+	if (isCGI || this->targetRoute.directoryListing)
 	{
 		std::string body = generateDirectoryListing(fullPath, uri);
 		HttpResponse httpResponse;
 		httpResponse.setVersion("HTTP/1.1");
 		httpResponse.setStatusCode(200);
 		httpResponse.setHeader("Content-Type", "text/html");
-		httpResponse.setHeader("Content-Length", std::to_string(body.size()));
+		httpResponse.setHeader("Content-Length", intToString(body.size()));
 		httpResponse.setHeader("Connection", "keep-alive");
 		if (this->cookies != "")
 			httpResponse.setHeader("Set-Cookie", this->cookies);
@@ -163,7 +167,7 @@ void Response::generateResponseFromFile(std::string &path, bool isHEAD)
 	httpResponse.setVersion("HTTP/1.1");
 	httpResponse.setStatusCode(200);
 	httpResponse.setHeader("Content-Type", mimeType);
-	httpResponse.setHeader("Content-Length", std::to_string(body.size()));
+	httpResponse.setHeader("Content-Length", intToString(body.size()));
 	httpResponse.setHeader("Connection", "keep-alive");
 	if (this->cookies != "")
 		httpResponse.setHeader("Set-Cookie", this->cookies);
@@ -206,7 +210,7 @@ bool Response::handleRedirect(bool isRedir, std::string redirect)
 			httpResponse.setVersion("HTTP/1.1");
 			httpResponse.setStatusCode(errorCode);
 			httpResponse.setHeader("Content-Type", "text/html");
-			httpResponse.setHeader("Content-Length", std::to_string(value.size()));
+			httpResponse.setHeader("Content-Length", intToString(value.size()));
 			httpResponse.setHeader("Server", "LULUGINX");
 			httpResponse.setBody(value);
 			response = httpResponse.generateResponse();
@@ -243,9 +247,11 @@ void Response::handlePOST(bool isPost, std::string &uri, Body &body)
 			return (setErrorCode(400, "[handlePOST]\t\t Empty body"));
 
 		std::string fullPath = generateFullPath(targetRoute.root, uri, targetRoute.routeName);
-		if (fullPath.back() != '/')
+		if (fullPath.empty())
+			return (setErrorCode(404, "[handlePOST]\t\t File not found"));
+		if (fullPath[fullPath.size() - 1] != '/')
 			fullPath += "/";
-		std::ofstream file(fullPath + getCurrentTimestamp());
+		std::ofstream file((fullPath + getCurrentTimestamp()).c_str());
 		if (!file.is_open())
 			return (setErrorCode(500, "[handlePOST]\t\t Could not open file"));
 		file << body.getContent();
@@ -257,7 +263,7 @@ void Response::handlePOST(bool isPost, std::string &uri, Body &body)
 		httpResponse.setVersion("HTTP/1.1");
 		httpResponse.setStatusCode(200);
 		httpResponse.setHeader("Content-Type", "text/html");
-		httpResponse.setHeader("Content-Length", std::to_string(body.size()));
+		httpResponse.setHeader("Content-Length", intToString(body.size()));
 		httpResponse.setHeader("Connection", "keep-alive");
 		if (this->cookies != "")
 			httpResponse.setHeader("Set-Cookie", this->cookies);
@@ -283,7 +289,7 @@ void Response::handleDELETE(bool isDelete, std::string &uri)
 		httpResponse.setVersion("HTTP/1.1");
 		httpResponse.setStatusCode(200);
 		httpResponse.setHeader("Content-Type", "text/html");
-		httpResponse.setHeader("Content-Length", std::to_string(body.size()));
+		httpResponse.setHeader("Content-Length", intToString(body.size()));
 		httpResponse.setHeader("Connection", "keep-alive");
 		if (this->cookies != "")
 			httpResponse.setHeader("Set-Cookie", this->cookies);
@@ -302,7 +308,7 @@ void Response::handlePUT(bool isPut, std::string &uri, Body &body)
 
 		if (body.getContent().empty())
 			return (setErrorCode(400, "[handlePUT]\t\t Empty body"));
-		std::ofstream file(fullPath);
+		std::ofstream file(fullPath.c_str());
 		if (!file.is_open())
 			return (setErrorCode(500, "[handlePUT]\t\t Could not open file"));
 		file << body.getContent();
@@ -314,7 +320,7 @@ void Response::handlePUT(bool isPut, std::string &uri, Body &body)
 		httpResponse.setVersion("HTTP/1.1");
 		httpResponse.setStatusCode(200);
 		httpResponse.setHeader("Content-Type", "text/html");
-		httpResponse.setHeader("Content-Length", std::to_string(body.size()));
+		httpResponse.setHeader("Content-Length", intToString(body.size()));
 		httpResponse.setHeader("Connection", "keep-alive");
 		if (this->cookies != "")
 			httpResponse.setHeader("Set-Cookie", this->cookies);
@@ -331,7 +337,7 @@ void Response::handleResponse(Request &request)
 	std::string uri = request.getHeaders().getValue("uri");
 	Body &body = request.getBody();
 	if (this->errorCode != 0)
-		return (sendError(std::to_string(this->errorCode)));
+		return (sendError(intToString(this->errorCode)));
 
 	handleGET(method == "GET" || method == "HEAD", uri, method == "HEAD");
 	handlePOST(method == "POST", uri, body);
@@ -349,9 +355,9 @@ void Response::defaultErrorPage(std::string errorCode)
                        "</body></html>";
 	HttpResponse httpResponse;
 	httpResponse.setVersion("HTTP/1.1");
-	httpResponse.setStatusCode(std::stoi(errorCode));
+	httpResponse.setStatusCode(std::atoi(errorCode.c_str()));
 	httpResponse.setHeader("Content-Type", "text/html");
-	httpResponse.setHeader("Content-Length", std::to_string(body.size()));
+	httpResponse.setHeader("Content-Length", intToString(body.size()));
 	if (isClosingCode(errorCode))
 		httpResponse.setHeader("Connection", "close");
 	else
@@ -372,20 +378,20 @@ void Response::findErrorPage(std::string errorCode, std::map<std::string, std::s
 	{
 		HttpResponse httpResponse;
 
-		std::ifstream file("." + it->second);
+		std::ifstream file(("." + it->second).c_str());
 		std::stringstream buffer;
 		buffer << file.rdbuf();
 		std::string body = buffer.str();
 		httpResponse.setVersion("HTTP/1.1");
-		httpResponse.setStatusCode(std::stoi(errorCode));
+		httpResponse.setStatusCode(std::atoi(errorCode.c_str()));
 		httpResponse.setHeader("Content-Type", "text/html");
-		httpResponse.setHeader("Content-Length", std::to_string(body.size()));
+		httpResponse.setHeader("Content-Length", intToString(body.size()));
 		if (isClosingCode(errorCode))
-		httpResponse.setHeader("Connection", "close");
+			httpResponse.setHeader("Connection", "close");
 		else
 		{
-		if (this->cookies != "")
-			httpResponse.setHeader("Set-Cookie", this->cookies);
+			if (this->cookies != "")
+				httpResponse.setHeader("Set-Cookie", this->cookies);
 			httpResponse.setHeader("Connection", "keep-alive");
 		}
 		httpResponse.setHeader("Server", "LULUGINX");
@@ -468,10 +474,10 @@ void Response::printResponse()
 Response::Response() : errorCode(0), isConnectionClosed(false) { }
 
 Response::Response(const Response &c) 
-: isConnectionClosed(c.isConnectionClosed),
+: 
  statusCodes(c.statusCodes), response(c.response),
-  targetServer(c.targetServer), targetRoute(c.targetRoute)
-  , errorCode(c.errorCode) { }
+  targetServer(c.targetServer), targetRoute(c.targetRoute),
+	errorCode(c.errorCode), isConnectionClosed(c.isConnectionClosed), cookies(c.cookies) { }
 
 Response& Response::operator=(const Response &c)
 {

@@ -46,7 +46,7 @@ void HttpResponse::setBody(const std::string& body)
 
 std::string HttpResponse::generateResponse()
 {
-	std::string response = this->version + " " + std::to_string(this->statusCode) + " " + getStatusMsg(std::to_string(this->statusCode)) + "\r\n";
+	std::string response = this->version + " " + intToString(this->statusCode) + " " + getStatusMsg(intToString(this->statusCode)) + "\r\n";
 	for (std::map<std::string, std::string>::iterator it = this->headers.begin(); it != this->headers.end(); it++)
 		response += it->first + ": " + it->second + "\r\n";
 	response += "\r\n";

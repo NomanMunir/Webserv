@@ -34,6 +34,7 @@ class Validation
 		void validateRouteMap(std::map<std::string, RouteConfig> &routeMap);
 		void validateReturn(std::string &redirect);
 		void isDirectory(const std::string &path);
+		void validateCGIExtensions(std::vector<std::string> cgiExtensions);
 
 };
 

@@ -1,3 +1,4 @@
+
 #include "MimeTypes.hpp"
 #include <sstream>
 #include <algorithm>
@@ -32,7 +33,7 @@ void MimeTypes::parseMimeFile(const std::string &filename)
         }
         if (line.empty() || line[0] == '#')
             continue;
-        if (line.back() != ';')
+        if (!line.empty() && line[line.size() - 1] != ';')
             Logs::appendLog("ERROR", "Invalid line in mime.types file: " + line);
 
         std::istringstream iss(line);
@@ -43,9 +44,8 @@ void MimeTypes::parseMimeFile(const std::string &filename)
         {
             while (iss >> extension)
             {
-                if (extension.back() == ';')
+                if (!extension.empty() && extension[extension.size() - 1] == ';')
                     extension.resize(extension.size() - 1);
-
                 mimeTypes[extension] = mimeType;
             }
         }

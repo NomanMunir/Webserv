@@ -47,7 +47,7 @@ void Parser::checkLocationBlock()
         value += " " + tokens[0];
         tokens.erase(tokens.begin());
     }
-    if (value.empty() || value.back() != ';')
+    if (value.empty() || value[value.size() - 1] != ';')
         throw std::runtime_error("[checkLocationBlock]\t\t invalid configuration file " + value);
     else
     {
@@ -188,7 +188,7 @@ void Parser::checkHttpDirective()
 
     if (key == "client_body_size" || key == "keepalive_timeout")
     {
-        if (value.back() != ';')
+        if (value[value.size() - 1] != ';')
             throw std::runtime_error("[checkHttpDirective]\t\t invalid configuration file " + value);
     }
     else

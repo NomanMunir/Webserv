@@ -10,7 +10,7 @@ def handle_get_request():
     query_string = os.getenv('QUERY_STRING', '')
 
     # Parse the query string into a dictionary
-    params = urllib.parse.parse_qs(query_string
+    params = urllib.parse.parse_qs(query_string)
 
     # Generate HTML response
     print()

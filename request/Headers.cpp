@@ -136,7 +136,7 @@ void Headers::isDuplicateHeader(const std::string &key, Response &structResponse
         "Authorization", "Referer"
     };
 
-    for (int i = 0; i < sizeof(criticalHeaders) / sizeof(criticalHeaders[0]); ++i)
+    for (long unsigned int i = 0; i < sizeof(criticalHeaders) / sizeof(criticalHeaders[0]); ++i)
     {
         if (key == criticalHeaders[i])
         {

@@ -22,34 +22,6 @@ bool Cgi::checkFilePermission(const char* path)
            (fileStat.st_mode & S_IXOTH);   // Others have execute permission
 }
 
-void Cgi::checkCGITimeout(pid_t pid, Request &_request, Response &_response)
-{
-    int     status;
-    int     childStatus = 0;
-    double  time = 0;
-    clock_t start = clock();
-    while (childStatus == 0)
-    {
-        childStatus = waitpid(pid, &status, WNOHANG);
-        clock_t end = clock();
-        time = static_cast<double>(end - start) / CLOCKS_PER_SEC;
-        
-        if (time > CGI_TIMEOUT)
-        {
-            
-            if (kill(pid, SIGKILL) < 0)
-            {
-                Logs::appendLog("ERROR", "[checkCGITimeout]\t\t Failed to kill CGI process " + std::string(strerror(errno)));
-                freeEnv(_envp);
-               _response.setErrorCode(500, "[checkCGITimeout]\t\t Internal Server Error: Failed to kill CGI process " + std::string(strerror(errno)));
-            }
-            Logs::appendLog("INFO", "[checkCGITimeout]\t\t CGI script execution timed out and was killed");
-            freeEnv(_envp);
-           _response.setErrorCode(504, "[checkCGITimeout]\t\t CGI script execution timed out");
-        }
-    }
-}
-
 bool setNoneBlocking(int fd)
 {
     int flags = fcntl(fd, F_GETFL, 0);
@@ -134,24 +106,13 @@ void Cgi::execute(EventPoller *poller, Request &_request, Response &_response, s
 
         poller->addToQueue(fd_out[0], READ_EVENT);
         freeEnv(_envp);
-        // int status;
-        // waitpid(pid, &status, WNOHANG);
-        // checkCGITimeout(pid, _request, _response);
-
-        // char buffer[1024];
-        // ssize_t count;
-
-        // while ((count = read(fd_out[0], buffer, sizeof(buffer))) > 0)
-        //     output.append(buffer, count);
-        // std::cout << "Output from CGI: " << output << std::endl;
-        // close(fd_out[0]);
     }
 }
 
 
 void Cgi::freeEnv(char** envp) 
 {
-    for (size_t i = 0; envp[i] != nullptr; ++i) 
+    for (size_t i = 0; envp[i] != NULL; ++i) 
         if (envp[i]) delete[] envp[i];
     if (envp) delete[] envp;
 }
@@ -194,7 +155,7 @@ void Cgi::setCGIEnv(Request &_request, Response &_response)
     if(!contentLength.empty() && method == "POST") // check if the body is empty
     {
         if (_request.getHeaders().getValue("Content-Length").empty())
-            envMaker.push_back("CONTENT_LENGTH=" + std::to_string(_request.getBody().getContent().length()));
+            envMaker.push_back("CONTENT_LENGTH=" + intToString(_request.getBody().getContent().length()));
         else
             envMaker.push_back("CONTENT_LENGTH=" + _request.getHeaders().getValue("Content-Length"));
     }

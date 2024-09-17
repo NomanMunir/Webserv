@@ -27,33 +27,36 @@ int isFileDir(const std::string &path)
 std::string generateFullPath(std::string rootPath, std::string path, std::string routeName)
 {
     bool flag = false;
-    if (path.back() == '/')
+
+    if (!path.empty() && path[path.size() - 1] == '/')
         flag = true;
-    
-    if (routeName.front() == '/')
+
+    if (!routeName.empty() && routeName[0] == '/')
         routeName.erase(0, 1);
-    if (path.front() == '/')
+    if (!path.empty() && path[0] == '/')
         path.erase(0, 1);
+    
     std::string newUri = path.erase(0, routeName.size());
-	if (rootPath.back() == '/')
-		rootPath.pop_back();
+
+    if (!rootPath.empty() && rootPath[rootPath.size() - 1] == '/')
+        rootPath.erase(rootPath.size() - 1);
+
     std::string fullPath = rootPath;
-	// if (newUri.front() == '/')
-	// 	newUri.erase(0, 1);
+    
     if (!newUri.empty())
         fullPath = rootPath + "/" + newUri;
-    if (fullPath.back() != '/' && flag)
+    if (!fullPath.empty() && fullPath[fullPath.size() - 1] != '/' && flag)
         fullPath += "/";
-	return fullPath;
+    return fullPath;
 }
 
 std::string getCurrentTimestamp() 
 {
-    std::time_t now = std::time(nullptr);
+    std::time_t now = std::time(NULL);
     std::tm* localTime = std::localtime(&now);
-    std::ostringstream oss;
-    oss << std::put_time(localTime, "%Y%m%d%H%M%S");
-    return oss.str();
+    char buffer[20];
+    std::strftime(buffer, sizeof(buffer), "%Y%m%d%H%M%S", localTime);
+    return std::string(buffer);
 }
 
 std::string toUpperCase(const std::string &str) 
@@ -188,9 +191,11 @@ static void initializeLimits(std::map<std::string, std::vector<int> > &limits)
 
 bool validateNumber(std::string key, std::string value)
 {
+    if (value.empty())
+        return false;
     std::map<std::string, std::vector<int> > limits;
     initializeLimits(limits);
-    size_t limit = value.back() == ';' ? value.size() - 1 : value.size();
+    size_t limit = value[value.size() - 1] == ';' ? value.size() - 1 : value.size();
     for (size_t j = 0; j < limit; j++)
     {
         if (!isdigit(value[j]))
@@ -325,4 +330,11 @@ std::string getStatusMsg(std::string errorCode)
     if (errorMsgs.empty())
         return "";
     return (errorMsgs[errorCode]);
+}
+
+std::string intToString(int number) 
+{
+    std::ostringstream oss;
+    oss << number;
+    return oss.str();
 }

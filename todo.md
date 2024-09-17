@@ -78,9 +78,10 @@
 [*] Duplicate Headers.
 [*] [ERROR] [removeFromQueue]             Event not found for fd 7
 [*] [ERROR] [removeFromQueue]             Error Removing Event Invalid argument
+[*] Setup multiple servers with different hostnames (use something like: curl --resolve example.com:80:127.0.0.1 http://example.com/).
+[*] flags
+[*] cgi killing pc
+[*] cgi extension
 
 
-[ ] Setup multiple servers with different hostnames (use something like: curl --resolve example.com:80:127.0.0.1 http://example.com/).
-[ ] flags
-[ ] cgi killing pc
-[ ] cgi extension
+[ ] Cookies

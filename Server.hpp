@@ -50,14 +50,14 @@ public:
 
     int serverError;
 
-    std::unordered_map<int, Client> &getClients();
+    std::map<int, Client> &getClients();
 private:
     int serverSocket;
     struct sockaddr_in addr;
     int port;
     ServerConfig serverConfig;
-    std::unordered_map<int, Client> clients;
     EventPoller *_poller;
+    std::map<int, Client> clients;
 
     void bindAndListen();
     void socketInUse();

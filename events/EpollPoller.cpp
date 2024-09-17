@@ -58,7 +58,7 @@ void EpollPoller::addToQueue(int fd, EventType event)
 	if (epoll_ctl(this->epollFd, op, fd, &epollEvent) < 0)
         Logs::appendLog("ERROR", "[addToQueue]\t\tError Adding Event " + filterType + " " + std::string(strerror(errno)));
     else
-        Logs::appendLog("INFO", "[addToQueue]\t\tAdded Event " + filterType + " to " + std::to_string(fd));
+        Logs::appendLog("INFO", "[addToQueue]\t\tAdded Event " + filterType + " to " + intToString(fd));
 }
 
 void EpollPoller::removeFromQueue(int fd, EventType event)
@@ -101,7 +101,7 @@ void EpollPoller::removeFromQueue(int fd, EventType event)
 	if (epoll_ctl(this->epollFd, op, fd, &epollEvent) < 0)
         Logs::appendLog("ERROR", "[removeFromQueue]\t\tError Removing Event " + std::string(strerror(errno)));
 	else
-        Logs::appendLog("INFO", "[removeFromQueue]\t\tRemoved Event " + filterType + " from " + std::to_string(fd));
+        Logs::appendLog("INFO", "[removeFromQueue]\t\tRemoved Event " + filterType + " from " + intToString(fd));
 
 	if (!this->fdState[fd].isRead && !this->fdState[fd].isWrite)
 		this->fdState.erase(fd);

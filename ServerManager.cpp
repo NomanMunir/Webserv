@@ -111,23 +111,20 @@ void ServerManager::run()
 			continue;
 		}
 		if (numOfEvents == 0)
-		{
-			// Logs::appendLog("DEBUG", "[run]\t\t No events to process");
             continue;
-		}
 
 		for (int i = 0; i < numOfEvents; i++)
 		{
 			EventInfo eventInfo = this->_poller->getEventInfo(i);
 			if (eventInfo.isError)
 			{
-				Logs::appendLog("ERROR", "[run]\t\t Error event at fd: [" + std::to_string(eventInfo.fd) + "]");
+				Logs::appendLog("ERROR", "[run]\t\t Error event at fd: [" + intToString(eventInfo.fd) + "]");
 				continue;
 			}
 			if (eventInfo.isRead || eventInfo.isEOF)
 				processReadEvent(eventInfo);
 		}
-		for (size_t i = 0; i < numOfEvents; i++)
+		for (int i = 0; i < numOfEvents; i++)
 		{
 			EventInfo eventInfo = this->_poller->getEventInfo(i);
 			if (eventInfo.isWrite)
