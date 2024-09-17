@@ -56,7 +56,6 @@ class Response
 		void 		defaultErrorPage(std::string errorCode);
 
 	private:
-		std::map<int, std::string> statusCodes;
 		std::string response;
 		int clientSocket;
 		ServerConfig targetServer;

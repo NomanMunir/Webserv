@@ -471,20 +471,25 @@ void Response::printResponse()
 	std::cout << "Response: " << response << std::endl;
 }
 
-Response::Response() : errorCode(0), isConnectionClosed(false) { }
+Response::Response() 
+	: clientSocket(-1), targetServer(), targetRoute(), \
+	errorCode(0), isConnectionClosed(false)
+{ }
 
 Response::Response(const Response &c) 
 : 
- statusCodes(c.statusCodes), response(c.response),
-  targetServer(c.targetServer), targetRoute(c.targetRoute),
-	errorCode(c.errorCode), isConnectionClosed(c.isConnectionClosed), cookies(c.cookies) { }
+	response(c.response), clientSocket(c.clientSocket), \
+  	targetServer(c.targetServer), targetRoute(c.targetRoute), \
+	errorCode(c.errorCode), isConnectionClosed(c.isConnectionClosed), cookies(c.cookies)
+{ }
 
 Response& Response::operator=(const Response &c)
 {
 	if (this == &c)
 		return *this;
-	statusCodes = c.statusCodes;
 	this->isConnectionClosed = c.isConnectionClosed;
+	this->clientSocket = c.clientSocket;
+	this->cookies = c.cookies;
 	response = c.response;
 	targetServer = c.targetServer;
 	targetRoute = c.targetRoute;
@@ -492,10 +497,7 @@ Response& Response::operator=(const Response &c)
 	return *this;
 }
 
-int Response::getErrorCode() const
-{
-	return (this->errorCode);
-}
+int Response::getErrorCode() const { return (this->errorCode); }
 
 void Response::setErrorCode(int errorStatus, std::string errorMsg)
 {
@@ -503,7 +505,4 @@ void Response::setErrorCode(int errorStatus, std::string errorMsg)
 	throw std::runtime_error(errorMsg);
 }
 
-void Response::setIsConnectionClosed(bool isClosed)
-{
-	isConnectionClosed = isClosed;
-}
+void Response::setIsConnectionClosed(bool isClosed) { isConnectionClosed = isClosed; }

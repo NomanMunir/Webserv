@@ -33,7 +33,6 @@ bool setNoneBlocking(int fd)
     if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
     {
         Logs::appendLog("ERROR", "[Cgi setNoneBlocking]\t\t " + std::string(strerror(errno)));
-        close(fd);
         return false;
     }
     return true;
@@ -42,7 +41,6 @@ bool setNoneBlocking(int fd)
 void Cgi::execute(EventPoller *poller, Request &_request, Response &_response, std::string fullPath)
 {
     this->_fullPath = fullPath;
-    // Check file permissions
     if (!checkFilePermission(this->_fullPath.c_str()))
         _response.setErrorCode(500, "[execute]\t\t CGI script is not executable");
 
@@ -56,7 +54,6 @@ void Cgi::execute(EventPoller *poller, Request &_request, Response &_response, s
 
     if (_pid < 0)
      {
-        // Fork failed
         close(fd_in[0]); close(fd_in[1]);
         close(fd_out[0]); close(fd_out[1]);
         _response.setErrorCode(500, "[execute]\t\t Failed to fork process");
@@ -64,9 +61,8 @@ void Cgi::execute(EventPoller *poller, Request &_request, Response &_response, s
 
     if (_pid == 0) 
     {
-        // Child process
-        close(fd_in[1]); // Close the write end of fd_in
-        close(fd_out[0]); // Close the read end of fd_out
+        close(fd_in[1]);
+        close(fd_out[0]);
 
         dup2(fd_in[0], STDIN_FILENO);
         close(fd_in[0]);
@@ -75,7 +71,7 @@ void Cgi::execute(EventPoller *poller, Request &_request, Response &_response, s
 
 
         char* argv[] = { const_cast<char*>(_fullPath.c_str()), NULL };
-
+        Logs::appendLog("INFO", "[execute]\t\t Executing " + _fullPath + " with PID " + intToString(getpid()));
         if (execve(_fullPath.c_str(), argv, _envp) < 0)
         {
             Logs::appendLog("ERROR", "[execute]\t\t Failed to execute " + std::string(strerror(errno)));
@@ -85,7 +81,6 @@ void Cgi::execute(EventPoller *poller, Request &_request, Response &_response, s
     } 
     else 
     {
-        // Parent process
         close(fd_in[0]);
         close(fd_out[1]);
         if (!setNoneBlocking(fd_in[1]) || !setNoneBlocking(fd_out[0]))
@@ -101,6 +96,7 @@ void Cgi::execute(EventPoller *poller, Request &_request, Response &_response, s
                 close(fd_in[1]); close(fd_out[0]); freeEnv(_envp);
                 _response.setErrorCode(500, "[execute]\t\t Failed to write to pipe");
             }
+            Logs::appendLog("INFO", "[execute]\t\t Writing to pipe " + intToString(fd_in[1]) + " with body size " + intToString(body.size()));
         }
         close(fd_in[1]);
 
@@ -141,12 +137,6 @@ void Cgi::setCGIEnv(Request &_request, Response &_response)
     std::string contentLength = _request.getHeaders().getValue("Content-Length");
     std::string queryString = _request.getHeaders().getValue("query_string");
 
-    // SERVER_PORT
-    // SCRIPT_NAME
-    // REMOTE_USER
-    // REMOTE_HOST
-    // PATH_INFO
-
     envMaker.push_back("REQUEST_URI=" + _request.getHeaders().getValue("uri"));
     envMaker.push_back("PATH_INFO=" + _fullPath);
     envMaker.push_back("REQUEST_METHOD=" + _request.getHeaders().getValue("method"));
@@ -172,7 +162,7 @@ void Cgi::setCGIEnv(Request &_request, Response &_response)
     vecToChar(envMaker, _response);
 }
 
-Cgi::Cgi(): _pid(-1), _isCGI(false)
+Cgi::Cgi(): _pid(-1), _isCGI(false), _envp(NULL)
 {
     fd_out[0] = -1; fd_out[1] = -1;
     fd_in[0] = -1; fd_in[1] = -1;

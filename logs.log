@@ -1,27 +1,17 @@
-[2024-09-17 10:20:33] [INFO]  [initializeSignalHandling]    Initializing signal handling
-[2024-09-17 10:20:34] [INFO]  [bindAndListen]               Server is listening at http://127.0.0.1:8080
-[2024-09-17 10:20:34] [INFO]  [addToQueue]                  Added Event READ EVENT to 5
-[2024-09-17 10:20:44] [INFO]  [acceptClient]                New connection, socket fd is [7], IP is : 127.0.0.1, port : 37792
-[2024-09-17 10:20:44] [INFO]  [addToQueue]                  Added Event READ EVENT to 7
-[2024-09-17 10:20:44] [DEBUG] [readFromSocket]              Reading from client socket 7
-[2024-09-17 10:20:44] [DEBUG] [recvHeader]                  Header received from client 7
-[2024-09-17 10:20:44] [INFO]  [addToQueue]                  Added Event WRITE EVENT to 7
-[2024-09-17 10:20:44] [INFO]  [handleWrite]                 Handling write for client 7
-[2024-09-17 10:20:44] [INFO]  [removeFromQueue]             Removed Event WRITE EVENT from 7
-[2024-09-17 10:20:44] [INFO]  [handleWrite]                 Write completed for client 7
-[2024-09-17 10:21:11] [INFO]  [acceptClient]                New connection, socket fd is [8], IP is : 127.0.0.1, port : 48000
-[2024-09-17 10:21:11] [INFO]  [addToQueue]                  Added Event READ EVENT to 8
-[2024-09-17 10:21:11] [DEBUG] [readFromSocket]              Reading from client socket 8
-[2024-09-17 10:21:11] [DEBUG] [recvHeader]                  Header received from client 8
-[2024-09-17 10:21:11] [DEBUG] [recvBody]                    Body received from client 8
-[2024-09-17 10:21:11] [INFO]  [addToQueue]                  Added Event READ EVENT to 11
-[2024-09-17 10:21:11] [INFO]  [handleCgiRead]               Reading from CGI process 58511
-[2024-09-17 10:21:11] [DEBUG] [handleCgiRead]               CGI process 58511 is still running and waiting for more data
-[2024-09-17 10:21:11] [INFO]  [handleCgiRead]               Reading from CGI process 58511
-[2024-09-17 10:21:11] [INFO]  [removeFromQueue]             Removed Event READ EVENT from 11
-[2024-09-17 10:21:11] [INFO]  [addToQueue]                  Added Event WRITE EVENT to 8
-[2024-09-17 10:21:11] [INFO]  [handleWrite]                 Handling write for client 8
-[2024-09-17 10:21:11] [INFO]  [removeFromQueue]             Removed Event WRITE EVENT from 8
-[2024-09-17 10:21:11] [INFO]  [handleWrite]                 Write completed for client 8
-[2024-09-17 10:21:17] [INFO]  [checkTimeouts]               Client 7 timed out
-[2024-09-17 10:21:17] [INFO]  [removeFromQueue]             Removed Event READ EVENT from 7
+[2024-09-17 12:00:24] [INFO]  [initializeSignalHandling]    Initializing signal handling
+[2024-09-17 12:00:25] [INFO]  [bindAndListen]               Server is listening at http://127.0.0.1:8080
+[2024-09-17 12:00:25] [INFO]  [addToQueue]                  Added Event READ EVENT to 5
+[2024-09-17 12:00:28] [INFO]  [acceptClient]                New connection, socket fd is [7], IP is : 127.0.0.1, port : 35034
+[2024-09-17 12:00:28] [INFO]  [addToQueue]                  Added Event READ EVENT to 7
+[2024-09-17 12:00:28] [DEBUG] [readFromSocket]              Reading from client socket 7
+[2024-09-17 12:00:28] [DEBUG] [recvHeader]                  Header received from client 7
+[2024-09-17 12:00:28] [INFO]  [addToQueue]                  Added Event READ EVENT to 10
+[2024-09-17 12:00:28] [INFO]  [execute]                     Executing ./cgi-bin/hello.pl with PID 22693
+[2024-09-17 12:00:28] [INFO]  [handleCgiRead]               Reading from CGI process 22693
+[2024-09-17 12:00:28] [INFO]  [removeFromQueue]             Removed Event READ EVENT from 10
+[2024-09-17 12:00:28] [INFO]  [addToQueue]                  Added Event WRITE EVENT to 7
+[2024-09-17 12:00:28] [INFO]  [handleWrite]                 Handling write for client 7
+[2024-09-17 12:00:28] [INFO]  [removeFromQueue]             Removed Event WRITE EVENT from 7
+[2024-09-17 12:00:28] [INFO]  [handleWrite]                 Write completed for client 7
+[2024-09-17 12:01:01] [INFO]  [checkTimeouts]               Client 7 timed out
+[2024-09-17 12:01:01] [INFO]  [removeFromQueue]             Removed Event READ EVENT from 7

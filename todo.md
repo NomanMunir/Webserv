@@ -84,4 +84,7 @@
 [*] cgi extension
 
 
-[ ] Cookies
+[ ] Cookies.
+[ ] test chunked request.
+[ ] move everything to html folder.
+[ ] Prepare a proper config file.

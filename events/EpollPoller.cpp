@@ -7,6 +7,7 @@ EpollPoller::EpollPoller()
     this->epollFd = epoll_create1(0);
     if (this->epollFd < 0)
 		throw std::runtime_error("Failed to create epoll instance");
+	std::memset(this->events, 0, sizeof(this->events));
 }
 
 EpollPoller::~EpollPoller() { close(this->epollFd); }
@@ -64,7 +65,7 @@ void EpollPoller::addToQueue(int fd, EventType event)
 void EpollPoller::removeFromQueue(int fd, EventType event)
 {
 	struct epoll_event	epollEvent;
-	memset(&epollEvent, 0, sizeof(epollEvent));
+	std::memset(&epollEvent, 0, sizeof(epollEvent));
 
 	epollEvent.events = 0;
 	epollEvent.data.fd = fd;
@@ -89,13 +90,6 @@ void EpollPoller::removeFromQueue(int fd, EventType event)
 			filterType = "WRITE EVENT";
 			this->fdState[fd].isWrite = false;
 		}
-		// else
-		// {
-		// 	Logs::appendLog("ERROR", "[removeFromQueue]\t\tInvalid Event Type");
-		// 	if (!this->fdState[fd].isRead && !this->fdState[fd].isWrite)
-		// 		this->fdState.erase(fd);		
-		// 	return ;
-		// }
 	}
 
 	if (epoll_ctl(this->epollFd, op, fd, &epollEvent) < 0)

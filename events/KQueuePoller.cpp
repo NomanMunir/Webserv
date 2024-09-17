@@ -13,7 +13,7 @@ KQueuePoller::KQueuePoller()
     if (this->kqueueFd == -1)
     {
         Logs::appendLog("ERROR", "[KQueuePoller]\t\t " + std::string(strerror(errno)));
-        throw std::exception();
+        std::runtime_error("Error Creating KQueue");
     }
 }
 
@@ -23,6 +23,7 @@ void KQueuePoller::addToQueue(int fd, EventType ev)
 {
     struct kevent evSet;
     std::memset(&evSet, 0, sizeof(evSet));
+
     std::string logMsg = "UNKNOWN EVENT";
     if (ev == READ_EVENT)
     {
@@ -38,7 +39,7 @@ void KQueuePoller::addToQueue(int fd, EventType ev)
     }
     else
     {
-        Logs::appendLog("ERROR", "[addToQueue]\t\tInvalid Event Type");
+        Logs::appendLog("ERROR", "[addToQueue]\t\tInvalid Event Type " + logMsg);
         return;
     }
 
@@ -91,7 +92,6 @@ EventInfo KQueuePoller::getEventInfo(int i)
     std::memset(&info, 0, sizeof(info));
 
     info.fd = this->events[i].ident;
-
     if (this->events[i].flags & EV_ERROR)
         info.isError = true;
     else if (this->events[i].flags & EV_EOF)

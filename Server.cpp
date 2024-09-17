@@ -19,13 +19,14 @@ Server::~Server()
     while (!clients.empty())
     {
         close(clients.begin()->first);
-        // if (clients.begin()->second.isCGI())
-            // clients.begin()->second.getCgi().killCGI();
         clients.erase(clients.begin());
     }
 }
 
-Server::Server(const Server &other) : serverSocket(other.serverSocket), addr(other.addr), port(other.port), serverConfig(other.serverConfig), _poller(other._poller)
+Server::Server(const Server &other)
+    : serverSocket(other.serverSocket), \
+    addr(other.addr), port(other.port), \
+    serverConfig(other.serverConfig), _poller(other._poller)
 {
     this->serverError = other.serverError;
 }
