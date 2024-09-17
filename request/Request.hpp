@@ -41,7 +41,6 @@ class Request
 		std::vector<std::string>& getSystemENV();
 
 		void setComplete(bool complete);
-		void reset();
 		bool isChunked();
 		void handleRequest(ServerConfig &serverConfig, Response &structResponse);
 		bool isBodyExist(ServerConfig &serverConfig, Response &structResponse, int fd);

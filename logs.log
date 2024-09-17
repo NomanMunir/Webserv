@@ -1,18 +1,34 @@
-[Sun Sep 15 13:21:57 2024] [INFO]  [initializeSignalHandling]    Initializing signal handling
-[Sun Sep 15 13:21:57 2024] [INFO]  [bindAndListen]               Server is listening at http://127.0.0.1:8080
-[Sun Sep 15 13:21:57 2024] [INFO]  [addToQueue]                  Added Event READ EVENT to 5
-[Sun Sep 15 13:22:17 2024] [INFO]  [acceptClient]                New connection, socket fd is [7], IP is : 127.0.0.1, port : 57800
-[Sun Sep 15 13:22:17 2024] [INFO]  [addToQueue]                  Added Event READ EVENT to 7
-[Sun Sep 15 13:22:17 2024] [DEBUG] [readFromSocket]              Reading from client socket 7
-[Sun Sep 15 13:22:17 2024] [DEBUG] [recvHeader]                  Header received from client 7
-[Sun Sep 15 13:22:17 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT to 7
-[Sun Sep 15 13:22:17 2024] [INFO]  [handleWrite]                 Handling write for client 7
-[Sun Sep 15 13:22:17 2024] [INFO]  [removeFromQueue]             Removed Event WRITE EVENT from 7
-[Sun Sep 15 13:22:17 2024] [INFO]  [handleWrite]                 Write completed for client 7
-[Sun Sep 15 13:22:17 2024] [DEBUG] [readFromSocket]              Reading from client socket 7
-[Sun Sep 15 13:22:17 2024] [ERROR] [recvHeader]                  Client disconnected 7
-[Sun Sep 15 13:22:17 2024] [INFO]  [removeFromQueue]             Removed Event READ EVENT from 7
-[Sun Sep 15 13:22:17 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT to 7
-[Sun Sep 15 13:22:17 2024] [INFO]  [handleWrite]                 Handling write for client 7
-[Sun Sep 15 13:22:17 2024] [INFO]  [handleWrite]                 Connection closed for client [7] with IP 127.0.0.1 on port 8080
-[Sun Sep 15 13:22:17 2024] [INFO]  [removeFromQueue]             Removed Event WRITE EVENT from 7
+[Tue Sep 17 11:58:28 2024] [INFO]  [initializeSignalHandling]    Initializing signal handling
+[Tue Sep 17 11:58:28 2024] [INFO]  [bindAndListen]               Server is listening at http://127.0.0.1:8080
+[Tue Sep 17 11:58:28 2024] [ERROR] [bindAndListen]               Error binding socket Address already in use
+[Tue Sep 17 11:58:28 2024] [INFO]  [bindAndListen]               Server is listening at http://127.0.0.1:8001
+[Tue Sep 17 11:58:28 2024] [INFO]  [bindAndListen]               Server is listening at http://127.0.0.1:8002
+[Tue Sep 17 11:58:28 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 5
+[Tue Sep 17 11:58:28 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 6
+[Tue Sep 17 11:58:28 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 7
+[Tue Sep 17 11:58:38 2024] [INFO]  [acceptClient]                New connection, socket fd is [8], IP is : 127.0.0.1, port : 50820
+[Tue Sep 17 11:58:38 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 8
+[Tue Sep 17 11:58:38 2024] [DEBUG] [readFromSocket]              Reading from client socket 8
+[Tue Sep 17 11:58:38 2024] [DEBUG] [recvHeader]                  Header received from client 8
+[Tue Sep 17 11:58:38 2024] [ERROR] [handleDirectory]             Redirecting to directory with trailing slash
+[Tue Sep 17 11:58:38 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT 8
+[Tue Sep 17 11:58:38 2024] [INFO]  [acceptClient]                New connection, socket fd is [9], IP is : 127.0.0.1, port : 50822
+[Tue Sep 17 11:58:38 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 9
+[Tue Sep 17 11:58:38 2024] [INFO]  [handleWrite]                 Handling write for client 8
+[Tue Sep 17 11:58:38 2024] [INFO]  [removeFromQueue]             Removed WRITE Event 8
+[Tue Sep 17 11:58:38 2024] [INFO]  [handleWrite]                 Write completed for client 8
+[Tue Sep 17 11:58:42 2024] [DEBUG] [readFromSocket]              Reading from client socket 8
+[Tue Sep 17 11:58:42 2024] [DEBUG] [recvHeader]                  Header received from client 8
+[Tue Sep 17 11:58:42 2024] [INFO]  [addToQueue]                  Added Event READ EVENT 12
+[Tue Sep 17 11:58:42 2024] [INFO]  [handleCgiRead]               Reading from CGI process 6000
+[Tue Sep 17 11:58:42 2024] [DEBUG] [handleCgiRead]               CGI process 6000 is still running and waiting for more data
+[Tue Sep 17 11:58:42 2024] [INFO]  [handleCgiRead]               Reading from CGI process 6000
+[Tue Sep 17 11:58:42 2024] [INFO]  [removeFromQueue]             Removed READ Event 12
+[Tue Sep 17 11:58:42 2024] [INFO]  [addToQueue]                  Added Event WRITE EVENT 8
+[Tue Sep 17 11:58:42 2024] [INFO]  [handleWrite]                 Handling write for client 8
+[Tue Sep 17 11:58:42 2024] [INFO]  [removeFromQueue]             Removed WRITE Event 8
+[Tue Sep 17 11:58:42 2024] [INFO]  [handleWrite]                 Write completed for client 8
+[Tue Sep 17 11:59:09 2024] [INFO]  [checkTimeouts]               Client 9 timed out
+[Tue Sep 17 11:59:09 2024] [INFO]  [removeFromQueue]             Removed READ Event 9
+[Tue Sep 17 11:59:15 2024] [INFO]  [checkTimeouts]               Client 8 timed out
+[Tue Sep 17 11:59:15 2024] [INFO]  [removeFromQueue]             Removed READ Event 8

@@ -116,7 +116,6 @@ bool Response::checkDefaultFile(std::string &fullPath, bool isCGI)
 			std::string fileExtension = newPath.substr(newPath.find_last_of("."));
 			if (std::find(targetServer.cgiExtensions.begin(), targetServer.cgiExtensions.end(), fileExtension) == targetServer.cgiExtensions.end())
 				continue;
-			std::cout << " [checkDefaultFile] newPath: " << newPath << std::endl;
 			fullPath = newPath;
 			return (true);
 		}

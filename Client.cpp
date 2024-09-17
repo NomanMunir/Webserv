@@ -251,7 +251,6 @@ void Client::readFromSocket(ServerConfig &serverConfig)
                     recvBody();
             }
         }
-        // std::cout << "body content: " << this->request.getBody().getContent() << "\n";
         this->request.handleRequest(serverConfig, this->response);
         if (this->request.isComplete())
         {
@@ -265,7 +264,6 @@ void Client::readFromSocket(ServerConfig &serverConfig)
     {
         std::cout << e.what() << std::endl;
         Logs::appendLog("ERROR", e.what());
-        // this->_poller->removeFromQueue(this->fd, READ_EVENT);
         handleNormalResponse(serverConfig);
     }
 }

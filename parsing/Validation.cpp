@@ -27,7 +27,6 @@ void Validation::validateRouteMap(std::map<std::string, RouteConfig> &routeMap)
 	for (std::map<std::string, RouteConfig>::iterator it = routeMap.begin(); it != routeMap.end(); it++)
 	{
         validateMethods(it->second.methods);
-		validateCgiExtensions(it->second.cgiExtensions);
 		if (it->second.redirect != "")
 		{
 		// std::cout << "redirect: " << it->second.redirect << std::endl;
@@ -116,18 +115,6 @@ void Validation::validateDirectives(std::map<std::string, std::string> directive
 		throw std::runtime_error("[validateDirectives]\t\t keep_alive_timeout directive is invalid");
 }
 
-void Validation::validateCgiExtensions(std::vector<std::string> cgiExtensions)
-{
-    std::string validCgiExtensions[] = {".php", ".py", ".sh"};
-	if (cgiExtensions.size() == 1 && cgiExtensions[0] == "")
-		return;
-	for (size_t i = 0; i < cgiExtensions.size(); i++)
-	{
-		if (cgiExtensions[i].empty() || std::find(validCgiExtensions, validCgiExtensions + 3, cgiExtensions[i]) == validCgiExtensions + 3)
-			throw std::runtime_error("[validateCgiExtensions]\t\t invalid configuration file " + cgiExtensions[i]);
-	}
-}
-
 Validation::Validation(Parser &parser)
 {
 	validateDirectives(parser.getDirectives());
@@ -155,7 +142,6 @@ Validation::Validation(Parser &parser)
 		}
 		if (!validateNumber("Content-Length", servers[i].clientBodySizeLimit))
 			throw std::runtime_error("[Validation]\t\t invalid client body size limit");
-		validateCgiExtensions(servers[i].cgiExtensions);
 		validateRouteMap(servers[i].routeMap);
 	}
 	// printServers(servers);

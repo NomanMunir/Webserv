@@ -36,6 +36,8 @@ private:
 
     void handleNormalResponse(ServerConfig &serverConfig);
     void handleCGI(ServerConfig &serverConfig);
+    void validateCgiExtensions(std::vector<std::string> cgiExtensions, std::string fullPath);
+
     
 
 public:

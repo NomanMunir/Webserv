@@ -213,13 +213,8 @@ Request& Request::operator=(const Request &c)
         rawData = c.rawData;
         headers = c.headers;
         body = c.body;
+		isCGI = c.isCGI;
         complete = c.complete;
     }
     return *this;
-}
-
-void Request::reset()
-{
-	rawData.clear();
-	complete = false;
 }

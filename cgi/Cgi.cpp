@@ -36,6 +36,7 @@ void Cgi::checkCGITimeout(pid_t pid, Request &_request, Response &_response)
         
         if (time > CGI_TIMEOUT)
         {
+            
             if (kill(pid, SIGKILL) < 0)
             {
                 Logs::appendLog("ERROR", "[checkCGITimeout]\t\t Failed to kill CGI process " + std::string(strerror(errno)));
