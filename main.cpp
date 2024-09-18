@@ -10,21 +10,22 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "events/EventPoller.hpp"
+#include "srcs/events/EventPoller.hpp"
 
 #if defined(__APPLE__) || defined(__FreeBSD__)
-    #include "events/KQueuePoller.hpp"
+    #include "srcs/events/KQueuePoller.hpp"
 #elif defined(__linux__)
-    #include "events/EpollPoller.hpp"
+    #include "srcs/events/EpollPoller.hpp"
 #endif
 
-#include "ServerManager.hpp"
+#include "srcs/server/ServerManager.hpp"
+#include "srcs/utils/MimeTypes.hpp"
+#include "srcs/utils/Logs.hpp"
+#include "srcs/parsing/Validation.hpp"
 #include <csignal>
 #include <stdexcept>
-#include "utils/Logs.hpp"
 #include <unistd.h>
 #include <sys/wait.h>
-#include "utils/MimeTypes.hpp"
 
 void handleSignal(int signal)
 {

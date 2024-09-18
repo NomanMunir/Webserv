@@ -1,0 +1,39 @@
+[2024-09-18 10:41:44] [INFO]  [initializeSignalHandling]    Initializing signal handling
+[2024-09-18 10:41:44] [INFO]  [Parser]                      Configuration file parsed successfully
+[2024-09-18 10:41:44] [INFO]  [Validation]                  Configuration file validated successfully.
+[2024-09-18 10:41:44] [INFO]  [bindAndListen]               Server is listening at http://127.0.0.1:8080
+[2024-09-18 10:41:44] [INFO]  [addToQueue]                  Added Event READ EVENT to 5
+[2024-09-18 10:41:47] [INFO]  [acceptClient]                New connection, socket fd is [7], IP is : 127.0.0.1, port : 45966
+[2024-09-18 10:41:47] [INFO]  [addToQueue]                  Added Event READ EVENT to 7
+[2024-09-18 10:41:47] [DEBUG] [readFromSocket]              Reading from client socket 7
+[2024-09-18 10:41:47] [DEBUG] [recvHeader]                  Header received from client 7
+[2024-09-18 10:41:47] [INFO]  [parseHeader]                 Method: GET
+[2024-09-18 10:41:47] [INFO]  [parseHeader]                 URI: /cgi-bin/test.py
+[2024-09-18 10:41:47] [INFO]  [parseHeader]                 Headers parsed successfully.
+[2024-09-18 10:41:47] [INFO]  [handleRequest]               CGI request detected.
+[2024-09-18 10:41:47] [INFO]  [handleRequest]               Request handled successfully.
+[2024-09-18 10:41:47] [ERROR] [checkType]                   File not found www/cgi-bin/test.py
+[2024-09-18 10:41:47] [INFO]  [removeFromQueue]             Removed Event READ EVENT from 7
+[2024-09-18 10:41:47] [INFO]  [addToQueue]                  Added Event WRITE EVENT to 7
+[2024-09-18 10:41:47] [INFO]  [handleWrite]                 Handling write for client 7
+[2024-09-18 10:41:47] [INFO]  [handleWrite]                 Connection closed for client [7] with IP 127.0.0.1 on port 8080
+[2024-09-18 10:41:47] [INFO]  [removeFromQueue]             Removed Event WRITE EVENT from 7
+[2024-09-18 10:42:09] [INFO]  [acceptClient]                New connection, socket fd is [7], IP is : 127.0.0.1, port : 52784
+[2024-09-18 10:42:09] [INFO]  [addToQueue]                  Added Event READ EVENT to 7
+[2024-09-18 10:42:09] [DEBUG] [readFromSocket]              Reading from client socket 7
+[2024-09-18 10:42:09] [DEBUG] [recvHeader]                  Header received from client 7
+[2024-09-18 10:42:09] [INFO]  [parseHeader]                 Method: GET
+[2024-09-18 10:42:09] [INFO]  [parseHeader]                 URI: /cgi-bin/formData.py
+[2024-09-18 10:42:09] [INFO]  [parseHeader]                 Headers parsed successfully.
+[2024-09-18 10:42:09] [INFO]  [handleRequest]               CGI request detected.
+[2024-09-18 10:42:09] [INFO]  [handleRequest]               Request handled successfully.
+[2024-09-18 10:42:09] [INFO]  [addToQueue]                  Added Event READ EVENT to 10
+[2024-09-18 10:42:09] [INFO]  [execute]                     Executing www/cgi-bin/formData.py with PID 111147
+[2024-09-18 10:42:09] [INFO]  [handleCgiRead]               Reading from CGI process 111147
+[2024-09-18 10:42:09] [DEBUG] [handleCgiRead]               CGI process 111147 is still running and waiting for more data
+[2024-09-18 10:42:09] [INFO]  [handleCgiRead]               Reading from CGI process 111147
+[2024-09-18 10:42:09] [INFO]  [removeFromQueue]             Removed Event READ EVENT from 10
+[2024-09-18 10:42:09] [INFO]  [addToQueue]                  Added Event WRITE EVENT to 7
+[2024-09-18 10:42:09] [INFO]  [handleWrite]                 Handling write for client 7
+[2024-09-18 10:42:09] [INFO]  [removeFromQueue]             Removed Event WRITE EVENT from 7
+[2024-09-18 10:42:09] [INFO]  [handleWrite]                 Write completed for client 7

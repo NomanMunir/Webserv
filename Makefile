@@ -4,19 +4,18 @@ CXX = c++
 CXXFLAGS = -std=c++98 -Wall -Wextra -Werror 
 
 SRCS = main.cpp \
-		Server.cpp \
-		ServerManager.cpp \
-		parsing/Parser.cpp parsing/Validation.cpp \
-		request/Headers.cpp request/Request.cpp request/Body.cpp \
-		response/Response.cpp response/HttpResponse.cpp \
-		utils/utils.cpp utils/Logs.cpp utils/MimeTypes.cpp \
-		Client.cpp \
-		cgi/Cgi.cpp \
+		srcs/server/Server.cpp srcs/server/ServerManager.cpp  \
+		srcs/parsing/Parser.cpp srcs/parsing/Validation.cpp \
+		srcs/request/Headers.cpp srcs/request/Request.cpp srcs/request/Body.cpp \
+		srcs/response/Response.cpp srcs/response/HttpResponse.cpp \
+		srcs/utils/utils.cpp srcs/utils/Logs.cpp srcs/utils/MimeTypes.cpp \
+		srcs/client/Client.cpp \
+		srcs/cgi/Cgi.cpp \
 
 		ifeq ($(shell uname), Linux)
-			SRCS += events/EpollPoller.cpp
+			SRCS += srcs/events/EpollPoller.cpp
 		else
-			SRCS += events/KQueuePoller.cpp
+			SRCS += srcs/events/KQueuePoller.cpp
 		endif
 
 OBJS = $(SRCS:.cpp=.o)
