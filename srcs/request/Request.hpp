@@ -43,7 +43,7 @@ class Request
 
 		void setComplete(bool complete);
 		void handleRequest(ServerConfig &serverConfig, Response &structResponse);
-		bool isBodyExist(ServerConfig &serverConfig, Response &structResponse, int fd);
+		bool isBodyExist(ServerConfig &serverConfig, Response &structResponse);
 
 	private:
 		bool chooseRoute(std::string path, ServerConfig server, RouteConfig &targetRoute);

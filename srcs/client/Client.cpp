@@ -15,6 +15,7 @@ Client::Client(int fd, EventPoller *poller)
 {
     lastActivity = time(NULL);
     env = NULL;
+    this->response.setClientSocket(fd);
 }
 
 Client::~Client() { }
@@ -201,7 +202,7 @@ void Client::readFromSocket(ServerConfig &serverConfig)
             recvHeader();
         this->request.getHeaders().parseHeader(this->response);
 
-        if (this->request.isBodyExist(serverConfig, this->response, this->fd))
+        if (this->request.isBodyExist(serverConfig, this->response))
         {
             Logs::appendLog("DEBUG", "[readFromSocket]\t\t Reading body from client socket " + intToString(this->fd));
             while(!this->request.getBody().isComplete())

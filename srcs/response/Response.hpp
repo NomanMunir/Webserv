@@ -40,12 +40,14 @@ class Response
 		int 		getErrorCode() const;
 		bool 		getIsConnectionClosed() const;
 		void 		printResponse();
+		int			getClientSocket() const;
 
 		void 		setErrorCode(int errorStatus, std::string errorMsg);
 		void 		setTargetServer(ServerConfig server);
 		void 		setTargetRoute(RouteConfig route);
 		void 		setIsConnectionClosed(bool isClosed);
 		void 		sendError(std::string errorCode);
+		void 		setClientSocket(int clientSocket);
 
 
 		int 		checkType(std::string path);

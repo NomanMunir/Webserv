@@ -71,7 +71,7 @@ void Cgi::execute(EventPoller *poller, Request &_request, Response &_response, s
 
 
         char* argv[] = { const_cast<char*>(_fullPath.c_str()), NULL };
-        Logs::appendLog("INFO", "[execute]\t\t Executing " + _fullPath + " with PID " + intToString(getpid()));
+        Logs::appendLog("INFO", "[execute]\t\t Executing " + _fullPath + " with PID " + intToString(getpid()) + " and fd " + intToString(_response.getClientSocket()));
         if (execve(_fullPath.c_str(), argv, _envp) < 0)
         {
             Logs::appendLog("ERROR", "[execute]\t\t Failed to execute " + std::string(strerror(errno)));

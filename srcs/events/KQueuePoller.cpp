@@ -54,6 +54,8 @@ void KQueuePoller::removeFromQueue(int fd, EventType ev)
     struct kevent evSet;
     std::memset(&evSet, 0, sizeof(evSet));
 
+    if (fdState.find(fd) == fdState.end())
+        return;
     if (ev == READ_EVENT && fdState[fd].isRead)
     {
         EV_SET(&evSet, fd, EVFILT_READ, EV_DELETE, 0, 0, NULL);

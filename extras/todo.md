@@ -83,32 +83,30 @@
 [*] cgi killing pc
 [*] cgi extension
 [*] Copy and assignment operator
+[*] move everything to html folder.
+[*] Prepare a proper config file.
+[*] file permission
+[*] CGI Timeout
+[*] CGI GET and POST
+[*] CGI Environment variables
+[*] exceve failure
+[*] no permmision for config file or file not exist.
+[*] empty file, ........
+[*] check cgi directory is not out of root dir.
+[*] test return
+[*] test ../../../ in default files.
+[*] update query string.
+[*] test handle Delete reqeust.
+[*] some test for default files.
+[*] decode uri
+[*] duplicateHeaders
 
 
-[ ] Cookies.
-[ ] move everything to html folder.
-[ ] Prepare a proper config file.
 
 Testing:
-- CGI
-[ ] file permission
-[ ] CGI Timeout
-[ ] CGI GET and POST
-[ ] CGI Environment variables
+[ ] Cookies.
 [ ] Multiple CGI
-[ ] exceve failure
 [ ] test chunked request.
-
-[ ] no permmision for config file or file not exist.
-[ ] empty file, ........
-[ ] check cgi directory is not out of root dir.
-[ ] test return
-[ ] play with first line of request
-[ ] decode uri
-[ ] duplicateHeaders
+[ ] make upload script for cgi.
+[ ] duplicate headers giving problems.
 [ ] test chooseRoute for get and post request.
-[ ] test ../../../ in default files.
-[ ] some test for default files.
-[ ] test handle Delete reqeust.
-
-[ ] update query string.

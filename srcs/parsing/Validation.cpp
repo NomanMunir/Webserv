@@ -162,7 +162,7 @@ void Validation::validateCGIExtensions(std::vector<std::string> cgiExtensions)
 	for (size_t i = 0; i < cgiExtensions.size(); i++)
 	{
 		if (cgiExtensions[i].empty())
-			throw std::runtime_error("[validateCGIExtensions]\t\t invalid configuration file " + cgiExtensions[i]);
+			continue;
 		if (cgiExtensions[i][0] != '.')
 			throw std::runtime_error("[validateCGIExtensions]\t\t invalid configuration file " + cgiExtensions[i]);
 		if (cgiExtensions[i].find("..") != std::string::npos)

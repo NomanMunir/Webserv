@@ -191,6 +191,7 @@ void Server::handleRead(int fd)
     catch(const std::exception& e)
     {
         Logs::appendLog("ERROR", e.what());
+        std::cout << "hi" << std::endl;
         this->_poller->removeFromQueue(fd, READ_EVENT);
         close(fd);
         clients.erase(fd);
@@ -297,6 +298,7 @@ void Server::generateCGIError(Client &client, std::string errorCode)
 
     client.getWriteBuffer() = client.getResponse().getResponse();
     client.setWritePending(true);
+    client.setReadPending(false);
 }
 
 void Server::checkTimeouts()

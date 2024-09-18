@@ -108,22 +108,16 @@ bool Request::chooseRoute(std::string uri, ServerConfig server, RouteConfig &tar
 	return false;
 }
 
-bool Request::isBodyExist(ServerConfig &serverConfig, Response &structResponse, int fd)
+bool Request::isBodyExist(ServerConfig &serverConfig, Response &structResponse)
 {
-	
 	std::string length = headers.getValue("Content-Length");
 	std::string encoding = headers.getValue("Transfer-Encoding");
+
 	if (length.empty() && encoding.empty())
-	{
-		char buffer[1];
-		if (recv(fd, buffer, 1, MSG_PEEK) <= 0)
-			return false;
-		else
-			structResponse.setErrorCode(411, "[isBodyExist]\t\t Content-Length or Transfer-Encoding is missing");
-	}
+		return false;
 	if (!length.empty())
 	{
-		std::string maxBodySize = serverConfig.clientBodySizeLimit == "" ? "1000000" : serverConfig.clientBodySizeLimit;
+		std::string maxBodySize = serverConfig.clientBodySizeLimit;
 		if (!validateNumber("Content-Length", length))
 			structResponse.setErrorCode(411,"[isBodyExist]\t\t Invalid Content-Length");
 		if (std::atof(length.c_str()) > std::atof(maxBodySize.c_str()))

@@ -325,7 +325,7 @@ void Parser::setDefault()
             servers[i].errorPages["500"] = std::string(DEFAULT_ROOT) + "/errors/500.html";
         }
         if (servers[i].clientBodySizeLimit.empty())
-            servers[i].clientBodySizeLimit = "1";
+            servers[i].clientBodySizeLimit = "1000000";
         if (servers[i].routeMap.empty())
         {
             servers[i].routeMap["/"] = routeConfig;

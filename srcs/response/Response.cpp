@@ -137,7 +137,7 @@ bool Response::checkDefaultFile(std::string &fullPath, bool isCGI)
 			newPath = resolvePath(fullPath, defaultFiles[i]);
 		if (newPath.find(root) != 0)
 		{
-			Logs::appendLog("Error", "What are you trying to access oui? " + newPath);
+			Logs::appendLog("ERROR", "[checkDefaultFile]\t\t What are you trying to access oui? " + newPath);
 			this->setErrorCode(403, "[checkDefaultFile]\t\t Access denied");
 		}
 		if (isFileDir(newPath) == IS_FILE && isCGI)
@@ -187,6 +187,8 @@ void Response::handleDirectory(std::string &fullPath, std::string &uri, bool &is
 void Response::generateResponseFromFile(std::string &path, bool isHEAD)
 {
 	std::ifstream file(path.c_str());
+	if (!file.is_open())
+		return (setErrorCode(403, "[generateResponseFromFile]\t\t Access denied " + path));
 	std::stringstream buffer;
 	buffer << file.rdbuf();
 	std::string body = buffer.str();
@@ -211,6 +213,7 @@ bool Response::handleRedirect(bool isRedir, std::string redirect)
 {
 	if (!isRedir)
 		return false;
+	Logs::appendLog("INFO", "[handleRedirect]\t\t Handling redirect with redirect value: " + redirect);
 	std::stringstream ss(redirect);
 	int errorCode;
 	ss >> errorCode;
@@ -222,7 +225,7 @@ bool Response::handleRedirect(bool isRedir, std::string redirect)
 
 	if (!value.empty())
 	{
-		if (errorCode >= 300 && errorCode < 400)
+		if (errorCode == 301 || errorCode == 302 || errorCode == 303 || errorCode == 307 || errorCode == 308)
 		{
 			value =  trim(value);
 			std::string tokenWithSlash = value[0] == '/' ? value :  "/" + value;
@@ -570,3 +573,6 @@ void Response::setErrorCode(int errorStatus, std::string errorMsg)
 }
 
 void Response::setIsConnectionClosed(bool isClosed) { isConnectionClosed = isClosed; }
+
+int Response::getClientSocket() const { return (clientSocket); }
+void Response::setClientSocket(int clientSocket) { this->clientSocket = clientSocket; }

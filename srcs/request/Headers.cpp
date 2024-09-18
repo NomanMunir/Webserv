@@ -13,7 +13,11 @@
 #include "Headers.hpp"
 #include "../response/Response.hpp"
 
-Headers::Headers(): complete(false) { }
+Headers::Headers(): complete(false)
+{
+	headers.clear();
+
+}
 
 Headers::~Headers() { }
 
@@ -140,14 +144,12 @@ void Headers::isDuplicateHeader(const std::string &key, Response &structResponse
         "Authorization", "Referer"
     };
 
-    for (long unsigned int i = 0; i < sizeof(criticalHeaders) / sizeof(criticalHeaders[0]); ++i)
-    {
-        if (key == criticalHeaders[i])
-        {
-            if (this->headers.find(key) != this->headers.end())
-                structResponse.setErrorCode(400, "[parseHeaderBody]\t\t Duplicate Header: " + key);
-        }
-    }
+	if (std::find(std::begin(criticalHeaders), std::end(criticalHeaders), key) != std::end(criticalHeaders))
+	{
+		if (headers.find(key) != headers.end())
+			structResponse.setErrorCode(400, "[parseHeaderBody]\t\t Duplicate Header: " + key);
+	}
+
 }
 
 void Headers::parseHeaderBody(std::istringstream &iss, Response &structResponse)
@@ -166,7 +168,6 @@ void Headers::parseHeaderBody(std::istringstream &iss, Response &structResponse)
 			structResponse.setErrorCode(400, "[parseHeaderBody]\t\t Invalid Header space before : " + line);
 		std::string key = trim(line.substr(0, pos));
 		std::string value = trim(line.substr(pos + 1));
-
 		isDuplicateHeader(key, structResponse);
 		if (key == "Host")
 		{
