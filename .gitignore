@@ -1,5 +1,4 @@
 html/PF
-uploads
 *.o
 */*.o
 */*/*.o

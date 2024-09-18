@@ -47,7 +47,6 @@ def handle_post_request():
 def main():
     # Determine the request method
     request_method = os.environ.get('REQUEST_METHOD', '')
-    print("Method:", request_method, file=sys.stderr)
     if request_method == 'GET':
         handle_get_request()
     elif request_method == 'POST':

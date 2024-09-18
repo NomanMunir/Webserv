@@ -73,13 +73,7 @@ int main(int ac, const char **av, char **env)
         if (ac > 2)
             throw std::runtime_error("[main]\t\t\t Usage: ./webserv <config_file>");
         if (ac == 1)
-        {
-            #if defined(__APPLE__) || defined(__FreeBSD__)
-                av[1] = "config/config.conf";
-            #elif defined(__linux__)
-                av[1] = "config/configLinux.conf";
-            #endif
-        }
+            av[1] = "config/config.conf";
 
         initializeSignalHandling();
         MimeTypes::load("config/mime.types");
