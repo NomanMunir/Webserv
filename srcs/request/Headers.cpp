@@ -171,7 +171,7 @@ void Headers::parseHeaderBody(std::istringstream &iss, Response &structResponse)
 			structResponse.setErrorCode(400, "[parseHeaderBody]\t\t Invalid Header space before : " + line);
 		std::string key = trim(line.substr(0, pos));
 		std::string value = trim(line.substr(pos + 1));
-		isDuplicateHeader(key, structResponse);
+		// isDuplicateHeader(key, structResponse);
 		if (key == "Host")
 		{
 			std::vector<std::string> tokens = split(value, ':');

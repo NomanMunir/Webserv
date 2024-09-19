@@ -30,7 +30,7 @@ def main():
         random_filename = generate_random_filename(extension=file_extension)
 
         # Specify the directory where the uploaded files will be saved
-        upload_dir = 'www/uploads'  # Change this to your desired directory
+        upload_dir = '../uploads'  # Change this to your desired directory
 
         # Ensure the upload directory exists
         if not os.path.exists(upload_dir):

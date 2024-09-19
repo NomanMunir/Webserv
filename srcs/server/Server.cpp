@@ -109,14 +109,7 @@ bool Server::acceptClient()
         Logs::appendLog("ERROR", "[acceptClient]\t\t Error accepting client " + std::string(strerror(errno)));
         return false;
     }
-    int flags = fcntl(clientSocket, F_GETFL, 0);
-    if (flags == -1)
-    {
-        Logs::appendLog("ERROR", "[acceptClient]\t\t " + std::string(strerror(errno)));
-        close(clientSocket);
-        return false;
-    }
-    if (fcntl(clientSocket, F_SETFL, flags | O_NONBLOCK) == -1)
+    if (fcntl(clientSocket, F_SETFL, O_NONBLOCK) == -1)
     {
         Logs::appendLog("ERROR", "[acceptClient]\t\t " + std::string(strerror(errno)));
         close(clientSocket);
@@ -142,7 +135,11 @@ void Server::handleWrite(int fd)
         bool isClosed = !clients[fd].isKeepAlive() || clients[fd].getResponse().getIsConnectionClosed();
         if (isClosed)
         {
-            send(fd, clients[fd].getWriteBuffer().c_str(), clients[fd].getWriteBuffer().size(), 0);
+            int bytesSent = send(fd, clients[fd].getWriteBuffer().c_str(), clients[fd].getWriteBuffer().size(), 0);
+            if (bytesSent < 0)
+                Logs::appendLog("ERROR", "[handleWrite]\t\t Error sending data to client " + std::string(strerror(errno)));
+            else if (bytesSent == 0)
+                Logs::appendLog("INFO", "[handleWrite]\t\t Connection closed for client [" + intToString(fd) + "] with IP " + inet_ntoa(this->addr.sin_addr) + " on port " + intToString(this->port));
             Logs::appendLog("INFO", "[handleWrite]\t\t Connection closed for client [" + intToString(fd) + "] with IP " + inet_ntoa(this->addr.sin_addr) + " on port " + intToString(this->port));
             this->_poller->removeFromQueue(fd, WRITE_EVENT);
             this->_poller->removeFromQueue(fd, READ_EVENT);
@@ -152,14 +149,15 @@ void Server::handleWrite(int fd)
         }
         if (!clients[fd].isWritePending()) return;
 
-        ssize_t bytesSent = send(fd, clients[fd].getWriteBuffer().c_str(), clients[fd].getWriteBuffer().size(), 0);
+        int bytesSent = send(fd, clients[fd].getWriteBuffer().c_str(), clients[fd].getWriteBuffer().size(), 0);
         if (bytesSent < 0)
         {
             Logs::appendLog("ERROR", "[handleWrite]\t\t Error sending data to client " + std::string(strerror(errno)));
             this->_poller->removeFromQueue(fd, WRITE_EVENT);
             return;
         }
-        
+        else if (bytesSent == 0)
+            return;
         this->_poller->removeFromQueue(fd, WRITE_EVENT);
         clients[fd].getWriteBuffer().clear();
         clients[fd].setWritePending(false);
@@ -353,8 +351,9 @@ void Server::handleDisconnection(int fd)
     }
     else
     {
+        this->_poller->removeFromQueue(fd, READ_EVENT);
+        this->_poller->removeFromQueue(fd, WRITE_EVENT);
         close(fd);
-        clients.erase(fd);
     }
     clients.erase(fd);
 }

@@ -56,7 +56,7 @@ void ServerManager::processReadEvent(EventInfo eventInfo)
 		{
 			if (this->servers[j]->isMyClient(eventInfo.fd))
 			{
-				if (eventInfo.isEOF)
+				if (eventInfo.isEOF || eventInfo.isError)
 				{
 					this->servers[j]->handleDisconnection(eventInfo.fd);
 					break;
@@ -118,18 +118,9 @@ void ServerManager::run()
 		for (int i = 0; i < numOfEvents; i++)
 		{
 			EventInfo eventInfo = this->_poller->getEventInfo(i);
-			if (eventInfo.isError)
-			{
-				Logs::appendLog("ERROR", "[run]\t\t Error event at fd: [" + intToString(eventInfo.fd) + "]");
-				continue;
-			}
-			if (eventInfo.isRead || eventInfo.isEOF)
+			if (eventInfo.isRead || eventInfo.isEOF || eventInfo.isError)
 				processReadEvent(eventInfo);
-		}
-		for (int i = 0; i < numOfEvents; i++)
-		{
-			EventInfo eventInfo = this->_poller->getEventInfo(i);
-			if (eventInfo.isWrite)
+			else if (eventInfo.isWrite)
 				processWriteEvent(eventInfo);
 		}
 	}

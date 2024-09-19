@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webserv Showcase</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        header {
+            background-color: #4CAF50;
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        section {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+            font-size: 3em;
+        }
+
+        .landing {
+            text-align: center;
+        }
+
+        .landing img {
+            width: 100%;
+            max-width: 600px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .features, .form-container {
+            margin-top: 40px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        ul li {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 8px;
+            margin: 5px 0;
+            font-size: 1.2em;
+        }
+
+        form {
+            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        form label {
+            margin: 10px 0 5px;
+            font-size: 1.2em;
+        }
+
+        form input, form textarea {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 1em;
+        }
+
+        form button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1.2em;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background-color: #45a049;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #333;
+            color: white;
+            margin-top: 50px;
+        }
+
+        footer a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Webserv Showcase</h1>
+    </header>
+
+    <nav>
+        <a href="#landing">Home</a>
+        <a href="#features">Features</a>
+        <a href="#upload">Upload File</a>
+        <a href="#contact">User Details</a>
+        <a href="./cookies.html">Cookies</a>
+    </nav>
+
+    <section id="landing" class="landing">
+        <h1>Welcome to Webserv!</h1>
+        <p>Your efficient, lightweight, and fast web server.</p>
+        <img src="landing-page.webp" alt="Webserv Image">
+    </section>
+
+    <section id="features" class="features">
+        <h2>About Webserv</h2>
+        <p>Webserv is a highly optimized, feature-rich web server designed to meet modern web hosting demands. Below are some of its key features:</p>
+        <ul>
+            <li>Fast, efficient request handling with I/O multiplexing</li>
+            <li>Support for GET, POST, and DELETE methods</li>
+            <li>Custom error pages for better user experience</li>
+            <li>File upload and management with security in mind</li>
+            <li>Flexible configuration for routing and file serving</li>
+            <li>CGI support for dynamic content</li>
+        </ul>
+    </section>
+
+    <section id="upload" class="form-container">
+        <h2>Upload a File</h2>
+        <form action="/cgi-bin/uploadFile.py" method="POST" enctype="multipart/form-data">
+            <label for="file">Choose a file:</label>
+            <input type="file" id="file" name="file" required>
+            <button type="submit">Upload</button>
+        </form>
+    </section>
+
+    <section id="contact" class="form-container">
+        <h2>User Details</h2>
+        <form action="/cgi-bin/formData.py" method="POST">
+            <label for="name">Full Name:</label>
+            <input type="text" id="name" name="name" required>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            <label for="message">Message:</label>
+            <textarea id="message" name="message" rows="4" required></textarea>
+            <button type="submit">Submit</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Webserv. All rights reserved. | <a href="#">Privacy Policy</a></p>
+    </footer>
+
+</body>
+</html>

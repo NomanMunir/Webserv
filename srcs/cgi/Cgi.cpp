@@ -24,13 +24,7 @@ bool Cgi::checkFilePermission(const char* path)
 
 bool setNoneBlocking(int fd)
 {
-    int flags = fcntl(fd, F_GETFL, 0);
-    if (flags == -1)
-    {
-        Logs::appendLog("ERROR", "[Cgi setNoneBlocking]\t\t " + std::string(strerror(errno)));
-        return false;
-    }
-    if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
+    if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1)
     {
         Logs::appendLog("ERROR", "[Cgi setNoneBlocking]\t\t " + std::string(strerror(errno)));
         return false;
@@ -69,10 +63,18 @@ void Cgi::execute(EventPoller *poller, Request &_request, Response &_response, s
         dup2(fd_out[1], STDOUT_FILENO);
         close(fd_out[1]);
 
-
+        std::string path = _fullPath.substr(0, _fullPath.find_last_of("/"));
+        std::string file = _fullPath.substr(_fullPath.find_last_of("/") + 1);
+        Logs::appendLog("INFO", "[execute]\t\t Changing directory to " + path);
+        if (chdir(path.c_str()) < 0)
+        {
+            Logs::appendLog("ERROR", "[execute]\t\t Failed to change directory " + std::string(strerror(errno)));
+            freeEnv(_envp);
+            exit(1);
+        }
         char* argv[] = { const_cast<char*>(_fullPath.c_str()), NULL };
         Logs::appendLog("INFO", "[execute]\t\t Executing " + _fullPath + " with PID " + intToString(getpid()) + " and fd " + intToString(_response.getClientSocket()));
-        if (execve(_fullPath.c_str(), argv, _envp) < 0)
+        if (execve(file.c_str(), argv, _envp) < 0)
         {
             Logs::appendLog("ERROR", "[execute]\t\t Failed to execute " + std::string(strerror(errno)));
             freeEnv(_envp);
@@ -91,7 +93,13 @@ void Cgi::execute(EventPoller *poller, Request &_request, Response &_response, s
         if (_request.getHeaders().getValue("method") == "POST") 
         {
             std::string body = _request.getBody().getContent();
-            if (write(fd_in[1], body.c_str(), body.size()) < 0)
+            int count = write(fd_in[1], body.c_str(), body.size());
+            if (count < 0)
+            {
+                close(fd_in[1]); close(fd_out[0]); freeEnv(_envp);
+                _response.setErrorCode(500, "[execute]\t\t Failed to write to pipe");
+            }
+            else if (count == 0)
             {
                 close(fd_in[1]); close(fd_out[0]); freeEnv(_envp);
                 _response.setErrorCode(500, "[execute]\t\t Failed to write to pipe");
