@@ -91,15 +91,19 @@ void Client::recvChunk()
     char buffer[1025];
     int bytesRead;
     std::string &bodyContent = this->request.getBody().getContent();
-    while (true)
+    while (!this->request.getBody().isComplete())
     {
+        if (isTimeOut(REQUEST_TIMEOUT))
+            response.setErrorCode(408, "[recvHeader]\t\t Request timeout");
         bytesRead = recv(this->fd, buffer, 1025, 0);
+        if (bytesRead < 0 && std::string(buffer).find("\r\n0\r\n\r\n") == std::string::npos)
+            continue;
         if (bytesRead < 0)
-            throw std::runtime_error("[recvChunk]\t\t Error reading from client socket " + intToString(this->fd) + " " + strerror(errno));
+            response.setErrorCode(500, "[recvChunk]\t\t Error reading from client socket");
         else if (bytesRead == 0)
-            throw std::runtime_error("[recvChunk]\t\t Client disconnected " + intToString(this->fd));
+            response.setErrorCode(499, "[recvChunk]\t\t Client disconnected " + intToString(this->fd));
         bodyContent.append(buffer, bytesRead);
-        if (bodyContent.find("0\r\n\r\n") != std::string::npos)
+        if (bodyContent.find("\r\n0\r\n\r\n") != std::string::npos)
             break;
     }
     Logs::appendLog("DEBUG", "[recvChunk]\t\t Chunked body received with size of " + intToString(bodyContent.size()));
@@ -114,6 +118,8 @@ void Client::recvHeader()
     char c[1];
     while (buffer.find("\r\n\r\n") == std::string::npos)
     {
+        if (isTimeOut(REQUEST_TIMEOUT))
+            response.setErrorCode(408, "[recvHeader]\t\t Request timeout");
         bytesRead = recv(this->fd, c, 1, 0);
         if (bytesRead < 0)
             response.setErrorCode(500, "[recvHeader]\t\t Error reading from client socket");
@@ -135,6 +141,8 @@ void Client::recvBody()
 
     while (buffer.size() < contentLength)
     {
+        if (isTimeOut(REQUEST_TIMEOUT))
+            response.setErrorCode(408, "[recvHeader]\t\t Request timeout");
         bytesRead = recv(this->fd, c, 1, 0);
         if (bytesRead < 0)
             response.setErrorCode(500, "[recvBody]\t\t Error reading from client socket");
@@ -174,6 +182,7 @@ void Client::handleCGI(ServerConfig &serverConfig)
         response.handleDirectory(fullPath, uri, isDirListing);
     if (isDirListing)
     {
+        std::cout << "fullPath with clientFd: " << fullPath << " " << this->fd << std::endl;
         validateCgiExtensions(serverConfig.cgiExtensions, fullPath);
         this->cgi.execute(this->_poller, this->request, this->response, fullPath);
     }
@@ -198,20 +207,16 @@ void Client::readFromSocket(ServerConfig &serverConfig)
     try
     {
         Logs::appendLog("DEBUG", "[readFromSocket]\t\t Reading from client socket " + intToString(this->fd));
-        while(!this->request.getHeaders().isComplete())
-            recvHeader();
+        recvHeader();
         this->request.getHeaders().parseHeader(this->response);
 
         if (this->request.isBodyExist(serverConfig, this->response))
         {
             Logs::appendLog("DEBUG", "[readFromSocket]\t\t Reading body from client socket " + intToString(this->fd));
-            while(!this->request.getBody().isComplete())
-            {
-                if (this->request.isChunked())
-                    recvChunk();
-                else
-                    recvBody();
-            }
+            if (this->request.isChunked())
+                recvChunk();
+            else
+                recvBody();
         }
         this->request.handleRequest(serverConfig, this->response);
         if (this->request.isComplete())
@@ -229,10 +234,10 @@ void Client::readFromSocket(ServerConfig &serverConfig)
     }
 }
 
-bool Client::isTimeOut()
+bool Client::isTimeOut(int timeout)
 {
     time_t now = time(NULL);
-    if (now - lastActivity > CLIENT_TIMEOUT)
+    if (now - lastActivity > timeout)
         return true;
     return false;
 }

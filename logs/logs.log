@@ -1,171 +1,93 @@
-[2024-09-18 19:08:21] [INFO]  [initializeSignalHandling]    Initializing signal handling
-[2024-09-18 19:08:21] [INFO]  [Parser]                      Configuration file parsed successfully
-[2024-09-18 19:08:21] [INFO]  [Validation]                  Configuration file validated successfully.
-[2024-09-18 19:08:21] [INFO]  [bindAndListen]               Server is listening at http://127.0.0.1:8080
-[2024-09-18 19:08:21] [INFO]  [addToQueue]                  Added Event READ EVENT 5
-[2024-09-18 19:08:23] [INFO]  [acceptClient]                New connection, socket fd is [6], IP is : 127.0.0.1, port : 61484
-[2024-09-18 19:08:23] [INFO]  [addToQueue]                  Added Event READ EVENT 6
-[2024-09-18 19:08:23] [DEBUG] [readFromSocket]              Reading from client socket 6
-[2024-09-18 19:08:23] [DEBUG] [recvHeader]                  Header received from client 6
-[2024-09-18 19:08:23] [INFO]  [parseHeader]                 Method: GET
-[2024-09-18 19:08:23] [INFO]  [parseHeader]                 URI: /cgi-bin/infinite.sh
-[2024-09-18 19:08:23] [INFO]  [parseHeader]                 Headers parsed successfully.
-[2024-09-18 19:08:23] [INFO]  [handleRequest]               CGI request detected.
-[2024-09-18 19:08:23] [INFO]  [handleRequest]               Request handled successfully.
-[2024-09-18 19:08:23] [INFO]  [addToQueue]                  Added Event READ EVENT 9
-[2024-09-18 19:08:23] [INFO]  [execute]                     Executing www/cgi-bin/infinite.sh with PID 52620 and fd 6
-[2024-09-18 19:08:23] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:23] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:24] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:24] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:25] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:25] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:26] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:26] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:27] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:27] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:28] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:28] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:29] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:29] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:30] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:30] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:31] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:31] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:32] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:32] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:33] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:33] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:34] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:34] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:35] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:35] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:36] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:36] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:37] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:37] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:38] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:38] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:39] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:39] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:40] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:40] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:41] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:41] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:42] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:42] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:43] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:43] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:44] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:44] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:45] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:45] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:46] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:46] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:47] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:47] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:48] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:48] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:49] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:49] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:50] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:50] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:51] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:51] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:52] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:52] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:53] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:53] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:54] [INFO]  [handleCgiRead]               Reading from CGI process 52620
-[2024-09-18 19:08:54] [DEBUG] [handleCgiRead]               CGI process 52620 is still running and waiting for more data
-[2024-09-18 19:08:54] [INFO]  [checkTimeouts]               CGI process for client 6 timed out
-[2024-09-18 19:08:54] [INFO]  [checkTimeouts]               Killed CGI process 52620
-[2024-09-18 19:08:54] [INFO]  [removeFromQueue]             Removed READ Event 6
-[2024-09-18 19:08:54] [INFO]  [removeFromQueue]             Removed READ Event 9
-[2024-09-18 19:08:54] [INFO]  [addToQueue]                  Added Event WRITE EVENT 6
-[2024-09-18 19:08:54] [INFO]  [handleWrite]                 Handling write for client 6
-[2024-09-18 19:08:54] [INFO]  [handleWrite]                 Connection closed for client [6] with IP 127.0.0.1 on port 8080
-[2024-09-18 19:08:54] [INFO]  [removeFromQueue]             Removed WRITE Event 6
-[2024-09-18 19:09:07] [INFO]  [acceptClient]                New connection, socket fd is [6], IP is : 127.0.0.1, port : 61494
-[2024-09-18 19:09:07] [INFO]  [addToQueue]                  Added Event READ EVENT 6
-[2024-09-18 19:09:07] [DEBUG] [readFromSocket]              Reading from client socket 6
-[2024-09-18 19:09:07] [DEBUG] [recvHeader]                  Header received from client 6
-[2024-09-18 19:09:07] [INFO]  [parseHeader]                 Method: GET
-[2024-09-18 19:09:07] [INFO]  [parseHeader]                 URI: /cgi-bin/infinite.sh
-[2024-09-18 19:09:07] [INFO]  [parseHeader]                 Headers parsed successfully.
-[2024-09-18 19:09:07] [INFO]  [handleRequest]               CGI request detected.
-[2024-09-18 19:09:07] [INFO]  [handleRequest]               Request handled successfully.
-[2024-09-18 19:09:07] [INFO]  [addToQueue]                  Added Event READ EVENT 9
-[2024-09-18 19:09:07] [INFO]  [execute]                     Executing www/cgi-bin/infinite.sh with PID 52736 and fd 6
-[2024-09-18 19:09:07] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:07] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:08] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:08] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:09] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:09] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:10] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:10] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:11] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:11] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:12] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:12] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:13] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:13] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:14] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:14] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:15] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:15] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:16] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:16] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:17] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:17] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:18] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:18] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:19] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:19] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:20] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:20] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:21] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:21] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:22] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:22] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:23] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:23] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:24] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:24] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:25] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:25] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:26] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:26] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:27] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:27] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:28] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:28] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:29] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:29] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:30] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:30] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:31] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:31] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:32] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:32] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:33] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:33] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:34] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:34] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:35] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:35] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:36] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:36] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:37] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:37] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:38] [INFO]  [handleCgiRead]               Reading from CGI process 52736
-[2024-09-18 19:09:38] [DEBUG] [handleCgiRead]               CGI process 52736 is still running and waiting for more data
-[2024-09-18 19:09:38] [INFO]  [checkTimeouts]               CGI process for client 6 timed out
-[2024-09-18 19:09:38] [INFO]  [checkTimeouts]               Killed CGI process 52736
-[2024-09-18 19:09:38] [INFO]  [removeFromQueue]             Removed READ Event 6
-[2024-09-18 19:09:38] [INFO]  [removeFromQueue]             Removed READ Event 9
-[2024-09-18 19:09:38] [INFO]  [addToQueue]                  Added Event WRITE EVENT 6
-[2024-09-18 19:09:38] [INFO]  [handleWrite]                 Handling write for client 6
-[2024-09-18 19:09:38] [INFO]  [handleWrite]                 Connection closed for client [6] with IP 127.0.0.1 on port 8080
-[2024-09-18 19:09:38] [INFO]  [removeFromQueue]             Removed WRITE Event 6
+[2024-09-19 10:51:48] [INFO]  [initializeSignalHandling]    Initializing signal handling
+[2024-09-19 10:51:48] [INFO]  [Parser]                      Configuration file parsed successfully
+[2024-09-19 10:51:48] [INFO]  [Validation]                  Configuration file validated successfully.
+[2024-09-19 10:51:48] [INFO]  [bindAndListen]               Server is listening at http://127.0.0.1:8080
+[2024-09-19 10:51:48] [INFO]  [addToQueue]                  Added Event READ EVENT 5
+[2024-09-19 10:51:48] [INFO]  [acceptClient]                New connection, socket fd is [6], IP is : 127.0.0.1, port : 51326
+[2024-09-19 10:51:48] [INFO]  [addToQueue]                  Added Event READ EVENT 6
+[2024-09-19 10:51:48] [DEBUG] [readFromSocket]              Reading from client socket 6
+[2024-09-19 10:51:48] [DEBUG] [recvHeader]                  Header received from client 6
+[2024-09-19 10:51:48] [INFO]  [parseHeader]                 Method: GET
+[2024-09-19 10:51:48] [INFO]  [parseHeader]                 URI: /cgi-bin/infinite.sh
+[2024-09-19 10:51:48] [INFO]  [parseHeader]                 Headers parsed successfully.
+[2024-09-19 10:51:48] [INFO]  [handleRequest]               CGI request detected.
+[2024-09-19 10:51:48] [INFO]  [handleRequest]               Request handled successfully.
+[2024-09-19 10:51:48] [INFO]  [addToQueue]                  Added Event READ EVENT 9
+[2024-09-19 10:51:48] [INFO]  [execute]                     Executing www/cgi-bin/infinite.sh with PID 9636 and fd 6
+[2024-09-19 10:51:48] [INFO]  [handleCgiRead]               Reading from CGI process 9636
+[2024-09-19 10:51:48] [DEBUG] [handleCgiRead]               CGI process 9636 is still running and waiting for more data
+[2024-09-19 10:51:49] [INFO]  [handleCgiRead]               Reading from CGI process 9636
+[2024-09-19 10:51:49] [DEBUG] [handleCgiRead]               CGI process 9636 is still running and waiting for more data
+[2024-09-19 10:51:50] [INFO]  [handleCgiRead]               Reading from CGI process 9636
+[2024-09-19 10:51:50] [DEBUG] [handleCgiRead]               CGI process 9636 is still running and waiting for more data
+[2024-09-19 10:51:51] [INFO]  [acceptClient]                New connection, socket fd is [7], IP is : 127.0.0.1, port : 51329
+[2024-09-19 10:51:51] [INFO]  [addToQueue]                  Added Event READ EVENT 7
+[2024-09-19 10:51:51] [DEBUG] [readFromSocket]              Reading from client socket 7
+[2024-09-19 10:51:51] [DEBUG] [recvHeader]                  Header received from client 7
+[2024-09-19 10:51:51] [INFO]  [parseHeader]                 Method: GET
+[2024-09-19 10:51:51] [INFO]  [parseHeader]                 URI: /cgi-bin/infinite.sh
+[2024-09-19 10:51:51] [INFO]  [parseHeader]                 Headers parsed successfully.
+[2024-09-19 10:51:51] [INFO]  [handleRequest]               CGI request detected.
+[2024-09-19 10:51:51] [INFO]  [handleRequest]               Request handled successfully.
+[2024-09-19 10:51:51] [INFO]  [addToQueue]                  Added Event READ EVENT 11
+[2024-09-19 10:51:51] [INFO]  [acceptClient]                New connection, socket fd is [8], IP is : 127.0.0.1, port : 51331
+[2024-09-19 10:51:51] [INFO]  [addToQueue]                  Added Event READ EVENT 8
+[2024-09-19 10:51:51] [INFO]  [execute]                     Executing www/cgi-bin/infinite.sh with PID 9646 and fd 7
+[2024-09-19 10:51:51] [INFO]  [handleCgiRead]               Reading from CGI process 9646
+[2024-09-19 10:51:51] [DEBUG] [handleCgiRead]               CGI process 9646 is still running and waiting for more data
+[2024-09-19 10:51:51] [INFO]  [handleCgiRead]               Reading from CGI process 9636
+[2024-09-19 10:51:51] [DEBUG] [handleCgiRead]               CGI process 9636 is still running and waiting for more data
+[2024-09-19 10:51:52] [INFO]  [handleCgiRead]               Reading from CGI process 9646
+[2024-09-19 10:51:52] [DEBUG] [handleCgiRead]               CGI process 9646 is still running and waiting for more data
+[2024-09-19 10:51:52] [INFO]  [handleCgiRead]               Reading from CGI process 9636
+[2024-09-19 10:51:52] [DEBUG] [handleCgiRead]               CGI process 9636 is still running and waiting for more data
+[2024-09-19 10:51:53] [INFO]  [handleCgiRead]               Reading from CGI process 9646
+[2024-09-19 10:51:53] [DEBUG] [handleCgiRead]               CGI process 9646 is still running and waiting for more data
+[2024-09-19 10:51:53] [INFO]  [handleCgiRead]               Reading from CGI process 9636
+[2024-09-19 10:51:53] [DEBUG] [handleCgiRead]               CGI process 9636 is still running and waiting for more data
+[2024-09-19 10:51:54] [INFO]  [handleCgiRead]               Reading from CGI process 9646
+[2024-09-19 10:51:54] [DEBUG] [handleCgiRead]               CGI process 9646 is still running and waiting for more data
+[2024-09-19 10:51:54] [INFO]  [handleCgiRead]               Reading from CGI process 9636
+[2024-09-19 10:51:54] [DEBUG] [handleCgiRead]               CGI process 9636 is still running and waiting for more data
+[2024-09-19 10:51:55] [INFO]  [handleCgiRead]               Reading from CGI process 9646
+[2024-09-19 10:51:55] [DEBUG] [handleCgiRead]               CGI process 9646 is still running and waiting for more data
+[2024-09-19 10:51:55] [INFO]  [handleCgiRead]               Reading from CGI process 9636
+[2024-09-19 10:51:55] [DEBUG] [handleCgiRead]               CGI process 9636 is still running and waiting for more data
+[2024-09-19 10:51:56] [INFO]  [handleCgiRead]               Reading from CGI process 9646
+[2024-09-19 10:51:56] [DEBUG] [handleCgiRead]               CGI process 9646 is still running and waiting for more data
+[2024-09-19 10:51:56] [INFO]  [handleCgiRead]               Reading from CGI process 9636
+[2024-09-19 10:51:56] [DEBUG] [handleCgiRead]               CGI process 9636 is still running and waiting for more data
+[2024-09-19 10:51:57] [INFO]  [handleCgiRead]               Reading from CGI process 9646
+[2024-09-19 10:51:57] [DEBUG] [handleCgiRead]               CGI process 9646 is still running and waiting for more data
+[2024-09-19 10:51:57] [INFO]  [handleCgiRead]               Reading from CGI process 9636
+[2024-09-19 10:51:57] [DEBUG] [handleCgiRead]               CGI process 9636 is still running and waiting for more data
+[2024-09-19 10:51:58] [INFO]  [handleCgiRead]               Reading from CGI process 9646
+[2024-09-19 10:51:58] [DEBUG] [handleCgiRead]               CGI process 9646 is still running and waiting for more data
+[2024-09-19 10:51:58] [INFO]  [handleCgiRead]               Reading from CGI process 9636
+[2024-09-19 10:51:58] [DEBUG] [handleCgiRead]               CGI process 9636 is still running and waiting for more data
+[2024-09-19 10:51:59] [INFO]  [handleCgiRead]               Reading from CGI process 9646
+[2024-09-19 10:51:59] [DEBUG] [handleCgiRead]               CGI process 9646 is still running and waiting for more data
+[2024-09-19 10:51:59] [INFO]  [checkTimeouts]               CGI process for client 6 timed out
+[2024-09-19 10:51:59] [INFO]  [checkTimeouts]               Killed CGI process 9636
+[2024-09-19 10:51:59] [INFO]  [removeFromQueue]             Removed READ Event 6
+[2024-09-19 10:51:59] [INFO]  [removeFromQueue]             Removed READ Event 9
+[2024-09-19 10:51:59] [INFO]  [addToQueue]                  Added Event WRITE EVENT 6
+[2024-09-19 10:51:59] [INFO]  [handleWrite]                 Handling write for client 6
+[2024-09-19 10:51:59] [INFO]  [handleWrite]                 Connection closed for client [6] with IP 127.0.0.1 on port 8080
+[2024-09-19 10:51:59] [INFO]  [removeFromQueue]             Removed WRITE Event 6
+[2024-09-19 10:52:00] [INFO]  [handleCgiRead]               Reading from CGI process 9646
+[2024-09-19 10:52:00] [DEBUG] [handleCgiRead]               CGI process 9646 is still running and waiting for more data
+[2024-09-19 10:52:01] [INFO]  [handleCgiRead]               Reading from CGI process 9646
+[2024-09-19 10:52:01] [DEBUG] [handleCgiRead]               CGI process 9646 is still running and waiting for more data
+[2024-09-19 10:52:02] [INFO]  [handleCgiRead]               Reading from CGI process 9646
+[2024-09-19 10:52:02] [DEBUG] [handleCgiRead]               CGI process 9646 is still running and waiting for more data
+[2024-09-19 10:52:02] [INFO]  [checkTimeouts]               CGI process for client 7 timed out
+[2024-09-19 10:52:02] [INFO]  [checkTimeouts]               Killed CGI process 9646
+[2024-09-19 10:52:02] [INFO]  [removeFromQueue]             Removed READ Event 7
+[2024-09-19 10:52:02] [INFO]  [removeFromQueue]             Removed READ Event 11
+[2024-09-19 10:52:02] [INFO]  [addToQueue]                  Added Event WRITE EVENT 7
+[2024-09-19 10:52:02] [INFO]  [checkTimeouts]               Client 8 timed out
+[2024-09-19 10:52:02] [INFO]  [removeFromQueue]             Removed READ Event 8
+[2024-09-19 10:52:02] [INFO]  [handleWrite]                 Handling write for client 7
+[2024-09-19 10:52:02] [INFO]  [handleWrite]                 Connection closed for client [7] with IP 127.0.0.1 on port 8080
+[2024-09-19 10:52:02] [INFO]  [removeFromQueue]             Removed WRITE Event 7

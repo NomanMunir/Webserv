@@ -82,7 +82,9 @@ void Cgi::execute(EventPoller *poller, Request &_request, Response &_response, s
     else 
     {
         close(fd_in[0]);
+        std::cout << "closing fd in parent " << fd_in[0] << std::endl;
         close(fd_out[1]);
+        std::cout << "closing fd in parent " << fd_out[1] << std::endl;
         if (!setNoneBlocking(fd_in[1]) || !setNoneBlocking(fd_out[0]))
         {
             close(fd_in[1]); close(fd_out[0]); freeEnv(_envp);
@@ -98,6 +100,7 @@ void Cgi::execute(EventPoller *poller, Request &_request, Response &_response, s
             }
             Logs::appendLog("INFO", "[execute]\t\t Writing to pipe " + intToString(fd_in[1]) + " with body size " + intToString(body.size()));
         }
+        std::cout << "closing fd in parent " << fd_in[1] << std::endl;
         close(fd_in[1]);
 
         poller->addToQueue(fd_out[0], READ_EVENT);
@@ -195,8 +198,12 @@ bool Cgi::getIsCGI() const { return _isCGI; }
 
 Cgi::~Cgi()
 {
-    if (fd_out[0] != -1) close(fd_out[0]);
-    if (fd_out[1] != -1) close(fd_out[1]);
-    if (fd_in[0] != -1) close(fd_in[0]);
-    if (fd_in[1] != -1) close(fd_in[1]);
+    // if (fd_out[0] != -1) close(fd_out[0]);
+    // if (fd_out[1] != -1) close(fd_out[1]);
+    // if (fd_in[0] != -1) close(fd_in[0]);
+    // if (fd_in[1] != -1) close(fd_in[1]);
+    std::cout << "closing fd in destructor " << fd_out[0] << std::endl;
+    std::cout << "closing fd in destructor " << fd_out[1] << std::endl;
+    std::cout << "closing fd in destructor " << fd_in[0] << std::endl;
+    std::cout << "closing fd in destructor " << fd_in[1] << std::endl;
 }

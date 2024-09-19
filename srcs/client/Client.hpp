@@ -14,8 +14,8 @@
 #include <string>
 #include <time.h>
 
-#define CLIENT_TIMEOUT 30
-
+#define CLIENT_TIMEOUT 10
+#define REQUEST_TIMEOUT 5
 class Client 
 {
     private:
@@ -55,7 +55,7 @@ class Client
         Response& getResponse();
         std::string& getWriteBuffer();
 
-        bool isTimeOut();
+        bool isTimeOut(int timeout);
         bool isKeepAlive();
         bool isReadPending() const;
         bool isWritePending() const;
