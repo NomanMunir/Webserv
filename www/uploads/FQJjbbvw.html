@@ -136,7 +136,6 @@
         <a href="#features">Features</a>
         <a href="#upload">Upload File</a>
         <a href="#contact">User Details</a>
-        <a href="./cookies.html">Cookies</a>
     </nav>
 
     <section id="landing" class="landing">
@@ -160,7 +159,7 @@
 
     <section id="upload" class="form-container">
         <h2>Upload a File</h2>
-        <form action="/cgi-bin/uploadFile.py" method="POST" enctype="multipart/form-data">
+        <form action="/" method="POST" enctype="multipart/form-data">
             <label for="file">Choose a file:</label>
             <input type="file" id="file" name="file" required>
             <button type="submit">Upload</button>
@@ -169,7 +168,7 @@
 
     <section id="contact" class="form-container">
         <h2>User Details</h2>
-        <form action="/cgi-bin/formData.py" method="POST">
+        <form action="/cgi-bin/test.py" method="POST">
             <label for="name">Full Name:</label>
             <input type="text" id="name" name="name" required>
             <label for="email">Email:</label>

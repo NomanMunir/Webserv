@@ -182,7 +182,6 @@ void Client::handleCGI(ServerConfig &serverConfig)
         response.handleDirectory(fullPath, uri, isDirListing);
     if (isDirListing)
     {
-        std::cout << "fullPath with clientFd: " << fullPath << " " << this->fd << std::endl;
         validateCgiExtensions(serverConfig.cgiExtensions, fullPath);
         this->cgi.execute(this->_poller, this->request, this->response, fullPath);
     }

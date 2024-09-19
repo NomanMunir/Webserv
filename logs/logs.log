@@ -1,93 +1,59 @@
-[2024-09-19 10:51:48] [INFO]  [initializeSignalHandling]    Initializing signal handling
-[2024-09-19 10:51:48] [INFO]  [Parser]                      Configuration file parsed successfully
-[2024-09-19 10:51:48] [INFO]  [Validation]                  Configuration file validated successfully.
-[2024-09-19 10:51:48] [INFO]  [bindAndListen]               Server is listening at http://127.0.0.1:8080
-[2024-09-19 10:51:48] [INFO]  [addToQueue]                  Added Event READ EVENT 5
-[2024-09-19 10:51:48] [INFO]  [acceptClient]                New connection, socket fd is [6], IP is : 127.0.0.1, port : 51326
-[2024-09-19 10:51:48] [INFO]  [addToQueue]                  Added Event READ EVENT 6
-[2024-09-19 10:51:48] [DEBUG] [readFromSocket]              Reading from client socket 6
-[2024-09-19 10:51:48] [DEBUG] [recvHeader]                  Header received from client 6
-[2024-09-19 10:51:48] [INFO]  [parseHeader]                 Method: GET
-[2024-09-19 10:51:48] [INFO]  [parseHeader]                 URI: /cgi-bin/infinite.sh
-[2024-09-19 10:51:48] [INFO]  [parseHeader]                 Headers parsed successfully.
-[2024-09-19 10:51:48] [INFO]  [handleRequest]               CGI request detected.
-[2024-09-19 10:51:48] [INFO]  [handleRequest]               Request handled successfully.
-[2024-09-19 10:51:48] [INFO]  [addToQueue]                  Added Event READ EVENT 9
-[2024-09-19 10:51:48] [INFO]  [execute]                     Executing www/cgi-bin/infinite.sh with PID 9636 and fd 6
-[2024-09-19 10:51:48] [INFO]  [handleCgiRead]               Reading from CGI process 9636
-[2024-09-19 10:51:48] [DEBUG] [handleCgiRead]               CGI process 9636 is still running and waiting for more data
-[2024-09-19 10:51:49] [INFO]  [handleCgiRead]               Reading from CGI process 9636
-[2024-09-19 10:51:49] [DEBUG] [handleCgiRead]               CGI process 9636 is still running and waiting for more data
-[2024-09-19 10:51:50] [INFO]  [handleCgiRead]               Reading from CGI process 9636
-[2024-09-19 10:51:50] [DEBUG] [handleCgiRead]               CGI process 9636 is still running and waiting for more data
-[2024-09-19 10:51:51] [INFO]  [acceptClient]                New connection, socket fd is [7], IP is : 127.0.0.1, port : 51329
-[2024-09-19 10:51:51] [INFO]  [addToQueue]                  Added Event READ EVENT 7
-[2024-09-19 10:51:51] [DEBUG] [readFromSocket]              Reading from client socket 7
-[2024-09-19 10:51:51] [DEBUG] [recvHeader]                  Header received from client 7
-[2024-09-19 10:51:51] [INFO]  [parseHeader]                 Method: GET
-[2024-09-19 10:51:51] [INFO]  [parseHeader]                 URI: /cgi-bin/infinite.sh
-[2024-09-19 10:51:51] [INFO]  [parseHeader]                 Headers parsed successfully.
-[2024-09-19 10:51:51] [INFO]  [handleRequest]               CGI request detected.
-[2024-09-19 10:51:51] [INFO]  [handleRequest]               Request handled successfully.
-[2024-09-19 10:51:51] [INFO]  [addToQueue]                  Added Event READ EVENT 11
-[2024-09-19 10:51:51] [INFO]  [acceptClient]                New connection, socket fd is [8], IP is : 127.0.0.1, port : 51331
-[2024-09-19 10:51:51] [INFO]  [addToQueue]                  Added Event READ EVENT 8
-[2024-09-19 10:51:51] [INFO]  [execute]                     Executing www/cgi-bin/infinite.sh with PID 9646 and fd 7
-[2024-09-19 10:51:51] [INFO]  [handleCgiRead]               Reading from CGI process 9646
-[2024-09-19 10:51:51] [DEBUG] [handleCgiRead]               CGI process 9646 is still running and waiting for more data
-[2024-09-19 10:51:51] [INFO]  [handleCgiRead]               Reading from CGI process 9636
-[2024-09-19 10:51:51] [DEBUG] [handleCgiRead]               CGI process 9636 is still running and waiting for more data
-[2024-09-19 10:51:52] [INFO]  [handleCgiRead]               Reading from CGI process 9646
-[2024-09-19 10:51:52] [DEBUG] [handleCgiRead]               CGI process 9646 is still running and waiting for more data
-[2024-09-19 10:51:52] [INFO]  [handleCgiRead]               Reading from CGI process 9636
-[2024-09-19 10:51:52] [DEBUG] [handleCgiRead]               CGI process 9636 is still running and waiting for more data
-[2024-09-19 10:51:53] [INFO]  [handleCgiRead]               Reading from CGI process 9646
-[2024-09-19 10:51:53] [DEBUG] [handleCgiRead]               CGI process 9646 is still running and waiting for more data
-[2024-09-19 10:51:53] [INFO]  [handleCgiRead]               Reading from CGI process 9636
-[2024-09-19 10:51:53] [DEBUG] [handleCgiRead]               CGI process 9636 is still running and waiting for more data
-[2024-09-19 10:51:54] [INFO]  [handleCgiRead]               Reading from CGI process 9646
-[2024-09-19 10:51:54] [DEBUG] [handleCgiRead]               CGI process 9646 is still running and waiting for more data
-[2024-09-19 10:51:54] [INFO]  [handleCgiRead]               Reading from CGI process 9636
-[2024-09-19 10:51:54] [DEBUG] [handleCgiRead]               CGI process 9636 is still running and waiting for more data
-[2024-09-19 10:51:55] [INFO]  [handleCgiRead]               Reading from CGI process 9646
-[2024-09-19 10:51:55] [DEBUG] [handleCgiRead]               CGI process 9646 is still running and waiting for more data
-[2024-09-19 10:51:55] [INFO]  [handleCgiRead]               Reading from CGI process 9636
-[2024-09-19 10:51:55] [DEBUG] [handleCgiRead]               CGI process 9636 is still running and waiting for more data
-[2024-09-19 10:51:56] [INFO]  [handleCgiRead]               Reading from CGI process 9646
-[2024-09-19 10:51:56] [DEBUG] [handleCgiRead]               CGI process 9646 is still running and waiting for more data
-[2024-09-19 10:51:56] [INFO]  [handleCgiRead]               Reading from CGI process 9636
-[2024-09-19 10:51:56] [DEBUG] [handleCgiRead]               CGI process 9636 is still running and waiting for more data
-[2024-09-19 10:51:57] [INFO]  [handleCgiRead]               Reading from CGI process 9646
-[2024-09-19 10:51:57] [DEBUG] [handleCgiRead]               CGI process 9646 is still running and waiting for more data
-[2024-09-19 10:51:57] [INFO]  [handleCgiRead]               Reading from CGI process 9636
-[2024-09-19 10:51:57] [DEBUG] [handleCgiRead]               CGI process 9636 is still running and waiting for more data
-[2024-09-19 10:51:58] [INFO]  [handleCgiRead]               Reading from CGI process 9646
-[2024-09-19 10:51:58] [DEBUG] [handleCgiRead]               CGI process 9646 is still running and waiting for more data
-[2024-09-19 10:51:58] [INFO]  [handleCgiRead]               Reading from CGI process 9636
-[2024-09-19 10:51:58] [DEBUG] [handleCgiRead]               CGI process 9636 is still running and waiting for more data
-[2024-09-19 10:51:59] [INFO]  [handleCgiRead]               Reading from CGI process 9646
-[2024-09-19 10:51:59] [DEBUG] [handleCgiRead]               CGI process 9646 is still running and waiting for more data
-[2024-09-19 10:51:59] [INFO]  [checkTimeouts]               CGI process for client 6 timed out
-[2024-09-19 10:51:59] [INFO]  [checkTimeouts]               Killed CGI process 9636
-[2024-09-19 10:51:59] [INFO]  [removeFromQueue]             Removed READ Event 6
-[2024-09-19 10:51:59] [INFO]  [removeFromQueue]             Removed READ Event 9
-[2024-09-19 10:51:59] [INFO]  [addToQueue]                  Added Event WRITE EVENT 6
-[2024-09-19 10:51:59] [INFO]  [handleWrite]                 Handling write for client 6
-[2024-09-19 10:51:59] [INFO]  [handleWrite]                 Connection closed for client [6] with IP 127.0.0.1 on port 8080
-[2024-09-19 10:51:59] [INFO]  [removeFromQueue]             Removed WRITE Event 6
-[2024-09-19 10:52:00] [INFO]  [handleCgiRead]               Reading from CGI process 9646
-[2024-09-19 10:52:00] [DEBUG] [handleCgiRead]               CGI process 9646 is still running and waiting for more data
-[2024-09-19 10:52:01] [INFO]  [handleCgiRead]               Reading from CGI process 9646
-[2024-09-19 10:52:01] [DEBUG] [handleCgiRead]               CGI process 9646 is still running and waiting for more data
-[2024-09-19 10:52:02] [INFO]  [handleCgiRead]               Reading from CGI process 9646
-[2024-09-19 10:52:02] [DEBUG] [handleCgiRead]               CGI process 9646 is still running and waiting for more data
-[2024-09-19 10:52:02] [INFO]  [checkTimeouts]               CGI process for client 7 timed out
-[2024-09-19 10:52:02] [INFO]  [checkTimeouts]               Killed CGI process 9646
-[2024-09-19 10:52:02] [INFO]  [removeFromQueue]             Removed READ Event 7
-[2024-09-19 10:52:02] [INFO]  [removeFromQueue]             Removed READ Event 11
-[2024-09-19 10:52:02] [INFO]  [addToQueue]                  Added Event WRITE EVENT 7
-[2024-09-19 10:52:02] [INFO]  [checkTimeouts]               Client 8 timed out
-[2024-09-19 10:52:02] [INFO]  [removeFromQueue]             Removed READ Event 8
-[2024-09-19 10:52:02] [INFO]  [handleWrite]                 Handling write for client 7
-[2024-09-19 10:52:02] [INFO]  [handleWrite]                 Connection closed for client [7] with IP 127.0.0.1 on port 8080
-[2024-09-19 10:52:02] [INFO]  [removeFromQueue]             Removed WRITE Event 7
+[2024-09-19 09:21:19] [INFO]  [initializeSignalHandling]    Initializing signal handling
+[2024-09-19 09:21:19] [INFO]  [Parser]                      Configuration file parsed successfully
+[2024-09-19 09:21:20] [INFO]  [Validation]                  Configuration file validated successfully.
+[2024-09-19 09:21:20] [INFO]  [bindAndListen]               Server is listening at http://127.0.0.1:8080
+[2024-09-19 09:21:20] [INFO]  [addToQueue]                  Added Event READ EVENT to 5
+[2024-09-19 09:21:23] [INFO]  [acceptClient]                New connection, socket fd is [7], IP is : 127.0.0.1, port : 56004
+[2024-09-19 09:21:23] [INFO]  [addToQueue]                  Added Event READ EVENT to 7
+[2024-09-19 09:21:23] [DEBUG] [readFromSocket]              Reading from client socket 7
+[2024-09-19 09:21:23] [DEBUG] [recvHeader]                  Header received from client 7
+[2024-09-19 09:21:23] [INFO]  [parseHeader]                 Method: GET
+[2024-09-19 09:21:23] [INFO]  [parseHeader]                 URI: /cookies.html
+[2024-09-19 09:21:23] [INFO]  [parseHeader]                 Headers parsed successfully.
+[2024-09-19 09:21:23] [INFO]  [handleRequest]               Normal request detected.
+[2024-09-19 09:21:23] [INFO]  [handleRequest]               Route chosen: /
+[2024-09-19 09:21:23] [INFO]  [handleRequest]               Request handled successfully.
+[2024-09-19 09:21:23] [INFO]  [handleGET]                   Handling GET request with Path: www/cookies.html
+[2024-09-19 09:21:24] [INFO]  [generateResponseFromFile]    File response generated
+[2024-09-19 09:21:24] [INFO]  [addToQueue]                  Added Event WRITE EVENT to 7
+[2024-09-19 09:21:24] [INFO]  [handleWrite]                 Handling write for client 7
+[2024-09-19 09:21:24] [INFO]  [removeFromQueue]             Removed Event WRITE EVENT from 7
+[2024-09-19 09:21:24] [INFO]  [handleWrite]                 Write completed for client 7
+[2024-09-19 09:21:26] [INFO]  [acceptClient]                New connection, socket fd is [8], IP is : 127.0.0.1, port : 56020
+[2024-09-19 09:21:26] [INFO]  [addToQueue]                  Added Event READ EVENT to 8
+[2024-09-19 09:21:26] [DEBUG] [readFromSocket]              Reading from client socket 8
+[2024-09-19 09:21:26] [DEBUG] [recvHeader]                  Header received from client 8
+[2024-09-19 09:21:26] [INFO]  [parseHeader]                 Method: GET
+[2024-09-19 09:21:26] [INFO]  [parseHeader]                 URI: /
+[2024-09-19 09:21:26] [INFO]  [parseHeader]                 Headers parsed successfully.
+[2024-09-19 09:21:26] [INFO]  [handleRequest]               Normal request detected.
+[2024-09-19 09:21:26] [INFO]  [handleRequest]               Route chosen: /
+[2024-09-19 09:21:26] [INFO]  [handleRequest]               Request handled successfully.
+[2024-09-19 09:21:26] [INFO]  [handleGET]                   Handling GET request with Path: www/
+[2024-09-19 09:21:26] [INFO]  [generateResponseFromFile]    File response generated
+[2024-09-19 09:21:26] [INFO]  [addToQueue]                  Added Event WRITE EVENT to 8
+[2024-09-19 09:21:26] [INFO]  [handleWrite]                 Handling write for client 8
+[2024-09-19 09:21:26] [INFO]  [removeFromQueue]             Removed Event WRITE EVENT from 8
+[2024-09-19 09:21:26] [INFO]  [handleWrite]                 Write completed for client 8
+[2024-09-19 09:21:27] [INFO]  [acceptClient]                New connection, socket fd is [9], IP is : 127.0.0.1, port : 56022
+[2024-09-19 09:21:27] [INFO]  [addToQueue]                  Added Event READ EVENT to 9
+[2024-09-19 09:21:27] [DEBUG] [readFromSocket]              Reading from client socket 9
+[2024-09-19 09:21:27] [DEBUG] [recvHeader]                  Header received from client 9
+[2024-09-19 09:21:27] [INFO]  [parseHeader]                 Method: GET
+[2024-09-19 09:21:27] [INFO]  [parseHeader]                 URI: /landing-page.webp
+[2024-09-19 09:21:27] [INFO]  [parseHeader]                 Headers parsed successfully.
+[2024-09-19 09:21:27] [INFO]  [handleRequest]               Normal request detected.
+[2024-09-19 09:21:27] [INFO]  [handleRequest]               Route chosen: /
+[2024-09-19 09:21:27] [INFO]  [handleRequest]               Request handled successfully.
+[2024-09-19 09:21:27] [INFO]  [handleGET]                   Handling GET request with Path: www/landing-page.webp
+[2024-09-19 09:21:27] [INFO]  [generateResponseFromFile]    File response generated
+[2024-09-19 09:21:27] [INFO]  [addToQueue]                  Added Event WRITE EVENT to 9
+[2024-09-19 09:21:27] [INFO]  [handleWrite]                 Handling write for client 9
+[2024-09-19 09:21:27] [INFO]  [removeFromQueue]             Removed Event WRITE EVENT from 9
+[2024-09-19 09:21:27] [INFO]  [handleWrite]                 Write completed for client 9
+[2024-09-19 09:21:57] [INFO]  [checkTimeouts]               Client 7 timed out
+[2024-09-19 09:21:57] [INFO]  [removeFromQueue]             Removed Event READ EVENT from 7
+[2024-09-19 09:21:57] [INFO]  [checkTimeouts]               Client 8 timed out
+[2024-09-19 09:21:57] [INFO]  [removeFromQueue]             Removed Event READ EVENT from 8
+[2024-09-19 09:22:00] [INFO]  [checkTimeouts]               Client 9 timed out
+[2024-09-19 09:22:00] [INFO]  [removeFromQueue]             Removed Event READ EVENT from 9

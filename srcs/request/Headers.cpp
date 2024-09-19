@@ -137,16 +137,19 @@ void Headers::parseFirstLine(Response &structResponse, std::istringstream &iss)
 
 void Headers::isDuplicateHeader(const std::string &key, Response &structResponse)
 {
-    std::string criticalHeaders[] = {
+    std::string criticalHeadersArr[] = {
         "Host", "Content-Length", "Transfer-Encoding",
         "Connection", "Expect", "User-Agent", 
         "Accept-Encoding", "Accept", "Date", 
         "Authorization", "Referer"
     };
+	std::vector<std::string> criticalHeaders;
+	initializeVector(criticalHeaders, criticalHeadersArr, sizeof(criticalHeadersArr) / sizeof(criticalHeadersArr[0]));
 
-	if (std::find(std::begin(criticalHeaders), std::end(criticalHeaders), key) != std::end(criticalHeaders))
+	std::string newKey = key;
+	if (myFind(criticalHeaders, newKey))
 	{
-		if (headers.find(key) != headers.end())
+		if (headers.find(newKey) != headers.end())
 			structResponse.setErrorCode(400, "[parseHeaderBody]\t\t Duplicate Header: " + key);
 	}
 

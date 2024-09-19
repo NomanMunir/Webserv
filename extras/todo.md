@@ -100,13 +100,14 @@
 [*] some test for default files.
 [*] decode uri
 [*] duplicateHeaders
+[*] Multiple CGI
+[*] test chunked request.
+[*] duplicate headers giving problems.
+[*] make upload script for cgi.
 
 
 
 Testing:
 [ ] Cookies.
-[ ] Multiple CGI
-[ ] test chunked request.
-[ ] make upload script for cgi.
-[ ] duplicate headers giving problems.
 [ ] test chooseRoute for get and post request.
+[ ] eval sheet

@@ -147,7 +147,6 @@ void Server::handleWrite(int fd)
             this->_poller->removeFromQueue(fd, WRITE_EVENT);
             this->_poller->removeFromQueue(fd, READ_EVENT);
             close(fd);
-            std::cout << "closing fd in handleWrite " << fd << std::endl;
             clients.erase(fd);
             return;
         }
@@ -166,14 +165,12 @@ void Server::handleWrite(int fd)
         clients[fd].setWritePending(false);
 
         clients[fd].reset();
-        clients[fd].updateLastActivity();
         Logs::appendLog("INFO", "[handleWrite]\t\t Write completed for client " + intToString(fd));
     }
     catch(const std::exception& e)
     {
         std::cerr << e.what() << '\n';
         close(fd);
-        std::cout << "closing fd in handleWrite catch" << fd << std::endl;
         clients.erase(fd);
     }
 }
@@ -193,10 +190,8 @@ void Server::handleRead(int fd)
     catch(const std::exception& e)
     {
         Logs::appendLog("ERROR", e.what());
-        std::cout << "hi" << std::endl;
         this->_poller->removeFromQueue(fd, READ_EVENT);
         close(fd);
-        std::cout << "closing fd in handleRead catch" << fd << std::endl;
         clients.erase(fd);
     }
 }
@@ -232,8 +227,7 @@ void Server::handleCgiRead(int clientFd)
     {
         this->_poller->removeFromQueue(client.getCgi().getReadFd(), READ_EVENT);
         close(client.getCgi().getReadFd());
-        std::cout << "closing fd in handleCgiRead cgi fd" << client.getCgi().getReadFd() << std::endl;
-
+        Logs::appendLog("INFO", "[handleCgiRead]\t\t Closing CGI read fd " + intToString(client.getCgi().getReadFd()));
         if (client.getCgi().output.empty())
         {
             Logs::appendLog("ERROR", "[handleCgiRead]\t\t CGI process " + intToString(client.getCgi().getPid()) + " returned no data");
@@ -282,6 +276,8 @@ void Server::handleCgiRead(int clientFd)
             Logs::appendLog("INFO", "[checkTimeouts]\t\t Killed CGI process " + intToString(client.getCgi().getPid()));
             this->_poller->removeFromQueue(clientFd, READ_EVENT);
             this->_poller->removeFromQueue(client.getCgi().getReadFd(), READ_EVENT);
+            close(client.getCgi().getReadFd());
+            Logs::appendLog("INFO", "[handleCgiRead]\t\t Closing CGI read fd " + intToString(client.getCgi().getReadFd()));
             generateCGIError(client, "502");
             this->_poller->addToQueue(clientFd, WRITE_EVENT);
             client.getResponse().setIsConnectionClosed(true);
@@ -291,7 +287,6 @@ void Server::handleCgiRead(int clientFd)
             Logs::appendLog("ERROR", "[handleCgiRead]\t\t Error reading from CGI " + std::string(strerror(errno)));
             this->_poller->removeFromQueue(clientFd, READ_EVENT);
             close(clientFd);
-            std::cout << "closing client fd in handleCgiRead" << clientFd << std::endl;
             clients.erase(clientFd);
         }
     }
@@ -321,6 +316,8 @@ void Server::checkTimeouts()
                 Logs::appendLog("INFO", "[checkTimeouts]\t\t Killed CGI process " + intToString(it->second.getCgi().getPid()));
                 this->_poller->removeFromQueue(it->first, READ_EVENT);
                 this->_poller->removeFromQueue(it->second.getCgi().getReadFd(), READ_EVENT);
+                close(it->second.getCgi().getReadFd());
+                Logs::appendLog("INFO", "[checkTimeouts]\t\t Closing CGI read fd " + intToString(it->second.getCgi().getReadFd()));
                 generateCGIError(it->second, "504");
                 this->_poller->addToQueue(it->first, WRITE_EVENT);
                 it->second.getResponse().setIsConnectionClosed(true);
@@ -331,7 +328,6 @@ void Server::checkTimeouts()
                 Logs::appendLog("INFO", "[checkTimeouts]\t\t Client " + intToString(it->first) + " timed out");
                 this->_poller->removeFromQueue(it->first, READ_EVENT);
                 close(it->first);
-                std::cout << "closing fd in checkTimeouts" << it->first << std::endl;
                 clients.erase(it++);
             }
         }
@@ -358,7 +354,6 @@ void Server::handleDisconnection(int fd)
     else
     {
         close(fd);
-        std::cout << "closing fd in handleDisconnection" << fd << std::endl;
         clients.erase(fd);
     }
     clients.erase(fd);
