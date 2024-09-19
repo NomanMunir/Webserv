@@ -135,26 +135,6 @@ void Headers::parseFirstLine(Response &structResponse, std::istringstream &iss)
     headers["Version"] = tokens[2];
 }
 
-void Headers::isDuplicateHeader(const std::string &key, Response &structResponse)
-{
-    std::string criticalHeadersArr[] = {
-        "Host", "Content-Length", "Transfer-Encoding",
-        "Connection", "Expect", "User-Agent", 
-        "Accept-Encoding", "Accept", "Date", 
-        "Authorization", "Referer"
-    };
-	std::vector<std::string> criticalHeaders;
-	initializeVector(criticalHeaders, criticalHeadersArr, sizeof(criticalHeadersArr) / sizeof(criticalHeadersArr[0]));
-
-	std::string newKey = key;
-	if (myFind(criticalHeaders, newKey))
-	{
-		if (headers.find(newKey) != headers.end())
-			structResponse.setErrorCode(400, "[parseHeaderBody]\t\t Duplicate Header: " + key);
-	}
-
-}
-
 void Headers::parseHeaderBody(std::istringstream &iss, Response &structResponse)
 {
 	std::string line;
@@ -171,7 +151,6 @@ void Headers::parseHeaderBody(std::istringstream &iss, Response &structResponse)
 			structResponse.setErrorCode(400, "[parseHeaderBody]\t\t Invalid Header space before : " + line);
 		std::string key = trim(line.substr(0, pos));
 		std::string value = trim(line.substr(pos + 1));
-		// isDuplicateHeader(key, structResponse);
 		if (key == "Host")
 		{
 			std::vector<std::string> tokens = split(value, ':');
