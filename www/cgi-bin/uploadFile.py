@@ -12,7 +12,7 @@ def generate_random_filename(length=8, extension=''):
 
 def main():
     # Set the maximum size of the uploaded file (e.g., 10 MB)
-    cgi.maxlen = 10 * 1024 * 1024
+    cgi.maxlen = 1000 * 1024 * 1024
 
     # Create a FieldStorage instance to parse the form data
     form = cgi.FieldStorage()

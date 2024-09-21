@@ -182,7 +182,7 @@ static void initializeLimits(std::map<std::string, std::vector<int> > &limits)
     
     limits["Content-Length"] = std::vector<int>();
     limits["Content-Length"].push_back(0);
-    limits["Content-Length"].push_back(100000000); // 0 to 100,000,000 bytes (100 MB)
+    limits["Content-Length"].push_back(2000000000); // 0 to 2,000,000,000 bytes (2 GB)
 
     limits["num"] = std::vector<int>();
     limits["num"].push_back(0);

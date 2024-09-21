@@ -1,3 +1,4 @@
+
 import http.client
 import time
 
@@ -26,7 +27,7 @@ conn.send(("%s\r\n" % chunk2).encode('utf-8'))
 time.sleep(1)
 
 # Send last chunk (size zero)
-conn.send(("00\r\n\r\n").encode('utf-8'))
+conn.send(("0\r\n\r\n").encode('utf-8'))
 
 # Get the response
 r = conn.getresponse()

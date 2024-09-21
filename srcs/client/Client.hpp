@@ -14,8 +14,8 @@
 #include <string>
 #include <time.h>
 
-#define CLIENT_TIMEOUT 60
-#define REQUEST_TIMEOUT 50
+#define CLIENT_TIMEOUT 600
+#define REQUEST_TIMEOUT 500
 class Client 
 {
     private:
