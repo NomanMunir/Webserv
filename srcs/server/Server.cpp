@@ -1,11 +1,12 @@
 #include "Server.hpp"
 #include "../events/EventPoller.hpp"
+#include "ServerManager.hpp"
 
 #define MAX_CONNECTIONS 10
 
 
 Server::Server(ServerConfig &serverConfig, EventPoller *poller)
-    : serverSocket(-1), addr(), port(0), serverConfig(serverConfig), _poller(poller)
+    : serverSocket(-1), addr(), port(0), serverConfig(serverConfig), _poller(poller), _manager(NULL)
 {
     std::string serverPort = serverConfig.listen.back().back();
     this->port =  std::atoi(serverPort.c_str());
@@ -18,7 +19,11 @@ Server::~Server()
     close(this->serverSocket);
     while (!clients.empty())
     {
-        close(clients.begin()->first);
+        int fd = clients.begin()->first;
+        close(fd);
+        // Unregister fd from ServerManager during cleanup
+        if (this->_manager)
+            this->_manager->unregisterClientFd(fd);
         clients.erase(clients.begin());
     }
 }
@@ -26,7 +31,7 @@ Server::~Server()
 Server::Server(const Server &other)
     : serverSocket(other.serverSocket), \
     addr(other.addr), port(other.port), \
-    serverConfig(other.serverConfig), _poller(other._poller)
+    serverConfig(other.serverConfig), _poller(other._poller), _manager(other._manager)
 {
     this->serverError = other.serverError;
     this->clients = other.clients;
@@ -40,11 +45,17 @@ Server &Server::operator=(const Server &other)
         this->serverSocket = other.serverSocket;
         this->addr = other.addr;
         this->_poller = other._poller;
+        this->_manager = other._manager;
         this->serverConfig = other.serverConfig;
         this->port = other.port;
         this->clients = other.clients;
     }
     return *this;
+}
+
+void Server::setServerManager(ServerManager* manager)
+{
+    this->_manager = manager;
 }
 
 void Server::socketInUse()
@@ -119,6 +130,11 @@ bool Server::acceptClient()
     Logs::appendLog("INFO", "[acceptClient]\t\t New connection, socket fd is [" + intToString(clientSocket) + "], IP is : " + inet_ntoa(clientAddr.sin_addr) + ", port : " + intToString(ntohs(clientAddr.sin_port)));
     clients[clientSocket] = Client(clientSocket, this->_poller);
     this->_poller->addToQueue(clientSocket, READ_EVENT);
+    
+    // Register this client fd with ServerManager for O(1) lookup
+    if (this->_manager)
+        this->_manager->registerClientFd(clientSocket, this);
+    
     return true;
 }
 
@@ -145,6 +161,9 @@ void Server::handleWrite(int fd)
             this->_poller->removeFromQueue(fd, READ_EVENT);
             close(fd);
             clients.erase(fd);
+            // Unregister fd from ServerManager
+            if (this->_manager)
+                this->_manager->unregisterClientFd(fd);
             return;
         }
         if (!clients[fd].isWritePending()) return;
@@ -170,6 +189,9 @@ void Server::handleWrite(int fd)
         std::cerr << e.what() << '\n';
         close(fd);
         clients.erase(fd);
+        // Unregister fd from ServerManager
+        if (this->_manager)
+            this->_manager->unregisterClientFd(fd);
     }
 }
 
@@ -191,6 +213,9 @@ void Server::handleRead(int fd)
         this->_poller->removeFromQueue(fd, READ_EVENT);
         close(fd);
         clients.erase(fd);
+        // Unregister fd from ServerManager
+        if (this->_manager)
+            this->_manager->unregisterClientFd(fd);
     }
 }
 
@@ -285,6 +310,9 @@ void Server::handleCgiRead(int clientFd)
             Logs::appendLog("ERROR", "[handleCgiRead]\t\t Error reading from CGI " + std::string(strerror(errno)));
             this->_poller->removeFromQueue(clientFd, READ_EVENT);
             close(clientFd);
+            // Unregister fd from ServerManager
+            if (this->_manager)
+                this->_manager->unregisterClientFd(clientFd);
             clients.erase(clientFd);
         }
     }
@@ -326,6 +354,9 @@ void Server::checkTimeouts()
                 Logs::appendLog("INFO", "[checkTimeouts]\t\t Client " + intToString(it->first) + " timed out");
                 this->_poller->removeFromQueue(it->first, READ_EVENT);
                 close(it->first);
+                // Unregister fd from ServerManager
+                if (this->_manager)
+                    this->_manager->unregisterClientFd(it->first);
                 clients.erase(it++);
             }
         }
@@ -356,6 +387,9 @@ void Server::handleDisconnection(int fd)
         close(fd);
     }
     clients.erase(fd);
+    // Unregister fd from ServerManager
+    if (this->_manager)
+        this->_manager->unregisterClientFd(fd);
 }
 
 

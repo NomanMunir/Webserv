@@ -28,8 +28,11 @@ void ServerManager::initServers(Parser &parser)
 			delete server;
 			continue;
 		}
+		server->setServerManager(this);
 		this->servers.push_back(server);
-		this->serverSockets.push_back(server->getServerSocket());
+		int serverSocket = server->getServerSocket();
+		this->serverSockets.push_back(serverSocket);
+		this->serverSocketMap[serverSocket] = server;
 	}
 
 	if (this->servers.size() == 0)
@@ -44,54 +47,60 @@ void ServerManager::initServers(Parser &parser)
 
 void ServerManager::processReadEvent(EventInfo eventInfo)
 {
+	// O(1) lookup: Check if this is a server socket
+	std::map<int, Server*>::iterator serverIt = serverSocketMap.find(eventInfo.fd);
+	if (serverIt != serverSocketMap.end())
+	{
+		// This is a new connection on a server socket
+		serverIt->second->acceptClient();
+		return;
+	}
+	
+	// O(1) lookup: Find which server owns this client fd
+	Server* server = getServerForFd(eventInfo.fd);
+	if (server != NULL)
+	{
+		// Handle client disconnect
+		if (eventInfo.isEOF || eventInfo.isError)
+		{
+			server->handleDisconnection(eventInfo.fd);
+			unregisterClientFd(eventInfo.fd);
+			return;
+		}
+		
+		// Handle normal read
+		server->handleRead(eventInfo.fd);
+		return;
+	}
+	
+	// If not found in client map, check if it's a CGI fd
+	// CGI fds are not pre-registered, so we need to check all servers
 	for (size_t j = 0; j < this->servers.size(); j++)
 	{
-		if (this->servers[j]->getServerSocket() == eventInfo.fd)
-		{
-			if (!this->servers[j]->acceptClient())
-				continue;
-			break;
-		}
-		else
-		{
-			if (this->servers[j]->isMyClient(eventInfo.fd))
-			{
-				if (eventInfo.isEOF || eventInfo.isError)
-				{
-					this->servers[j]->handleDisconnection(eventInfo.fd);
-					break;
-				}
-				this->servers[j]->handleRead(eventInfo.fd);
-				break;
-			}
-			else if(this->servers[j]->isMyCGI(eventInfo.fd))
-				break;
-		}
+		if (this->servers[j]->isMyCGI(eventInfo.fd))
+			return; // CGI handler already processed
 	}
 }
 
 void ServerManager::processWriteEvent(EventInfo eventInfo)
 {
-	for (size_t j = 0; j < this->servers.size(); j++)
-	{
-		if (servers[j]->isMyClient(eventInfo.fd))
-		{
-			servers[j]->handleWrite(eventInfo.fd);
-			break;
-		}
-	}
+	// O(1) lookup: Find which server owns this client fd
+	Server* server = getServerForFd(eventInfo.fd);
+	if (server == NULL)
+		return; // Unknown fd, ignore
+	
+	server->handleWrite(eventInfo.fd);
 }
 
 void ServerManager::processTimeoutEvent(EventInfo eventInfo)
 {
-	for (size_t j = 0; j < this->servers.size(); j++)
-	{
-		if (servers[j]->isMyClient(eventInfo.fd))
-		{
-			servers[j]->handleDisconnection(eventInfo.fd);
-			break;
-		}
-	}
+	// O(1) lookup: Find which server owns this client fd
+	Server* server = getServerForFd(eventInfo.fd);
+	if (server == NULL)
+		return; // Unknown fd, ignore
+	
+	server->handleDisconnection(eventInfo.fd);
+	unregisterClientFd(eventInfo.fd);
 }
 
 void ServerManager::checkTimeouts()
@@ -124,4 +133,22 @@ void ServerManager::run()
 				processWriteEvent(eventInfo);
 		}
 	}
+}
+
+void ServerManager::registerClientFd(int fd, Server* server)
+{
+	fdToServer[fd] = server;
+}
+
+void ServerManager::unregisterClientFd(int fd)
+{
+	fdToServer.erase(fd);
+}
+
+Server* ServerManager::getServerForFd(int fd)
+{
+	std::map<int, Server*>::iterator it = fdToServer.find(fd);
+	if (it != fdToServer.end())
+		return it->second;
+	return NULL;
 }

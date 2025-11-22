@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Server.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: absalem < absalem@student.42abudhabi.ae    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/29 14:41:08 by nmunir            #+#    #+#             */
-/*   Updated: 2024/08/15 13:20:07 by absalem          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
@@ -23,6 +11,8 @@
 
 #include <sys/wait.h>
 
+class ServerManager;  // Forward declaration
+
 class Server
 {
     public:
@@ -32,6 +22,7 @@ class Server
         Server &operator=(const Server &other);
 
         void init();
+        void setServerManager(ServerManager* manager);
 
         int getPort() const;
         int getServerSocket() const;
@@ -58,6 +49,7 @@ class Server
         int port;
         ServerConfig serverConfig;
         EventPoller *_poller;
+        ServerManager *_manager;
         std::map<int, Client> clients;
 
         void initSocket();
